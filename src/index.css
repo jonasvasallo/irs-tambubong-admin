@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
+
+:root{
+    /* Follows 60-30-10 color rule */
+    --primary: #C8414A;
+    --secondary: #D8D8D8;
+
+    --neutral: #F9F9F9; /* color of background */
+    --container: #fff; /* color of containers/components */
+
+    /* Text Colors (Change to white when using dark mode) */
+    --major: #425154;
+    --minor: #787d80;
+
+    --background: #FEFBFB;
+
+
+    /* Dark Mode (Copy this hex code then paste to neutral variable) */
+    --dark: #0b0e14;
+    --dark-container: #0d1017;
+}
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+html{
+    line-height: 1.25;
+    font-size: 14px;
+}
+
+body{
+    background-color: var(--background);
+}
+
+
+/* FONT STYLES */
+
+.heading-l{
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.heading-m{
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.heading-s{
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.body-l{
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.body-m{
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.body-s{
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Font Colors */
+
+.color-primary{
+  color: var(--primary);
+}
+
+.color-secondary{
+  color: var(--secondary);
+}
+
+.color-major{
+  color: var(--major);
+}
+
+.color-minor{
+  color: var(--minor);
+}
+
+/* Background Color */
+
+.bg-primary{
+  background-color: var(--primary);
+}
+
+.bg-secondary{
+  background-color: var(--secondary);
+}
+
+.bg{
+  background-color: var(--background);
+}
+
+.bg-container{
+  background-color: var(--container);
+}
+
+
+
