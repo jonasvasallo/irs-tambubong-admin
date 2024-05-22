@@ -4,6 +4,7 @@
     /* Follows 60-30-10 color rule */
     --primary: #C8414A;
     --secondary: #D8D8D8;
+    --primary-light: #ffdbdd;
 
     --neutral: #F9F9F9; /* color of background */
     --container: #fff; /* color of containers/components */
@@ -52,6 +53,19 @@ body{
 .heading-s{
   font-size: 18px;
   font-weight: 700;
+}
+
+.subheading-l{
+  font-size: 16px;
+  font-weight: 600;
+}
+.subheading-m{
+  font-size: 14px;
+  font-weight: 600;
+}
+.subheading-s{
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .body-l{
@@ -104,6 +118,21 @@ body{
 .bg-container{
   background-color: var(--container);
 }
+
+.content{
+  display: flex;
+}
+
+.main-content{
+  margin-left: 280px;
+  width: 100%;
+}
+
+.content-here{
+  padding: 64px;
+}
+
+
 
 
 
