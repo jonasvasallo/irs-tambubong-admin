@@ -12,13 +12,24 @@ function App() {
   const navigate = useNavigate();
   const [count, setCount] = useState(0);
   useEffect(() => {
-    const checkLogin = () => {
-      if(auth.currentUser == null){
+    auth.onAuthStateChanged(function(user) {
+      // if (user != null) {
+      //   this.name = user.displayName;
+      //   this.uid = user.uid;
+      // } else {
+      //   this.name = "Unknown";
+      // }
+      if(user == null){
         navigate('/login');
       }
-    }
+    });
+    // const checkLogin = () => {
+    //   if(auth.currentUser == null){
+    //     navigate('/login');
+    //   }
+    // }
 
-    checkLogin();
+    // checkLogin();
   });
   return (
 
