@@ -1,47 +1,40 @@
-import { useEffect, useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import LoginPage from './pages/LoginPage'
-import DashboardPage from './pages/DashboardPage'
-import ReportsPage from './pages/ReportsPage'
-import NotFoundPage from './pages/NotFoundPage'
-import { auth } from './config/firebase'
-import { useNavigate } from 'react-router-dom'
-
+import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import ReportsPage from "./pages/incidents/ReportsPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import { auth } from "./config/firebase";
+import { useNavigate } from "react-router-dom";
+import ReportDetailsPage from "./pages/incidents/ReportDetailsPage";
 
 function App() {
   const navigate = useNavigate();
-  const [count, setCount] = useState(0);
+  const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
-    auth.onAuthStateChanged(function(user) {
-      // if (user != null) {
-      //   this.name = user.displayName;
-      //   this.uid = user.uid;
-      // } else {
-      //   this.name = "Unknown";
-      // }
-      if(user == null){
-        navigate('/login');
+    auth.onAuthStateChanged(function (user) {
+      if (user == null) {
+        navigate("/login");
       }
-    });
-    // const checkLogin = () => {
-    //   if(auth.currentUser == null){
-    //     navigate('/login');
-    //   }
-    // }
 
-    // checkLogin();
+      setCurrentUser(user);
+    });
   });
   return (
-
     <>
       <Routes>
-        <Route path='/' element={<DashboardPage />}></Route>
-        <Route path='/reports' element={<ReportsPage />}></Route>
-        <Route path='/login' element={<LoginPage/>}></Route>
-        <Route path='*' element={<NotFoundPage />}></Route>
+        <Route path="/" element={<DashboardPage />}/>
+        <Route path="/reports" >
+          <Route index element={<ReportsPage />} />
+          <Route path=":id" element={<ReportDetailsPage />}/>
+          <Route path="new" />
+        </Route>
+        
+        <Route path="/login" element={<LoginPage />}/>
+        <Route path="*" element={<NotFoundPage />}/>
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
