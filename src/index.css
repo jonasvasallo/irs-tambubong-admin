@@ -148,7 +148,7 @@ body{
   border-radius: 16px;
   padding: 16px;
   height: 100% !important;
-  max-height: 90% !important;
+  max-height: 95% !important;
   overflow: hidden;
 }
 
@@ -179,11 +179,29 @@ body{
 
 .status{
   display: inline-block;
-  background-color: rgb(255, 207, 207);
+  
   width: fit-content;
   padding: 4px 6px;
   border-radius: 6px;
-  color: var(--primary);
+}
+
+.error{
+  background-color: rgb(255, 207, 207);
+  color: red;
+}
+
+.success{
+  background-color: rgb(211, 255, 207);
+  color: rgb(24, 173, 19);
+}
+
+.statusContainer{
+  border: 1px solid red;
+  background-color: rgb(255, 242, 242);
+  padding: 16px;
+  color: red;
+  border-radius: 8px;
+  width: 100%;
 }
 
 

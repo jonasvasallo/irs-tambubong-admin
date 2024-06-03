@@ -1,0 +1,87 @@
+.modal-background{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1,1);
+    background: rgba(0,0,0,0.5);
+    transition: 0.5s;
+}
+
+body.open .modal-background{
+    visibility: visible;
+    opacity: 1;
+    animation: background-in 1s both;
+}
+
+body.open .modal{
+    opacity: 1;
+    visibility: visible;
+    animation: modal-in 1s;
+}
+
+body.closed .modal{
+    opacity: 0;
+    visibility: hidden;
+    translate: -50% -50%;
+}
+
+.modal{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background: var(--container);
+    color: var(--major);
+    border-radius: 12px;
+    width: 480px;
+    translate: -50% -50%;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+
+    /* This disables highlighting the text inside the modal, you can remove it if you want. */
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;      
+    user-select: none;
+}
+
+.modal-header{
+    border-bottom: 1px solid var(--minor);
+    display: flex;
+}
+
+.modal-header p{
+    color: var(--minor);
+}
+
+.modal-header .icon{
+    height: 42px;
+    width: 42px;
+    outline: 1px solid var(--minor);
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    margin-right: 8px;
+}
+
+.modal-actions{
+    border-top: 1px solid var(--minor);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.modal-header, .modal-content, .modal-actions{
+    padding: 16px;
+}
+
+.modal-content{
+    min-height: 150px;
+}
+

@@ -2,38 +2,55 @@ import React from 'react'
 import { InputField } from './InputField'
 import { InputButton } from './InputButton'
 import { useState, useEffect } from 'react'
-import { collection, getDocs, doc, onSnapshot } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { collection, getDocs, doc, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
+import { firestore, auth } from "../config/firebase";
 
 const LiveStatusContainer = (props) => {
-
+const [status, setStatus] = useState('');
 const [statusList, setStatusList] = useState([]);
 const incidentDocRef = doc(firestore, "incidents", props.id);
 const statusCollectionRef = collection(incidentDocRef, "live_status");
 
 useEffect(() => {
     console.log("use effect fired");
-    //     const unsubscribe = onSnapshot(statusCollectionRef, (snapshot) => {
-
-    //     const filteredData = snapshot.docs.map((doc) => ({
-    //       ...doc.data(),
-    //       id: doc.id,
-    //       content: doc.data().status_content,
-    //       timestamp: new Date(doc.data().timestamp.seconds * 1000).toLocaleString(),
-    //     }));
+        const unsubscribe = onSnapshot(statusCollectionRef, (snapshot) => {
+            console.log("reading database live status...");
+        const filteredData = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+          content: doc.data().status_content,
+          timestamp: new Date(doc.data().timestamp.seconds * 1000).toLocaleString(),
+        }));
         
-    //     filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    //     setStatusList(filteredData);
-    //     console.log("this happened");
-    //   }, (error) => {
-    //     window.alert(error);
-    //   });
+        setStatusList(filteredData);
+        console.log("this happened");
+      }, (error) => {
+        window.alert(error);
+      });
 
-    // return () => unsubscribe();
+    return () => unsubscribe();
     
 }, []);
 
+    const addStatus = async () => {
+        if(status.trim() == ""){
+            alert("Please enter status first");
+            return;
+        }
+    
+        try{
+            await addDoc(statusCollectionRef, {
+                status_content: status.trim(),
+                updated_by: auth.currentUser.uid,
+                timestamp: serverTimestamp(),
+            })
+            setStatus("");
+        } catch(err){
+            console.log(err.message);
+        }
+    }
 
   return (
     <div id='live_status' className='h-100 flex col gap-8'>
@@ -51,8 +68,8 @@ useEffect(() => {
         </div>
         <div className="send-message flex-1">
             <div className="flex gap-8">
-                <input type="text" name="" id="" placeholder='Enter status here...'/>
-                <InputButton label='Update' buttonType="filled"/>
+                <input type="text" name="" id="" placeholder='Enter status here...' onChange={(e) => setStatus(e.target.value)} value={status}/>
+                <button className="button filled" onClick={()=>addStatus()}>Update</button>
             </div>
         </div>
         

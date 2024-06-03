@@ -8,7 +8,7 @@
 #live_status{
     padding: 16px;
     border-radius: 8px;
-    max-height: 50%;
+    max-height: 45%;
     border: 1px solid var(--major);
 }
 
@@ -44,6 +44,10 @@ width: 100%;
     border-radius: 8px;
     max-height: 50%;
     border: 1px solid var(--major);
+}
+
+#chatroom .messages{
+    overflow-y: scroll;
 }
 
 #chatroom .messages .message .message-box{

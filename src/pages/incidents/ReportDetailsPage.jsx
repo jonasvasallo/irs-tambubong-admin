@@ -8,6 +8,12 @@ import { doc, getDoc } from "firebase/firestore";
 import { firestore } from "../../config/firebase";
 import LiveStatusContainer from "../../components/LiveStatusContainer";
 import ChatroomContainer from "../../components/ChatroomContainer";
+import WitnessContainer from "../../components/WitnessContainer";
+import AssignedPersonsContainer from "../../components/AssignedPersonsContainer";
+import Modal from "../../components/Modal";
+import { useModal } from '../../core/ModalContext';
+import IncidentTags from "../../components/IncidentTags";
+import IncidentStatus from "../../components/IncidentStatus";
 
 const ReportDetailsPage = () => {
   const { id } = useParams();
@@ -16,9 +22,10 @@ const ReportDetailsPage = () => {
   const [incidentTag, setIncidentTag] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { openModal } = useModal();
 
   useEffect(() => {
-    // console.log(id);
+    console.log("fetched incident details");
     const fetchIncidentDetails = async () => {
       try {
         const docRef = doc(firestore, "incidents", id);
@@ -77,11 +84,21 @@ const ReportDetailsPage = () => {
       }
     }
 
-    // fetchIncidentDetails();
-  }, [id]);
+    fetchIncidentDetails();
+  }, []);
 
+  const modalToggle = () => {
 
-  
+    const bodyClassList = document.body.classList;
+    if(bodyClassList.contains("open")){
+        bodyClassList.remove("open");
+        bodyClassList.add("closed");
+    } else{
+        bodyClassList.remove("closed");
+        bodyClassList.add("open");
+    }
+}
+    
   return (
     <div className="content">
       <Sidebar />
@@ -90,102 +107,53 @@ const ReportDetailsPage = () => {
         <div className="content-here">
           <div className="container w-100">
           {incidentDetails ? (
-            <div className="flex col">
-              <div className="flex">
-                <div id="incident_details" className="flex col gap-8">
-                  
-                      <>
-                        <span className="subheading-l color-major">{incidentDetails.title}</span>
-                        <span className="body-l color-minor">{new Date(incidentDetails.timestamp.seconds * 1000).toLocaleString()}</span>
-                        <span>{incidentDetails.location_address}</span>
-                        <span>{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
-                        <span>{incidentDetails.status}</span>
-                        {userDetails ? (
-                        <div id="user_info" className="flex gap-8">
-                          <img src={userDetails.profile_path} alt="" width={60} height={60}/>
-                          <div className="flex col">
-                              <span>{`${userDetails.first_name} ${userDetails.last_name}`}</span>
-                              <span>{`${userDetails.user_type.toString().toUpperCase()}`}</span>
-                              <span>{(userDetails.verified) ? 'Verified' : 'Not Verified'}</span>
-                          </div>
-                        </div>
-                        ) : (<p>Loading...</p>)}
-                      </>
-                    
-
+            <div className="flex main-between gap-32 h-100">
+            <div className="flex col w-100 flex-2 gap-16">
+              <div className="flex gap-32 main-between ">
+                <div id="incident-details" className="flex col gap-8">
+                  <span className="subheading-l color-major">{incidentDetails.title}</span>
+                  <span className="body-l color-minor">{new Date(incidentDetails.timestamp.seconds * 1000).toLocaleString()}</span>
+                  <span className="body-m color-major">{incidentDetails.location_address}</span>
+                  <div className="flex gap-8">
+                    <span className="status error">Status: {incidentDetails.status}</span>
+                    <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id}/>, 'info', <></>)}>Update</button>
+                  </div>
+                  <div className="flex gap-8">
+                    <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
+                    <button className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
+                  </div>
+                  {userDetails ? (
+                    <div id="user_info" className="flex gap-8">
+                      <img src={userDetails.profile_path} alt="" width={60} height={60}/>
+                      <div className="flex col">
+                          <span className="subheading-s">{`${userDetails.first_name} ${userDetails.last_name}`}</span>
+                          <span className="color-minor">{`${userDetails.user_type.toString().toUpperCase()}`}</span>
+                          <span className="color-primary">{(userDetails.verified) ? 'Verified' : 'Not Verified'}</span>
+                      </div>
+                    </div>
+                    ) : (<p>Loading...</p>)}
                 </div>
-                <div id="maps_container">
+                <div className="maps">
                 </div>
               </div>
-              <div className="flex"></div>
+              <span className="body-m color-major">{incidentDetails.details}</span>
+              <div className="flex main-between gap-32">
+                <WitnessContainer id={id}/>
+                <AssignedPersonsContainer id={id}/>
+              </div>
             </div>
+            <div className="flex col main-between w-100 flex-1 gap-16">
+              <LiveStatusContainer id={id}/>
+              <ChatroomContainer id={id}/>
+            </div>
+          </div>
             ) : (
-              <div className="flex main-between gap-32 h-100">
-                <div className="flex col w-100 flex-2 gap-16">
-                  <div className="flex gap-32 main-between ">
-                    <div id="incident-details" className="flex col gap-8">
-                      <span className="subheading-l color-major">Incident Title Here</span>
-                      <span className="body-l color-minor">August 9, 2023</span>
-                      <span className="body-m color-major">1084 Kalsadang Bago, Caingin, San Rafael, Bulacan</span>
-                      <span className="status">Status: Handling</span>
-                      <span className="tag">Robbery</span>
-                      <div id="user_info" className="flex gap-8">
-                        <img src="" alt="" width={60} height={60}/>
-                        <div className="flex col">
-                          <span className="body-m color-major">Full Name</span>
-                          <span className="body-s color-primary">RESIDENT</span>
-                          <span className="body-s color-minor">Verified</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="maps">
-                      awdawd
-                    </div>
-                  </div>
-                  <span className="body-m color-major">Lorem ipsum dolor sit amet consectetur adipisicing elit. Et animi magni nobis reiciendis dignissimos doloribus, deserunt praesentium ratione delectus aperiam, ab quos incidunt maxime esse harum totam eos sed quidem!</span>
-                  <div className="flex main-between gap-32">
-                    <div id="witnesses" className="w-100 flex col gap-8">
-                      <span className="subheading-m color-major">Witnesses</span>
-                      <div className="witness-row flex gap-8 cross-center main-between">
-                        <div className="flex gap-8 cross-center">
-                          <img src="" alt="" width={40} height={40}/>
-                          <div className="flex col">
-                            <span className="subheading-m color-major">Glenn Mark Cruz</span>
-                            <span className="body-m color-minor">09184639221</span>
-                            <span className="body-m color-major">Details here</span>
-                          </div>
-                        </div>
-                        <button>View</button>
-                      </div>
-                    </div>
-                    <div id="responders" className="w-100 flex col gap-8">
-                      <div className="flex main-between">
-                        <span className="subheading-m color-major">Assigned Persons</span>
-                        <button>Add</button>
-                      </div>
-                      <div className="responder-row flex gap-8 cross-center main-between">
-                        <div className="flex gap-8 cross-center">
-                          <img src="" alt="" width={40} height={40}/>
-                          <div className="flex col main-center">
-                            <span className="subheading-m color-major">Glenn Mark Cruz</span>
-                            <span className="body-m color-minor">09184639221</span>
-                          </div>
-                        </div>
-                        <button>Delete</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex col main-between w-100 flex-1 gap-32">
-                  <LiveStatusContainer id={id}/>
-                  <ChatroomContainer id={id}/>
-                </div>
-              </div>
-              
+              <span>Loading...</span>
             )}
           </div>
         </div>
       </div>
+      <Modal />
     </div>
   );
 };

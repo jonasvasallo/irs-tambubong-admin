@@ -7,7 +7,7 @@ const ChatroomMessage = (props) => {
     const [fullName, setFullName] = useState("");
 
     useEffect(() => {
-
+        console.log("reading database fetching user details...");
         const getFullName = async () => {
             try{
                 

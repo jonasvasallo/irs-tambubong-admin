@@ -1,0 +1,120 @@
+import React, {useEffect, useState} from 'react'
+import Modal from "./Modal";
+import { collection, getDocs, doc, onSnapshot, query, where, getDoc, updateDoc, arrayRemove  } from "firebase/firestore";
+import { firestore } from '../config/firebase';
+import { useModal } from '../core/ModalContext';
+import PersonsAvailable from './PersonsAvailable';
+
+
+const AssignedPersonsContainer = (props) => {
+    const [error, setError] = useState('');
+    const [assignedPersonnelList, setAssignedPersonnelList] = useState([]);
+    const incidentDocRef = doc(firestore, "incidents", props.id);
+
+    const { openModal } = useModal();
+
+    const modalToggle = () => {
+
+        const bodyClassList = document.body.classList;
+        if(bodyClassList.contains("open")){
+            bodyClassList.remove("open");
+            bodyClassList.add("closed");
+        } else{
+            bodyClassList.remove("closed");
+            bodyClassList.add("open");
+        }
+    }
+
+
+    useEffect(() => {
+        
+        const fetchUserDetails = async (uIDs) => {
+            try {
+                const userDetailsPromises = uIDs.map(uID => getDoc(doc(firestore, "users", uID)));
+                const userDocs = await Promise.all(userDetailsPromises);
+                const users = userDocs.map(userDoc => ({
+                    id: userDoc.id,
+                    ...userDoc.data()
+                }));
+                setAssignedPersonnelList(users);
+            } catch (error) {
+                console.error("Error fetching user details: ", error);
+            }
+        };
+
+        const unsubscribe = onSnapshot(incidentDocRef, (doc) => {
+            console.log("reading database assigned persons...");
+            if (doc.exists()) {
+                const data = doc.data();
+                if (data.responders) {
+                    fetchUserDetails(data.responders);
+                }
+            } else {
+                console.log("No such document!");
+            }
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const handleRemovePerson = async (personId) => {
+        setError("");
+        try {
+            const incidentDocRef = doc(firestore, "incidents", props.id);
+            const incidentDoc = await getDoc(incidentDocRef);
+            if (incidentDoc.exists()) {
+                const incidentData = incidentDoc.data();
+                const responders = incidentData.responders || [];
+                console.log(responders);
+                const status = incidentData.status;
+    
+                if (status !== "Verifying" && status !== "Verified") {
+                    setError("Cannot remove responder unless status is verifying or verified.");
+                    return;
+                }
+    
+                if (!responders.includes(personId)) {
+                    setError("User is not in the responders list.");
+                } else {
+                    await updateDoc(incidentDocRef, {
+                        responders: arrayRemove(personId)
+                    });
+                    setError(null);
+                }
+            } else {
+                setError("Incident document not found.");
+            }
+        } catch (error) {
+            console.error("Error removing person from responders: ", error);
+            setError("Error removing person from responders.");
+        }
+    };
+
+  return (
+    <div id="responders" className="w-100 flex col gap-8">
+        <div className="flex main-between">
+        <span className="subheading-m color-major">Assigned Persons</span>
+        <button onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id}/>, 'info', <button>Action</button>)} className='button text'>Add</button>
+        </div>
+        {assignedPersonnelList.map((person) => (
+        <div key={person.id} className="responder-row flex gap-8 cross-center main-between">
+            
+                <div className="flex gap-8 cross-center">
+                <img src={person.profile_path} alt="" width={40} height={40}/>
+                <div className="flex col main-center">
+                    <span className="subheading-m color-major">{`${person.first_name} ${person.last_name}`}</span>
+                    <span className="body-m color-minor">{person.contact_no}</span>
+                </div>
+                </div>
+            
+        <button className='button filled' onClick={() => handleRemovePerson(person.id)}>Delete</button>
+        
+        </div>
+        ))}
+        {error && <span className='status error'>{error}</span>}
+        
+    </div>
+  )
+}
+
+export default AssignedPersonsContainer
