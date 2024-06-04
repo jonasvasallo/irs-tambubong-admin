@@ -7,7 +7,6 @@ const ChatroomMessage = (props) => {
     const [fullName, setFullName] = useState("");
 
     useEffect(() => {
-        console.log("reading database fetching user details...");
         const getFullName = async () => {
             try{
                 
@@ -19,7 +18,6 @@ const ChatroomMessage = (props) => {
                   return;
                 }
                 setFullName(`${userDocSnap.data().first_name} ${userDocSnap.data().last_name}`);
-                console.log("fetched full name");
             } catch(err){
                 console.log(err);
                 alert(err);

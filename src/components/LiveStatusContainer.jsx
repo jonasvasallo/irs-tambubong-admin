@@ -12,9 +12,7 @@ const incidentDocRef = doc(firestore, "incidents", props.id);
 const statusCollectionRef = collection(incidentDocRef, "live_status");
 
 useEffect(() => {
-    console.log("use effect fired");
         const unsubscribe = onSnapshot(statusCollectionRef, (snapshot) => {
-            console.log("reading database live status...");
         const filteredData = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
@@ -25,7 +23,6 @@ useEffect(() => {
         filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         setStatusList(filteredData);
-        console.log("this happened");
       }, (error) => {
         window.alert(error);
       });

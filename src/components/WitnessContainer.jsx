@@ -24,7 +24,6 @@ const WitnessContainer = (props) => {
   };
 
   const unsubscribe = onSnapshot(witnessCollectionRef, async (snapshot) => {
-    console.log("reading database witnesses");
     const witnessDataPromises = snapshot.docs.map(async (doc) => {
         const witnessData = doc.data();
         const userData = await fetchUserDetails(witnessData.user_id);

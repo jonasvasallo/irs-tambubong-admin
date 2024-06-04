@@ -195,6 +195,23 @@ body{
   color: rgb(24, 173, 19);
 }
 
+.warning{
+  background-color: rgb(255, 254, 207);
+  color: rgb(255, 230, 0);
+}
+
+.textalign-center{
+  text-align: center;
+}
+
+.textalign-start{
+  text-align: start;
+}
+
+.textalign-end{
+  text-align: end;
+}
+
 .statusContainer{
   border: 1px solid red;
   background-color: rgb(255, 242, 242);

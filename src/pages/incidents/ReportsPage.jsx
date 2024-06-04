@@ -7,57 +7,29 @@ import { firestore } from "../../config/firebase";
 import { Link } from "react-router-dom";
 
 const ReportsPage = () => {
-  const table_rows = document.querySelectorAll("tbody tr"),
-    table_headings = document.querySelectorAll("thead th");
-
-  function sortTable(column, sort_asc) {
-    [...table_rows]
-      .sort((a, b) => {
-        let first_row = a
-            .querySelectorAll("td")
-            [column].textContent.toLowerCase(),
-          second_row = b
-            .querySelectorAll("td")
-            [column].textContent.toLowerCase();
-
-        return sort_asc
-          ? first_row < second_row
-            ? 1
-            : -1
-          : first_row < second_row
-          ? -1
-          : 1;
-      })
-      .map((sorted_row) =>
-        document.querySelector("tbody").appendChild(sorted_row)
-      );
-  }
-
-  table_headings.forEach((head, i) => {
-    let sort_asc = true;
-    head.onclick = () => {
-      console.log("test");
-      table_headings.forEach((head) => head.classList.remove("active"));
-      head.classList.add("active");
-
-      document
-        .querySelectorAll("td")
-        .forEach((td) => td.classList.remove("active"));
-      table_rows.forEach((row) => {
-        row.querySelectorAll("td")[i].classList.add("active");
-      });
-
-      head.classList.toggle("asc", sort_asc);
-      sort_asc = head.classList.contains("asc") ? false : true;
-
-      sortTable(i, sort_asc);
-    };
-  });
 
   const [incidentList, setIncidentList] = useState([]);
   const incidentCollectionRef = collection(firestore, "incidents");
 
+  const [incidentGroupList, setIncidentGroupList] = useState([]);
+  const incidentGroupCollectionRef = collection(firestore, "incident_groups");
+
   useEffect(() => {
+    const getIncidentGroupsList = async () => {
+      try {
+        const data = await getDocs(incidentGroupCollectionRef);
+        const filteredData = data.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+          date: new Date(
+            doc.data().timestamp.seconds * 1000
+          ).toLocaleString(),
+        }))
+        setIncidentGroupList(filteredData);
+      } catch(error){
+        window.alert(error);
+      }
+    }
     const getIncidentsList = async () => {
       try {
         const data = await getDocs(incidentCollectionRef);
@@ -82,6 +54,7 @@ const ReportsPage = () => {
     };
 
     getIncidentsList();
+    getIncidentGroupsList();
   }, []);
 
   return (
@@ -132,12 +105,6 @@ const ReportsPage = () => {
                         </tr>
                       </>
                     ))}
-                    <tr>
-                      <td>Bugbugan</td>
-                      <td> 17 Dec, 2022 - 12:54 AM </td>
-                      <td>Public Harassment</td>
-                      <td>View Delete</td>
-                    </tr>
                   </tbody>
                 </table>
               </section>
@@ -158,19 +125,15 @@ const ReportsPage = () => {
                     <tr>
                       <th>
                         {" "}
-                        Id <span className="icon-arrow">↑</span>
+                        Title
                       </th>
                       <th>
                         {" "}
-                        Customer <span className="icon-arrow">↑</span>
+                        Date
                       </th>
                       <th>
                         {" "}
-                        Location <span className="icon-arrow">↑</span>
-                      </th>
-                      <th>
-                        {" "}
-                        Order Date <span className="icon-arrow">↑</span>
+                        Incidents
                       </th>
                       <th>
                         {" "}
@@ -178,211 +141,21 @@ const ReportsPage = () => {
                       </th>
                       <th>
                         {" "}
-                        Amount <span className="icon-arrow">↑</span>
+                        Action
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td> 1 </td>
-                      <td>
-                        {" "}
-                        <img src="images/Zinzu Chan Lee.jpg" alt="" />
-                        Zinzu Chan Lee
-                      </td>
-                      <td> Seoul </td>
-                      <td> 17 Dec, 2022 </td>
-                      <td>
-                        <p className="status delivered">Delivered</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong> $128.90 </strong>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 2 </td>
-                      <td>
-                        <img src="images/Jeet Saru.png" alt="" /> Jeet Saru{" "}
-                      </td>
-                      <td> Kathmandu </td>
-                      <td> 27 Aug, 2023 </td>
-                      <td>
-                        <p className="status cancelled">Cancelled</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$5350.50</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 3</td>
-                      <td>
-                        <img src="images/Sonal Gharti.jpg" alt="" /> Sonal
-                        Gharti{" "}
-                      </td>
-                      <td> Tokyo </td>
-                      <td> 14 Mar, 2023 </td>
-                      <td>
-                        <p className="status shipped">Shipped</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$210.40</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 4</td>
-                      <td>
-                        <img src="images/Alson GC.jpg" alt="" /> Alson GC{" "}
-                      </td>
-                      <td> New Delhi </td>
-                      <td> 25 May, 2023 </td>
-                      <td>
-                        <p className="status delivered">Delivered</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$149.70</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 5</td>
-                      <td>
-                        <img src="images/Sarita Limbu.jpg" alt="" /> Sarita
-                        Limbu{" "}
-                      </td>
-                      <td> Paris </td>
-                      <td> 23 Apr, 2023 </td>
-                      <td>
-                        <p className="status pending">Pending</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$399.99</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 6</td>
-                      <td>
-                        <img src="images/Alex Gonley.jpg" alt="" /> Alex Gonley{" "}
-                      </td>
-                      <td> London </td>
-                      <td> 23 Apr, 2023 </td>
-                      <td>
-                        <p className="status cancelled">Cancelled</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$399.99</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 7</td>
-                      <td>
-                        <img src="images/Alson GC.jpg" alt="" /> Jeet Saru{" "}
-                      </td>
-                      <td> New York </td>
-                      <td> 20 May, 2023 </td>
-                      <td>
-                        <p className="status delivered">Delivered</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$399.99</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 8</td>
-                      <td>
-                        <img src="images/Sarita Limbu.jpg" alt="" /> Aayat Ali
-                        Khan{" "}
-                      </td>
-                      <td> Islamabad </td>
-                      <td> 30 Feb, 2023 </td>
-                      <td>
-                        <p className="status pending">Pending</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$149.70</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 9</td>
-                      <td>
-                        <img src="images/Alex Gonley.jpg" alt="" /> Alson GC{" "}
-                      </td>
-                      <td> Dhaka </td>
-                      <td> 22 Dec, 2023 </td>
-                      <td>
-                        <p className="status cancelled">Cancelled</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$249.99</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 9</td>
-                      <td>
-                        <img src="images/Alex Gonley.jpg" alt="" /> Alson GC{" "}
-                      </td>
-                      <td> Dhaka </td>
-                      <td> 22 Dec, 2023 </td>
-                      <td>
-                        <p className="status cancelled">Cancelled</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$249.99</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 9</td>
-                      <td>
-                        <img src="images/Alex Gonley.jpg" alt="" /> Alson GC{" "}
-                      </td>
-                      <td> Dhaka </td>
-                      <td> 22 Dec, 2023 </td>
-                      <td>
-                        <p className="status cancelled">Cancelled</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$249.99</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 9</td>
-                      <td>
-                        <img src="images/Alex Gonley.jpg" alt="" /> Alson GC{" "}
-                      </td>
-                      <td> Dhaka </td>
-                      <td> 22 Dec, 2023 </td>
-                      <td>
-                        <p className="status cancelled">Cancelled</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$249.99</strong>{" "}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td> 9</td>
-                      <td>
-                        <img src="images/Alex Gonley.jpg" alt="" /> Alson GC{" "}
-                      </td>
-                      <td> Dhaka </td>
-                      <td> 22 Dec, 2023 </td>
-                      <td>
-                        <p className="status cancelled">Cancelled</p>
-                      </td>
-                      <td>
-                        {" "}
-                        <strong>$249.99</strong>{" "}
-                      </td>
-                    </tr>
+                    {incidentGroupList.map((group) => (
+                      <tr>
+                        <td>{group.title}</td>
+                        <td>{group.date}</td>
+                        <td>{group.incidents}</td>
+                        <td>{group.status}</td>
+                        <td><Link to={`/incident_group/${group.id}`}>View</Link> Delete</td>
+                      </tr>
+                    ))}
+
                   </tbody>
                 </table>
               </section>

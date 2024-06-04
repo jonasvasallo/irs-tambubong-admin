@@ -13,7 +13,6 @@ const ChatroomContainer = (props) => {
   const chatroomCollectionRef = collection(incidentDocRef, "chatroom");
   useEffect(() => {
     const unsubscribe = onSnapshot(chatroomCollectionRef, (snapshot) => {
-        console.log("reading database chatroom messages");
       const filteredData = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
@@ -24,7 +23,6 @@ const ChatroomContainer = (props) => {
       filteredData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
       setMessageList(filteredData);
-      console.log("this happened");
     }, (error) => {
       window.alert(error);
     });

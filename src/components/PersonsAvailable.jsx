@@ -8,15 +8,12 @@ const PersonsAvailable = (props) => {
 
     useEffect(() => {
         const fetchAvailablePersons = async () => {
-            console.log("reading database available persons...");
             try {
                 const incidentDocRef = doc(firestore, "incidents", props.id);
                 const incidentDoc = await getDoc(incidentDocRef);
                 if (incidentDoc.exists()) {
                     const incidentData = incidentDoc.data();
                     const responders = incidentData.responders || [];
-
-                    console.log(responders);
 
                     const usersRef = collection(firestore, "users");
                     const q = query(usersRef, where("user_type", "==", "tanod"));
