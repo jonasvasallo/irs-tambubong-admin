@@ -50,7 +50,7 @@ const ChatroomContainer = (props) => {
     
   }
   return (
-    <div id='chatroom' className='h-100 flex col gap-8'>
+    <div id='chatroom' className='h-100 flex col gap-8 flex-1'>
         <div className="heading">
             <span className='subheading-l color-major'>Chatroom</span>
         </div>

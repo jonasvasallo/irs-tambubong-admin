@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
 import '../../styles/incidentpage.css';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
 import { firestore } from "../../config/firebase";
@@ -19,6 +19,7 @@ import { getDistance } from "geolib";
 import MergeIncidents from "../../components/MergeIncidents";
 
 const ReportDetailsPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [incidentDetails, setIncidentDetails] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
@@ -188,7 +189,7 @@ const ReportDetailsPage = () => {
                     <span className="textalign-start">
                       This incident is a part of an incident group. All actions are synced with all the incidents included in the incident group.
                     </span>
-                    <button className="button text">Check</button>
+                    <button className="button text" onClick={() => navigate(`/incident_group/${incidentDetails.incident_group}`)}>Check</button>
                   </div>}
                   {(nearbyIncidents && !incidentDetails.incident_group) ? <div className="status warning flex main-start cross-center">
                     <span className="textalign-start">
@@ -204,7 +205,7 @@ const ReportDetailsPage = () => {
                 <AssignedPersonsContainer id={id}/>
               </div>
             </div>
-            <div className="flex col main-between w-100 flex-1 gap-16">
+            <div className="flex col main-between w-100 flex-1 gap-16 overflow-scroll">
               <LiveStatusContainer id={id}/>
               <ChatroomContainer id={id}/>
             </div>

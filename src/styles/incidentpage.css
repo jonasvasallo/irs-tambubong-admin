@@ -6,9 +6,10 @@
 }
 
 #live_status{
+    flex: 1;
+    max-height: 100%;
     padding: 16px;
     border-radius: 8px;
-    max-height: 45%;
     border: 1px solid var(--major);
 }
 
@@ -19,6 +20,7 @@
 }
 
 #live_status .messages{
+    min-height: 50px;
     overflow-y: scroll;
 }
 
@@ -40,9 +42,10 @@ width: 100%;
 }
 
 #chatroom{
+    max-height: 100%;
+    flex: 1;
     padding: 16px;
     border-radius: 8px;
-    max-height: 50%;
     border: 1px solid var(--major);
 }
 

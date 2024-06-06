@@ -2,7 +2,7 @@ import React from 'react'
 import { InputField } from './InputField'
 import { InputButton } from './InputButton'
 import { useState, useEffect } from 'react'
-import { collection, getDocs, doc, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, getDocs, doc, onSnapshot, addDoc, serverTimestamp, updateDoc, getDoc } from "firebase/firestore";
 import { firestore, auth } from "../config/firebase";
 
 const LiveStatusContainer = (props) => {
@@ -10,24 +10,47 @@ const [status, setStatus] = useState('');
 const [statusList, setStatusList] = useState([]);
 const incidentDocRef = doc(firestore, "incidents", props.id);
 const statusCollectionRef = collection(incidentDocRef, "live_status");
+const incidentGroupDocRef = doc(firestore, "incident_groups", props.id);
+const statusGroupCollectionRef = collection(incidentGroupDocRef, "live_status");
 
 useEffect(() => {
-        const unsubscribe = onSnapshot(statusCollectionRef, (snapshot) => {
-        const filteredData = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-          content: doc.data().status_content,
-          timestamp: new Date(doc.data().timestamp.seconds * 1000).toLocaleString(),
-        }));
+    if(props.group && props.group == true){
         
-        filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        setStatusList(filteredData);
-      }, (error) => {
-        window.alert(error);
-      });
-
-    return () => unsubscribe();
+        
+        const unsubscribe = onSnapshot(statusGroupCollectionRef, (snapshot) => {
+            const filteredData = snapshot.docs.map((doc) => ({
+              ...doc.data(),
+              id: doc.id,
+              content: doc.data().status_content,
+              timestamp: new Date(doc.data().timestamp.seconds * 1000).toLocaleString(),
+            }));
+            
+            filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+            setStatusList(filteredData);
+          }, (error) => {
+            window.alert(error);
+          });
+    
+        return () => unsubscribe();
+    } else{
+        const unsubscribe = onSnapshot(statusCollectionRef, (snapshot) => {
+            const filteredData = snapshot.docs.map((doc) => ({
+              ...doc.data(),
+              id: doc.id,
+              content: doc.data().status_content,
+              timestamp: new Date(doc.data().timestamp.seconds * 1000).toLocaleString(),
+            }));
+            
+            filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+            setStatusList(filteredData);
+          }, (error) => {
+            window.alert(error);
+          });
+    
+        return () => unsubscribe();
+    }
     
 }, []);
 
@@ -36,21 +59,54 @@ useEffect(() => {
             alert("Please enter status first");
             return;
         }
-    
-        try{
-            await addDoc(statusCollectionRef, {
-                status_content: status.trim(),
-                updated_by: auth.currentUser.uid,
-                timestamp: serverTimestamp(),
-            })
-            setStatus("");
-        } catch(err){
-            console.log(err.message);
+
+        if(props.group && props.group == true){
+            try{
+                await addDoc(statusGroupCollectionRef, {
+                    status_content: status.trim(),
+                    updated_by: auth.currentUser.uid,
+                    timestamp: serverTimestamp(),
+                });
+
+                const incidentGroupSnap = await getDoc(incidentGroupDocRef);
+                if(!incidentGroupSnap.exists()){
+                    alert("does not exist");
+                    return;
+                }
+                const incidentGroupData = incidentGroupSnap.data();
+
+                incidentGroupData.in_group.forEach(async (incidentId) => {
+                    const incidentRef = doc(firestore, "incidents", incidentId);
+                    const incidentStatusCol = collection(incidentRef, "live_status");
+
+                    await addDoc(incidentStatusCol, {
+                        status_content: status.trim(),
+                        updated_by: auth.currentUser.uid,
+                        timestamp: serverTimestamp(),
+                    });
+                });
+                setStatus("");
+            } catch(err){
+                console.log(err.message);
+            }
+        } else{
+            try{
+                await addDoc(statusCollectionRef, {
+                    status_content: status.trim(),
+                    updated_by: auth.currentUser.uid,
+                    timestamp: serverTimestamp(),
+                })
+                setStatus("");
+            } catch(err){
+                console.log(err.message);
+            }
         }
+    
+
     }
 
   return (
-    <div id='live_status' className='h-100 flex col gap-8'>
+    <div id='live_status' className='flex col gap-8 flex-1'>
         <div className="heading flex-1">
             <span className='subheading-l color-major'>Incident Live Status</span>
             <span className='body-s color-minor block'>Notify the residents about the status of an incident by updating them here.</span>
