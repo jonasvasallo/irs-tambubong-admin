@@ -3,13 +3,20 @@ import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion }
 import { firestore } from "../config/firebase";
 
 const PersonsAvailable = (props) => {
+    let incidentDocRef = doc(firestore, "incidents", props.id);
+    if(props.emergency != null && props.emergency == true){
+        console.log("emergency is true");
+        incidentDocRef = doc(firestore, "sos", props.id);
+    } else{
+        incidentDocRef = doc(firestore, "incidents", props.id);
+    }
     const [availablePersons, setAvailablePersons] = useState([]);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        
         const fetchAvailablePersons = async () => {
             try {
-                const incidentDocRef = doc(firestore, "incidents", props.id);
                 const incidentDoc = await getDoc(incidentDocRef);
                 if (incidentDoc.exists()) {
                     const incidentData = incidentDoc.data();
@@ -38,7 +45,6 @@ const PersonsAvailable = (props) => {
 
     const handleAddPerson = async (personId) => {
         try {
-            const incidentDocRef = doc(firestore, "incidents", props.id);
             const incidentDoc = await getDoc(incidentDocRef);
             if (incidentDoc.exists()) {
                 const incidentData = incidentDoc.data();
@@ -54,6 +60,8 @@ const PersonsAvailable = (props) => {
                 }
 
             } else {
+                console.log(incidentDocRef);
+                console.log(props.id);
                 setError("Incident document not found.");
             }
         } catch (error) {

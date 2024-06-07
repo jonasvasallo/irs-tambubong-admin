@@ -9,7 +9,13 @@ import ChatroomMessage from './ChatroomMessage';
 const ChatroomContainer = (props) => {
   const [messageList, setMessageList] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const incidentDocRef = doc(firestore, "incidents", props.id);
+  let incidentDocRef = doc(firestore, "incidents", props.id);
+    if(props.emergency != null && props.emergency == true){
+        console.log("emergency is true");
+        incidentDocRef = doc(firestore, "sos", props.id);
+    } else{
+        incidentDocRef = doc(firestore, "incidents", props.id);
+    }
   const chatroomCollectionRef = collection(incidentDocRef, "chatroom");
   useEffect(() => {
     const unsubscribe = onSnapshot(chatroomCollectionRef, (snapshot) => {

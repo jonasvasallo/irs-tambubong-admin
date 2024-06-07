@@ -9,7 +9,13 @@ import PersonsAvailable from './PersonsAvailable';
 const AssignedPersonsContainer = (props) => {
     const [error, setError] = useState('');
     const [assignedPersonnelList, setAssignedPersonnelList] = useState([]);
-    const incidentDocRef = doc(firestore, "incidents", props.id);
+    let incidentDocRef = doc(firestore, "incidents", props.id);
+    if(props.emergency != null && props.emergency == true){
+        console.log("emergency is true");
+        incidentDocRef = doc(firestore, "sos", props.id);
+    } else{
+        incidentDocRef = doc(firestore, "incidents", props.id);
+    }
 
     const { openModal } = useModal();
 
@@ -27,7 +33,6 @@ const AssignedPersonsContainer = (props) => {
 
 
     useEffect(() => {
-        
         const fetchUserDetails = async (uIDs) => {
             try {
                 const userDetailsPromises = uIDs.map(uID => getDoc(doc(firestore, "users", uID)));
@@ -60,7 +65,7 @@ const AssignedPersonsContainer = (props) => {
     const handleRemovePerson = async (personId) => {
         setError("");
         try {
-            const incidentDocRef = doc(firestore, "incidents", props.id);
+
             const incidentDoc = await getDoc(incidentDocRef);
             if (incidentDoc.exists()) {
                 const incidentData = incidentDoc.data();
@@ -68,9 +73,11 @@ const AssignedPersonsContainer = (props) => {
                 console.log(responders);
                 const status = incidentData.status;
     
-                if (status !== "Verifying" && status !== "Verified") {
-                    setError("Cannot remove responder unless status is verifying or verified.");
-                    return;
+                if(props.emergency == null){
+                    if (status !== "Verifying" && status !== "Verified") {
+                        setError("Cannot remove responder unless status is verifying or verified.");
+                        return;
+                    }
                 }
     
                 if (!responders.includes(personId)) {
@@ -94,7 +101,7 @@ const AssignedPersonsContainer = (props) => {
     <div id="responders" className="w-100 flex col gap-8">
         <div className="flex main-between">
         <span className="subheading-m color-major">Assigned Persons</span>
-        <button onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id}/>, 'info', <button>Action</button>)} className='button text'>Add</button>
+        <button onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id} emergency={true}/>, 'info', <button>Action</button>)} className='button text'>Add</button>
         </div>
         {assignedPersonnelList.map((person) => (
         <div key={person.id} className="responder-row flex gap-8 cross-center main-between">

@@ -4,7 +4,6 @@ import Sidebar from '../../components/Sidebar'
 import Header from '../../components/Header'
 import { doc, onSnapshot, getDoc, updateDoc, arrayRemove, deleteField, increment, deleteDoc } from 'firebase/firestore'
 import { firestore } from '../../config/firebase'
-import Modal from "../../components/Modal";
 import { useModal } from '../../core/ModalContext';
 import IncidentGroupStatus from '../../components/IncidentGroupStatus'
 import LiveStatusContainer from '../../components/LiveStatusContainer'
@@ -154,7 +153,6 @@ const IncidentGroupPage = () => {
                 </div>
             </div>
         </div>
-        <Modal />
     </div>
   )
 }

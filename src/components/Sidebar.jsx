@@ -22,8 +22,10 @@ const Sidebar = () => {
                 <div className="sidebar-menu">
                     <Link className='nav-button body-l' to={'/'}>Dashboard</Link>
                     <Link className='nav-button body-l' to={'/reports'}>Reports</Link>
+                    <Link className='nav-button body-l' to={'/emergencies'}>Emergencies</Link>
                     <Link className='nav-button body-l' to={'/complaints'}>Complaints</Link>
                     <Link className='nav-button body-l' to={'/news'}>News</Link>
+                    <Link className='nav-button body-l' to={'/users'}>Users</Link>
                     <Link className='nav-button body-l' to={'/analytics'}>Analytics</Link>
                 </div>
             </div>

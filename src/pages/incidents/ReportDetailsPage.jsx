@@ -10,7 +10,6 @@ import LiveStatusContainer from "../../components/LiveStatusContainer";
 import ChatroomContainer from "../../components/ChatroomContainer";
 import WitnessContainer from "../../components/WitnessContainer";
 import AssignedPersonsContainer from "../../components/AssignedPersonsContainer";
-import Modal from "../../components/Modal";
 import { useModal } from '../../core/ModalContext';
 import IncidentTags from "../../components/IncidentTags";
 import IncidentStatus from "../../components/IncidentStatus";
@@ -191,7 +190,7 @@ const ReportDetailsPage = () => {
                     </span>
                     <button className="button text" onClick={() => navigate(`/incident_group/${incidentDetails.incident_group}`)}>Check</button>
                   </div>}
-                  {(nearbyIncidents && !incidentDetails.incident_group) ? <div className="status warning flex main-start cross-center">
+                  {(nearbyIncidents && !incidentDetails.incident_group && nearbyIncidents.length > 1) ? <div className="status warning flex main-start cross-center">
                     <span className="textalign-start">
                       The system has identified that this report was submitted in close proximity and within a short time frame to another similar report. Would you like to merge these incidents?
                     </span>
@@ -216,7 +215,6 @@ const ReportDetailsPage = () => {
           </div>
         </div>
       </div>
-      <Modal />
     </div>
   );
 };

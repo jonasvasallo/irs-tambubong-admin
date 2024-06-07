@@ -8,6 +8,8 @@ import { auth } from "./config/firebase";
 import { useNavigate } from "react-router-dom";
 import ReportDetailsPage from "./pages/incidents/ReportDetailsPage";
 import IncidentGroupPage from "./pages/incidents/IncidentGroupPage";
+import EmergenciesPage from "./pages/emergencies/EmergenciesPage";
+import EmergencyDetailsPage from "./pages/emergencies/EmergencyDetailsPage";
 
 function App() {
   const navigate = useNavigate();
@@ -34,7 +36,10 @@ function App() {
 
         <Route path="/incident_group/:id" element={<IncidentGroupPage />}></Route>
 
-        <Route path="/emergency"></Route>
+        <Route path="/emergencies">
+          <Route index element={<EmergenciesPage />} />
+          <Route path=":id" element={<EmergencyDetailsPage />} />
+        </Route>
         <Route path="/login" element={<LoginPage />}/>
         <Route path="*" element={<NotFoundPage />}/>
       </Routes>

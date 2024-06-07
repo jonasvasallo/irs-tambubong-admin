@@ -42,7 +42,8 @@ width: 100%;
 }
 
 #chatroom{
-    max-height: 100%;
+    min-height: 45%;
+    height: 100%;
     flex: 1;
     padding: 16px;
     border-radius: 8px;
