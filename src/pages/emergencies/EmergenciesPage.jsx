@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../config/firebase';
 
 const EmergenciesPage = () => {
@@ -11,33 +11,32 @@ const EmergenciesPage = () => {
     const emergencyCollectionRef = collection(firestore, "sos");
 
     useEffect(() => {
-        const getEmergencyList = async () => {
-            try {
-                const data = await getDocs(emergencyCollectionRef);
-                const emergencyPromises = data.docs.map(async (emergencyDoc) => {
-                    const emergencyData = emergencyDoc.data();
-                    const userDocRef = doc(firestore, "users", emergencyData.user_id);
-                    const userDoc = await getDoc(userDocRef);
-                    const userData = userDoc.exists() ? userDoc.data() : null;
+        const unsubscribe = onSnapshot(collection(firestore, 'sos'), (snapshot) => {
+            const promises = snapshot.docs.map(async (emergencyDoc) => {
+                const emergencyData = emergencyDoc.data();
+                const userDocRef = doc(firestore, 'users', emergencyData.user_id);
+                const userDoc = await getDoc(userDocRef);
+                const userData = userDoc.exists() ? userDoc.data() : null;
 
-                    return {
-                        ...emergencyData,
-                        id: emergencyDoc.id,
-                        date: new Date(emergencyData.timestamp.seconds * 1000).toLocaleString(),
-                        userFullName: userData ? `${userData.first_name} ${userData.last_name}` : 'Unknown',
-                        contact_no: userData ? userData.contact_no : 'Unknown',
-                    };
-                });
+                return {
+                    ...emergencyData,
+                    id: emergencyDoc.id,
+                    date: new Date(emergencyData.timestamp.seconds * 1000).toLocaleString(),
+                    userFullName: userData ? `${userData.first_name} ${userData.last_name}` : 'Unknown',
+                    contact_no: userData ? userData.contact_no : 'Unknown',
+                };
+            });
 
-                const emergencies = await Promise.all(emergencyPromises);
-                const filteredData = emergencies.filter((emergency) => emergency.status === "Active");
+            Promise.all(promises).then((emergencies) => {
+                const filteredData = emergencies.filter((emergency) => emergency.status === 'Active');
                 setEmergencyList(filteredData);
-            } catch (error) {
-                alert(error);
-            }
-        };
+            }).catch((error) => {
+                console.error('Error fetching emergency data:', error);
+                alert('An error occurred while fetching emergency data.');
+            });
+        });
 
-        getEmergencyList();
+        return () => unsubscribe();
     }, []);
 
   return (
