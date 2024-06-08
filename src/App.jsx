@@ -10,6 +10,7 @@ import ReportDetailsPage from "./pages/incidents/ReportDetailsPage";
 import IncidentGroupPage from "./pages/incidents/IncidentGroupPage";
 import EmergenciesPage from "./pages/emergencies/EmergenciesPage";
 import EmergencyDetailsPage from "./pages/emergencies/EmergencyDetailsPage";
+import { IncidentProvider } from "./core/IncidentContext";
 
 function App() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ function App() {
   });
   return (
     <>
+      <IncidentProvider>
       <Routes>
         <Route path="/" element={<DashboardPage />}/>
 
@@ -43,6 +45,7 @@ function App() {
         <Route path="/login" element={<LoginPage />}/>
         <Route path="*" element={<NotFoundPage />}/>
       </Routes>
+      </IncidentProvider>
     </>
   );
 }
