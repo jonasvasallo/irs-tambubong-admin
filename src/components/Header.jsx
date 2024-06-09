@@ -4,6 +4,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../config/firebase';
 import { IncidentContext } from '../core/IncidentContext';
 
+
 import alert from "../assets/alarm.m4a";
 import { useNavigate } from 'react-router-dom';
 
@@ -60,7 +61,8 @@ const Header = (props) => {
   }, []);
 
   return (
-    <div className='header'>
+    <>
+      <div className='header'>
         <span className='header-title heading-m color-major'>{props.title}</span>
         {recentDocId && (
         <div className='recent-doc status error'>
@@ -72,7 +74,10 @@ const Header = (props) => {
             <button onClick={playSound}>Play Sound</button>
             <button onClick={showNotification}>Action 2</button>
         </div>
-    </div>
+        
+      </div>
+      
+    </>
   );
 };
 

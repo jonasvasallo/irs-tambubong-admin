@@ -11,6 +11,8 @@ import IncidentGroupPage from "./pages/incidents/IncidentGroupPage";
 import EmergenciesPage from "./pages/emergencies/EmergenciesPage";
 import EmergencyDetailsPage from "./pages/emergencies/EmergencyDetailsPage";
 import { IncidentProvider } from "./core/IncidentContext";
+import ComplaintsPage from "./pages/complaints/ComplaintsPage";
+import ComplaintDetailsPage from "./pages/complaints/ComplaintDetailsPage";
 
 function App() {
   const navigate = useNavigate();
@@ -41,6 +43,11 @@ function App() {
         <Route path="/emergencies">
           <Route index element={<EmergenciesPage />} />
           <Route path=":id" element={<EmergencyDetailsPage />} />
+        </Route>
+
+        <Route path="/complaints">
+          <Route index element={<ComplaintsPage />} />
+          <Route path=":id" element={<ComplaintDetailsPage />}/>
         </Route>
         <Route path="/login" element={<LoginPage />}/>
         <Route path="*" element={<NotFoundPage />}/>

@@ -115,6 +115,7 @@ const EmergencyDetailsPage = () => {
                     </div>
                 </div>
             </div>
+            <Modal />
         </div>
   )
 }

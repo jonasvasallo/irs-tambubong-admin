@@ -11,6 +11,7 @@ import ChatroomContainer from "../../components/ChatroomContainer";
 import WitnessContainer from "../../components/WitnessContainer";
 import AssignedPersonsContainer from "../../components/AssignedPersonsContainer";
 import { useModal } from '../../core/ModalContext';
+import Modal from '../../components/Modal';
 import IncidentTags from "../../components/IncidentTags";
 import IncidentStatus from "../../components/IncidentStatus";
 
@@ -215,6 +216,7 @@ const ReportDetailsPage = () => {
           </div>
         </div>
       </div>
+      <Modal />
     </div>
   );
 };
