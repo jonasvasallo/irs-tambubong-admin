@@ -85,20 +85,23 @@ const SchedulesPage = () => {
                           </tr>
                         </thead>
                         <tbody>
-                        {filteredSchedules.map((schedule) => (
-                          <tr key={schedule.id}>
-                            <td>{schedule.title}</td>
-                            <td>{new Date(schedule.meeting_start).toLocaleString()}</td>
-                            <td>{new Date(schedule.meeting_end).toLocaleString()}</td>
-                            <td>
-                              {Math.round((new Date(schedule.meeting_end) - new Date(schedule.meeting_start)) / 60000)} minutes
-                          </td>
-                            <td>
-                              <button className="button secondary" onClick={() => openModal("Update Schedule", "", <CreateSchedule id={schedule.complaint_id} schedule_id={schedule.id} />, "info", <></>)}>Edit</button>
-                              <button className="button filled" onClick={() => deleteSchedule(schedule.id)}>Delete</button>
-                            </td>
-                          </tr>
-                        ))}
+                        {filteredSchedules
+                          .sort((a, b) => new Date(a.meeting_start) - new Date(b.meeting_start))
+                          .map((schedule) => (
+                            <tr key={schedule.id}>
+                              <td>{schedule.title}</td>
+                              <td>{new Date(schedule.meeting_start).toLocaleString()}</td>
+                              <td>{new Date(schedule.meeting_end).toLocaleString()}</td>
+                              <td>
+                                {Math.round((new Date(schedule.meeting_end) - new Date(schedule.meeting_start)) / 60000)} minutes
+                              </td>
+                              <td>
+                                <button className="button secondary" onClick={() => openModal("Update Schedule", "", <CreateSchedule id={schedule.complaint_id} schedule_id={schedule.id} />, "info", <></>)}>Edit</button>
+                                <button className="button filled" onClick={() => deleteSchedule(schedule.id)}>Delete</button>
+                              </td>
+                            </tr>
+                          ))
+                        }
                         </tbody>
                       </table>
                     </div>
