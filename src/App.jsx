@@ -13,6 +13,7 @@ import EmergencyDetailsPage from "./pages/emergencies/EmergencyDetailsPage";
 import { IncidentProvider } from "./core/IncidentContext";
 import ComplaintsPage from "./pages/complaints/ComplaintsPage";
 import ComplaintDetailsPage from "./pages/complaints/ComplaintDetailsPage";
+import SchedulesPage from "./pages/schedule/SchedulesPage";
 
 function App() {
   const navigate = useNavigate();
@@ -49,6 +50,11 @@ function App() {
           <Route index element={<ComplaintsPage />} />
           <Route path=":id" element={<ComplaintDetailsPage />}/>
         </Route>
+
+        <Route path="/schedules">
+          <Route index element={<SchedulesPage/>}/>
+        </Route>
+
         <Route path="/login" element={<LoginPage />}/>
         <Route path="*" element={<NotFoundPage />}/>
       </Routes>

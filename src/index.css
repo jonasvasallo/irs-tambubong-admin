@@ -225,6 +225,23 @@ body{
   overflow-y: scroll;
 }
 
+.anchor{
+  text-decoration: none;
+  color: var(--primary);
+  font-size: 12px;
+}
+
+.items{
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  background-color: rgb(255, 242, 242);
+  color: var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 
 

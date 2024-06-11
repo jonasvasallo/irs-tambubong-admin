@@ -45,7 +45,10 @@ const ComplaintsPage = () => {
             <Header title="Submitted Complaints"/>
             <div className="content-here">
                 <div className="container w-100 h-100">
-                <span className="heading-m color-major block">Complaints</span>
+                <div className="flex gap-8 cross-center">
+                    <span className="heading-m color-major block">Complaints</span>
+                    <Link to={`/schedules`} className='anchor'>View Scheduled</Link>
+                </div>
                         <section className="table__body">
                             <table>
                                 <thead>

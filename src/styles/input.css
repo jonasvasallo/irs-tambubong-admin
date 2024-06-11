@@ -7,9 +7,9 @@
     gap: 4px;
 }
 
-.input-field input{
+.input-field input, .multi-line{
    width: 100%;
-   height: 50px;
+   min-height: 50px;
    outline: none;
    padding: 0 30px;
    font-size: 1rem;
@@ -17,7 +17,6 @@
    border-radius: 6px;
    border: 1px solid #ddd;
    padding: 0 15px;
-   
 }
 
 .input-field input:focus{
@@ -128,5 +127,6 @@
     border: 1px solid #ddd;
     padding: 0 15px;
 }
+
 
 
