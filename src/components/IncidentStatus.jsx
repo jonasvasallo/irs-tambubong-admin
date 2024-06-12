@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { doc, updateDoc } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { auth, firestore } from "../config/firebase";
 
 const IncidentStatus = (props) => {
   const [status, setStatus] = useState('');
@@ -18,6 +18,27 @@ const IncidentStatus = (props) => {
       await updateDoc(docRef, {
           status: status.trim()
       });
+      const userDocRef = doc(firestore, "users", props.reported_by);
+      const notificationsCollectionRef = collection(userDocRef, "notifications");
+
+      switch(status){
+        case 'Verified':
+          await addDoc(notificationsCollectionRef, {
+            'title' : `Incident No. ${props.id} has been verified`,
+            'content' : 'Your report has been acknowledged. Please wait while the authorities handle your case.',
+            'timestamp' : serverTimestamp(),
+          })
+          break;
+        case 'Resolved':
+          await addDoc(notificationsCollectionRef, {
+            'title' : `Incident No. ${props.id} marked as Resolved`,
+            'content' : 'You may send your feedback through the My Incidents section of the Profile Page so that we may be able to improve our service quality.',
+            'timestamp' : serverTimestamp(),
+          })
+          break;
+        default:
+          break;
+      }
       setSuccess('Status updated successfully.');
       setError('');
       window.location.reload();

@@ -1,4 +1,4 @@
-import { addDoc, collection, query, where, getDocs, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { addDoc, collection, query, where, getDocs, doc, updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import React, {useState, useEffect} from 'react'
 import { firestore } from '../config/firebase';
 import { Link } from 'react-router-dom';
@@ -59,6 +59,25 @@ const CreateSchedule = (props) => {
                     schedule_id: scheduleDocRef.id,
                 });
 
+                const complainantDocRef = doc(firestore, "users", props.complainant);
+                const complainantNotificationsCollectionRef = collection(complainantDocRef, "notifications");
+                await addDoc(complainantNotificationsCollectionRef, {
+                    'title': 'You are being summoned',
+                    'content' : `Your complaint has been scheduled for a conciliation meeting. You are expected to come to the barangay hall at ${StartDate}. Please bring any relevant documents or evidence related to your complaint.`,
+                    'timestamp' : serverTimestamp(),
+                })
+
+                if(props.respondent){
+                    const respondentDocRef = doc(firestore, "users", props.respondent);
+                    const respondentNotificationsCollectionRef = collection(respondentDocRef, "notifications");
+                    await addDoc(respondentNotificationsCollectionRef, {
+                        'title': 'You are being summoned',
+                        'content' : `You have received a complaint from a fellow resident. You are expected to come to the barangay hall at ${StartDate}. Please bring any relevant documents or evidence that you may need for your defense.`,
+                        'timestamp' : serverTimestamp(),
+                    })
+                }
+                
+
                 setSuccess("Successfully scheduled a meeting");
             } else{
                 const scheduleDocRef = doc(firestore, "schedules", props.schedule_id);
@@ -69,6 +88,24 @@ const CreateSchedule = (props) => {
                     meeting_start: new Date(StartDate),
                     meeting_end: new Date(EndDate),
                 });
+
+                const complainantDocRef = doc(firestore, "users", props.complainant);
+                const complainantNotificationsCollectionRef = collection(complainantDocRef, "notifications");
+                await addDoc(complainantNotificationsCollectionRef, {
+                    'title': 'Conciliation date has been changed',
+                    'content' : `Your scheduled conciliation meeting date and time for your complaint has been changed. The new date and time is ${StartDate}.`,
+                    'timestamp' : serverTimestamp(),
+                })
+
+                if(props.respondent){
+                    const respondentDocRef = doc(firestore, "users", props.respondent);
+                    const respondentNotificationsCollectionRef = collection(respondentDocRef, "notifications");
+                    await addDoc(respondentNotificationsCollectionRef, {
+                        'title': 'Conciliation date has been changed',
+                        'content' : `Your scheduled conciliation meeting date and time for the complaint you had received has been changed. The new date and time is ${StartDate}.`,
+                        'timestamp' : serverTimestamp(),
+                    })
+                }
                 setSuccess("Successfully updated meeting schedule");
             }
 

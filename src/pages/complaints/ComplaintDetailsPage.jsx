@@ -66,7 +66,7 @@ const ComplaintDetailsPage = () => {
                                     </div>
                                     <div className='flex-1'>
                                         {(!ComplaintDetails.schedule_id) ? 
-                                        <button className="button filled" onClick={() => openModal("Schedule a meeting", "", <CreateSchedule id={id}/>, 'info', <></>)}>Schedule</button> 
+                                        <button className="button filled" onClick={() => openModal("Schedule a meeting", "", <CreateSchedule id={id} complainant={ComplaintDetails.issued_by} respondent={ComplaintDetails.respondent_id}/>, 'info', <></>)}>Schedule</button> 
                                         : 
                                         ScheduleDetails && <div className='status success textalign-start flex main-between gap-16'>
                                         This complaint has been scheduled for a meeting on {new Date(ScheduleDetails.meeting_start.seconds * 1000).toLocaleString()}. 

@@ -166,7 +166,7 @@ const ReportDetailsPage = () => {
                   <span className="body-m color-major">{incidentDetails.location_address}</span>
                   <div className="flex gap-8">
                     <span className="status error">Status: {incidentDetails.status}</span>
-                    <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id}/>, 'info', <></>)}>Update</button>
+                    <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id} reported_by={incidentDetails.reported_by}/>, 'info', <></>)}>Update</button>
                   </div>
                   <div className="flex gap-8">
                     <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
@@ -202,7 +202,7 @@ const ReportDetailsPage = () => {
               <span className="body-m color-major">{incidentDetails.details}</span>
               <div className="flex main-between gap-32 flex-1">
                 <WitnessContainer id={id}/>
-                <AssignedPersonsContainer id={id}/>
+                <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false}/>
               </div>
             </div>
             <div className="flex col main-between w-100 flex-1 gap-16 overflow-scroll">

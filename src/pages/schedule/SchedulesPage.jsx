@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import Sidebar from '../../components/Sidebar'
 import Header from '../../components/Header'
 import '../../styles/schedulepage.css';
-import { collection, deleteDoc, onSnapshot, doc } from 'firebase/firestore';
+import { collection, deleteDoc, onSnapshot, doc, updateDoc, FieldValue } from 'firebase/firestore';
 import { firestore } from '../../config/firebase';
 import { useModal } from '../../core/ModalContext';
 import Modal from '../../components/Modal';
@@ -36,11 +36,16 @@ const SchedulesPage = () => {
 
   }, []);
 
-  const deleteSchedule = async (schedule_id) => {
+  const deleteSchedule = async (schedule_id, complaint_id) => {
     const scheduleDocRef = doc(firestore, "schedules", schedule_id);
-
+    const complaintDocRef = doc(firestore, "schedules", complaint_id);
     try{
       await deleteDoc(scheduleDocRef);
+      await updateDoc(complaintDocRef, {
+        'schedule_id' : FieldValue.delete(),
+      })
+
+      
     } catch(error){
       console.log(error);
       alert(error.message);
@@ -97,7 +102,7 @@ const SchedulesPage = () => {
                               </td>
                               <td>
                                 <button className="button secondary" onClick={() => openModal("Update Schedule", "", <CreateSchedule id={schedule.complaint_id} schedule_id={schedule.id} />, "info", <></>)}>Edit</button>
-                                <button className="button filled" onClick={() => deleteSchedule(schedule.id)}>Delete</button>
+                                <button className="button filled" onClick={() => deleteSchedule(schedule.id, schedule.complaint_id)}>Delete</button>
                               </td>
                             </tr>
                           ))
