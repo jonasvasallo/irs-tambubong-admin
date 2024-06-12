@@ -1,0 +1,11 @@
+
+.report-container{
+    padding: 16px;
+    background-color: white;
+    border-radius: 16px;
+}
+
+#dashboard-content{
+    overflow-y: scroll;
+    box-sizing: border-box;
+}
