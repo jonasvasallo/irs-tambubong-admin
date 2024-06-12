@@ -89,7 +89,11 @@ const CreateSchedule = (props) => {
                     meeting_end: new Date(EndDate),
                 });
 
-                const complainantDocRef = doc(firestore, "users", props.complainant);
+                const complaintDocRef = doc(firestore, "complaints", props.id);
+                const complaintSnapshot = await getDoc(complaintDocRef);
+                const complaintData = complaintSnapshot.data();
+
+                const complainantDocRef = doc(firestore, "users", complaintData.issued_by);
                 const complainantNotificationsCollectionRef = collection(complainantDocRef, "notifications");
                 await addDoc(complainantNotificationsCollectionRef, {
                     'title': 'Conciliation date has been changed',
@@ -97,8 +101,8 @@ const CreateSchedule = (props) => {
                     'timestamp' : serverTimestamp(),
                 })
 
-                if(props.respondent){
-                    const respondentDocRef = doc(firestore, "users", props.respondent);
+                if(complaintData.respondent_id){
+                    const respondentDocRef = doc(firestore, "users", complaintData.respondent_id);
                     const respondentNotificationsCollectionRef = collection(respondentDocRef, "notifications");
                     await addDoc(respondentNotificationsCollectionRef, {
                         'title': 'Conciliation date has been changed',
