@@ -142,6 +142,11 @@ const CreateSchedule = (props) => {
             fetchScheduleDoc();
         }
     }, []);
+
+    const now = new Date();
+    const localNow = moment(now).format("YYYY-MM-DDTHH:mm");
+
+
   return (
     <div>
         <div className="input-field">
@@ -150,11 +155,11 @@ const CreateSchedule = (props) => {
         <textarea name="" id="" className='multi-line' placeholder='Notes' rows={5} onChange={(e) => setNotes(e.target.value)} value={Notes}></textarea>
         <div className="input-field">
             <label htmlFor="">Meeting Start Date</label>
-            <input type="datetime-local" name="" id="" required onChange={(e) => setStartDate(e.target.value)} value={StartDate}/>
+            <input type="datetime-local" name="" id="" required onChange={(e) => setStartDate(e.target.value)} value={StartDate} min={localNow}/>
         </div>
         <div className="input-field">
             <label htmlFor="">Meeting End Date</label>
-            <input type="datetime-local" name="" id="" required onChange={(e) => setEndDate(e.target.value)} value={EndDate}/>
+            <input type="datetime-local" name="" id="" required onChange={(e) => setEndDate(e.target.value)} value={EndDate} min={localNow}/>
         </div>
         <div className='w-100'>
             {ComplaintID && <button className='button text' onClick={() => window.location.href=`/complaints/${ComplaintID}`}>Go to complaint</button>}
