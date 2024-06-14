@@ -9,7 +9,7 @@
 
 .input-field input, .multi-line{
    width: 100%;
-   min-height: 50px;
+   min-height: 40px;
    outline: none;
    padding: 0 30px;
    font-size: 1rem;
