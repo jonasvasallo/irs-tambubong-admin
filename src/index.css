@@ -200,6 +200,11 @@ body{
   color: rgb(255, 230, 0);
 }
 
+.danger{
+  color: rgb(255, 136, 0);
+  background-color: rgb(255, 229, 207);
+}
+
 .textalign-center{
   text-align: center;
 }
