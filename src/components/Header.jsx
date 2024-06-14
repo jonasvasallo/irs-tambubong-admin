@@ -3,6 +3,7 @@ import "../styles/header.css";
 import { collection, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../config/firebase';
 import { IncidentContext } from '../core/IncidentContext';
+import {Link} from 'react-router-dom'
 
 
 import alert from "../assets/alarm.m4a";
@@ -21,10 +22,15 @@ const Header = (props) => {
 
   const showNotification = (data) => {
     if (Notification.permission === 'granted') {
-      new Notification('New Incident Reported', {
-        body: `Details: ${data.details}`, // Customize this based on your data structure
-        icon: '/path/to/icon.png' // Optional: path to an icon image
-      });
+      
+      setTimeout(() => {
+        new Notification('New Incident Reported', {
+          body: `hahahah`,
+        });
+        
+      console.log("notification")
+      }, 5000);
+
     }
   };
 
@@ -71,8 +77,9 @@ const Header = (props) => {
         </div>
       )}
         <div className="actions">
-            <button onClick={playSound}>Play Sound</button>
-            <button onClick={showNotification}>Action 2</button>
+          <Link><button className='button circular'><span class="material-symbols-outlined">admin_panel_settings</span></button></Link>
+          <button className="button circular"><span class="material-symbols-outlined">notifications</span></button>
+          <Link><button className="button circular"><span class="material-symbols-outlined">manage_accounts</span></button></Link>
         </div>
         
       </div>
