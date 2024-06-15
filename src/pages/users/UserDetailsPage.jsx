@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import Sidebar from '../../components/Sidebar'
 import Header from '../../components/Header'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { doc, getDoc } from 'firebase/firestore'
 import { firestore } from '../../config/firebase'
 import { useModal } from '../../core/ModalContext'
@@ -78,7 +78,7 @@ const UserDetailsPage = () => {
                                             <span className="body-m status success">Verified</span>
                                             }
                                         </div>
-                                        {userDetails.verification_photo ? <img src={userDetails.verification_photo} alt="" width={400} height={200}/> : <span>Awaiting user to upload their identification once again...</span>}
+                                        {userDetails.verification_photo ? <Link to={userDetails.verification_photo}><img src={userDetails.verification_photo} alt="" width={400} height={200} style={{objectFit: 'cover'}}/></Link> : <span>Awaiting user to upload their identification once again...</span>}
                                     </div>
                                 </div>
                                 <span> </span>
