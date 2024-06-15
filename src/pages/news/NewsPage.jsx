@@ -76,7 +76,7 @@ const NewsPage = () => {
                                         <td>{news.date}</td>
                                         <td>
                                             <button className="button secondary" onClick={() => window.location.href = `/news/${news.id}`}>View</button>
-                                            <button className="button filled" onClick={() => deletePost(news.id)}>Delete</button>
+                                            <button className="button filled error" onClick={() => deletePost(news.id)}>Delete</button>
                                         </td>
                                     </tr>
                                 ))}

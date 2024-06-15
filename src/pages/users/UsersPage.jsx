@@ -96,7 +96,7 @@ const UsersPage = () => {
                                         <td><span className='subheading-m'>{`${user.first_name} ${user.last_name}`}</span></td>
                                         <td><span>{`${user.user_type.toUpperCase()}`}</span></td>
                                         <td>{(user.verified) ? <span className='status success'>Verified</span> : <span className='status error'>Not Verified</span>}</td>
-                                        <td><Link to={`/users/${user.id}`}><button className='button secondary'>View</button></Link> {user.disabled && user.disabled ? <button className='button filled' onClick={() => liftBanUser(user.id)}>Unban</button> : <button className='button filled' onClick={() => banUser(user.id)}>Ban</button>}</td>
+                                        <td><Link to={`/users/${user.id}`}><button className='button secondary'>View</button></Link> {user.disabled && user.disabled ? <button className='button filled warning' onClick={() => liftBanUser(user.id)}>Unban</button> : <button className='button filled error' onClick={() => banUser(user.id)}>Ban</button>}</td>
                                     </tr>
                                 ))}
                             </tbody>
