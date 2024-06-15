@@ -56,7 +56,7 @@ const SchedulesPage = () => {
         <div className="content">
             <Sidebar />
             <div className="main-content">
-                <Header title="Scheduled meetings"/>
+                <Header title="Scheduled Hearings"/>
                 <div className="content-here">
                     <div className="container" style={{'padding' : '0'}}>
                       <div className="schedule-header flex main-between">

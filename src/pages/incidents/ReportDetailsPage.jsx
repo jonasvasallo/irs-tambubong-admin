@@ -75,7 +75,7 @@ const ReportDetailsPage = () => {
         const tagDocSnap = await getDoc(tagDocRef);
 
         if(!tagDocSnap.exists()){
-          setError("No such tag!");
+          setIncidentTag({ tag_name: "Tag removed" });
           return;
         }
 
@@ -178,7 +178,7 @@ const ReportDetailsPage = () => {
                       <div className="flex col">
                           <span className="subheading-s">{`${userDetails.first_name} ${userDetails.last_name}`}</span>
                           <span className="color-minor">{`${userDetails.user_type.toString().toUpperCase()}`}</span>
-                          {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified.<br/> <Link to={`/users/${incidentDetails.reported_by}`}>Check User</Link></span>}
+                          {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${incidentDetails.reported_by}`}>Check User</Link></span>}
                       </div>
                     </div>
                     ) : (<p>Loading...</p>)}
