@@ -6,7 +6,7 @@ import Header from "../../components/Header";
 import '../../styles/emergencypage.css';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../config/firebase';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useModal } from '../../core/ModalContext';
 import Modal from '../../components/Modal';
 import EmergencyStatus from '../../components/EmergencyStatus';
@@ -77,17 +77,18 @@ const EmergencyDetailsPage = () => {
                             {emergencyDetails.location.latitude}
                             {emergencyDetails.location.longitude}
                           </div>
-                          <div className="flex main-between cross-center">
+                          <div className="flex main-between cross-start">
                             {userDetails && 
-                            <div className="flex gap-8 cross-center flex-1">
+                            <div className="flex gap-8 cross-start">
                               <img src={userDetails.profile_path} alt="" width={60} height={60}/>
                               <div className="flex col">
                                 <span className='subheading-m'>{`${userDetails.first_name} ${userDetails.last_name}`}</span>
                                 <span className="body-m">{userDetails.gender}</span>
                                 <span className="body-m color-minor">{userDetails.contact_no}</span>
+                                {(!userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${emergencyDetails.user_id}`}>Check User</Link></span>}
                               </div>
                             </div>}
-                            <div className='flex-1'>
+                            <div>
                               {!emergencyDetails.incident_id ? <button className="button filled" onClick={() => openModal("Add New Incident", "", <AddIncident id={id} attachment={emergencyDetails.attachment} location={emergencyDetails.location} reported_by={emergencyDetails.user_id}/>, 'info')}>Add as an incident</button> : 
                               <div className='status warning flex gap-8'>
                                 <span className="body-m textalign-start">This emergency report is attached to an incident.</span>

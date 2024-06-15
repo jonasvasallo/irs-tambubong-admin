@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
 import '../../styles/incidentpage.css';
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
 import { firestore } from "../../config/firebase";
@@ -178,7 +178,7 @@ const ReportDetailsPage = () => {
                       <div className="flex col">
                           <span className="subheading-s">{`${userDetails.first_name} ${userDetails.last_name}`}</span>
                           <span className="color-minor">{`${userDetails.user_type.toString().toUpperCase()}`}</span>
-                          <span className="color-primary">{(userDetails.verified) ? 'Verified' : 'Not Verified'}</span>
+                          {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified.<br/> <Link to={`/users/${incidentDetails.reported_by}`}>Check User</Link></span>}
                       </div>
                     </div>
                     ) : (<p>Loading...</p>)}
