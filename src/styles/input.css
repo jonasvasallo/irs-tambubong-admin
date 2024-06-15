@@ -128,5 +128,17 @@
     padding: 0 15px;
 }
 
+.filled.error{
+    background-color: #ff0021;
+}
+
+.filled.warning{
+    background-color: #ffc400;
+}
+
+.filled.success{
+    background-color: #5cdb5c;
+}
+
 
 

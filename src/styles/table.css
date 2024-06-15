@@ -64,12 +64,10 @@
 }
 
 .table__body {
-    width: 95%;
+    width: 100%;
     background-color: #fffb;
     height: 100% !important;
     max-height: 90% !important;
-    margin: .8rem auto;
-    border-radius: .6rem;
 
     overflow: auto;
     overflow: overlay;
@@ -107,7 +105,7 @@ td img {
 
 table, th, td {
     border-collapse: collapse;
-    padding: 1rem;
+    padding: 2rem 1rem;
     text-align: left;
 }
 
@@ -115,9 +113,12 @@ thead th {
     position: sticky;
     top: 0;
     left: 0;
-    background-color: #d5d1defe;
-    cursor: pointer;
     text-transform: capitalize;
+    border-top: 1px solid #e7edf1;
+    border-bottom: 1px solid #e7edf1;
+    font-weight: 400;
+    text-decoration: none;
+    color: #8fa79e;
 }
 
 tbody tr:nth-child(even) {
@@ -125,6 +126,7 @@ tbody tr:nth-child(even) {
 }
 
 tbody tr {
+    border-bottom: 1px solid #e7edf1;
     --delay: .1s;
     transition: .5s ease-in-out var(--delay), background-color 0s;
 }
@@ -135,13 +137,17 @@ tbody tr.hide {
 }
 
 tbody tr:hover {
-    background-color: #fff6 !important;
+    background-color: #e1edf3 !important;
 }
 
 tbody tr td,
 tbody tr td p,
 tbody tr td img {
     transition: .2s ease-in-out;
+}
+
+tbody tr td{
+    color: var(--major);
 }
 
 tbody tr.hide td,
@@ -202,18 +208,6 @@ thead th span.icon-arrow {
     transition: .2s ease-in-out;
 }
 
-thead th:hover span.icon-arrow{
-    border: 1.4px solid #6c00bd;
-}
-
-thead th:hover {
-    color: #6c00bd;
-}
-
-thead th.active span.icon-arrow{
-    background-color: #6c00bd;
-    color: #fff;
-}
 
 thead th.asc span.icon-arrow{
     transform: rotate(180deg);

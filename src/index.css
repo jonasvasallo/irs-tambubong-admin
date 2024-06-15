@@ -2,18 +2,18 @@
 
 :root{
     /* Follows 60-30-10 color rule */
-    --primary: #C8414A;
+    --primary: #4b7a94;
     --secondary: #D8D8D8;
-    --primary-light: #ffdbdd;
+    --primary-light: #e1edf3;
 
     --neutral: #F9F9F9; /* color of background */
     --container: #fff; /* color of containers/components */
 
     /* Text Colors (Change to white when using dark mode) */
-    --major: #425154;
-    --minor: #787d80;
+    --major: #4c697a;
+    --minor: #a2b6b0;
 
-    --background: #FEFBFB;
+    --background: #ebf2f5;
 
 
     /* Dark Mode (Copy this hex code then paste to neutral variable) */
@@ -185,17 +185,23 @@ body{
   border-radius: 6px;
 }
 
-.error{
+.status a{
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.status.error{
   background-color: rgb(255, 207, 207);
   color: red;
 }
 
-.success{
+.status.success{
   background-color: rgb(211, 255, 207);
   color: rgb(24, 173, 19);
 }
 
-.warning{
+.status.warning{
   background-color: rgb(255, 254, 207);
   color: rgb(255, 230, 0);
 }
