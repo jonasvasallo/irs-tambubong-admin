@@ -14,6 +14,7 @@ import EmergencyAssignedPersons from '../../components/EmergencyAssignedPersons'
 import AssignedPersonsContainer from '../../components/AssignedPersonsContainer';
 import ChatroomContainer from '../../components/ChatroomContainer';
 import AddIncident from '../../components/AddIncident';
+import ReactMap from "../../components/maps/ReactMap";
 
 const EmergencyDetailsPage = () => {
   const navigate = useNavigate();
@@ -73,10 +74,9 @@ const EmergencyDetailsPage = () => {
                       {emergencyDetails && 
                       <div className="flex gap-32 h-100">
                         <div className="w-100 flex col gap-8">
-                          <div id="google-map-container">
-                            {emergencyDetails.location.latitude}
-                            {emergencyDetails.location.longitude}
-                          </div>
+                        <div className="google-map-container">
+                          <ReactMap latitude={emergencyDetails.location.latitude} longitude={emergencyDetails.location.longitude}/>
+                        </div>
                           <div className="flex main-between cross-start">
                             {userDetails && 
                             <div className="flex gap-8 cross-start">

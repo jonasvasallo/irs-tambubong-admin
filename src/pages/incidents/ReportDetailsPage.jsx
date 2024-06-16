@@ -17,6 +17,7 @@ import IncidentStatus from "../../components/IncidentStatus";
 
 import { getDistance } from "geolib";
 import MergeIncidents from "../../components/MergeIncidents";
+import ReactMap from "../../components/maps/ReactMap";
 
 const ReportDetailsPage = () => {
   const navigate = useNavigate();
@@ -184,14 +185,16 @@ const ReportDetailsPage = () => {
                     ) : (<p>Loading...</p>)}
                 </div>
                 <div className="flex col flex-1 gap-16">
-                  <div className="maps"></div>
+                  <div className="maps">
+                    <ReactMap latitude={incidentDetails.coordinates.latitude} longitude={incidentDetails.coordinates.longitude}/>
+                  </div>
                   {incidentDetails.incident_group && <div className="status warning flex main-start cross-center">
                     <span className="textalign-start">
                       This incident is a part of an incident group. All actions are synced with all the incidents included in the incident group.
                     </span>
                     <button className="button text" onClick={() => navigate(`/incident_group/${incidentDetails.incident_group}`)}>Check</button>
                   </div>}
-                  {(nearbyIncidents && !incidentDetails.incident_group && nearbyIncidents.length > 1) ? <div className="status warning flex main-start cross-center">
+                  {(nearbyIncidents && !incidentDetails.incident_group && nearbyIncidents.length >= 1) ? <div className="status warning flex main-start cross-center">
                     <span className="textalign-start">
                       The system has identified that this report was submitted in close proximity and within a short time frame to another similar report. Would you like to merge these incidents?
                     </span>
