@@ -26,7 +26,7 @@ const Sidebar = () => {
                     <Link className='nav-button body-l' to={'/complaints'}>Complaints</Link>
                     <Link className='nav-button body-l' to={'/news'}>News</Link>
                     <Link className='nav-button body-l' to={'/users'}>Users</Link>
-                    <Link className='nav-button body-l' to={'/analytics'}>Analytics</Link>
+                    <Link className='nav-button body-l' to={'/tickets'}>Tickets</Link>
                 </div>
             </div>
             <div className="sidebar-footer">

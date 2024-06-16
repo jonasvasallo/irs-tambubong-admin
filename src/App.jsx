@@ -18,6 +18,8 @@ import NewsPage from "./pages/news/NewsPage";
 import NewsDetailsPage from "./pages/news/NewsDetailsPage";
 import UsersPage from "./pages/users/UsersPage";
 import UserDetailsPage from "./pages/users/UserDetailsPage";
+import SupportTicketsPage from "./pages/support/SupportTicketsPage";
+import TicketDetailsPage from "./pages/support/TicketDetailsPage";
 
 function App() {
   const navigate = useNavigate();
@@ -67,6 +69,11 @@ function App() {
         <Route path="/users">
           <Route index element={<UsersPage/>}/>
           <Route path=":id" element={<UserDetailsPage/>}/>
+        </Route>
+
+        <Route path="/tickets">
+          <Route index element={<SupportTicketsPage />}/>
+          <Route path=":id" element={<TicketDetailsPage/>}/>
         </Route>
 
         <Route path="/login" element={<LoginPage />}/>

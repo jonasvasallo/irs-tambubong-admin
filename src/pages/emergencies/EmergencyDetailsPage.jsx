@@ -85,7 +85,7 @@ const EmergencyDetailsPage = () => {
                                 <span className='subheading-m'>{`${userDetails.first_name} ${userDetails.last_name}`}</span>
                                 <span className="body-m">{userDetails.gender}</span>
                                 <span className="body-m color-minor">{userDetails.contact_no}</span>
-                                {(!userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${emergencyDetails.user_id}`}>Check User</Link></span>}
+                                {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${emergencyDetails.user_id}`}>Check User</Link></span>}
                               </div>
                             </div>}
                             <div>
