@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vis.gl/react-google-maps": "^1.0.2",
     "chart.js": "^4.4.3",
     "firebase": "^10.12.1",
     "geolib": "^3.3.4",
