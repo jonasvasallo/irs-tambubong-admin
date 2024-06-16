@@ -12,6 +12,7 @@
   "dependencies": {
     "@vis.gl/react-google-maps": "^1.0.2",
     "chart.js": "^4.4.3",
+    "dotenv": "^16.4.5",
     "firebase": "^10.12.1",
     "geolib": "^3.3.4",
     "moment": "^2.30.1",
