@@ -356,7 +356,7 @@ const DashboardPage = () => {
                       </div>
                     </div>
                     <div className="report-container grow-1" style={{maxWidth: "600px"}}>
-                      <span className="body-l">Incident Tags</span>
+                      <span className="body-l">Incident Frequency</span>
                       <BarChart data={{ labels: tagCounts.map(tag => tag.tag), data: tagCounts.map(tag => tag.count) }} />
                     </div>
                     <div className="report-container grow-1">
