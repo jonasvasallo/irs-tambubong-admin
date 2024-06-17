@@ -3,21 +3,33 @@ import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import { firestore } from '../config/firebase';
 
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 import '../styles/dashboardpage.css';
 import LineChart from '../components/charts/LineChart';
+import { barChartData, lineChartData } from '../components/charts/FAKE_DATA';
+import BarChart from '../components/charts/BarChart';
+import moment from 'moment';
+import { Link } from 'react-router-dom';
+import ReactHeatmap from '../components/maps/ReactHeatmap';
 
 const DashboardPage = () => {
-
+  const [topTag, setTopTag] = useState();
   const [incidentList, setIncidentList] = useState([]);
+  const [ratingsList, setRatingsList] = useState([]);
+  const [respondersList, setRespondersList] = useState([]);
+  const [tanodRankings, setTanodRankings] = useState([]);
+  const [averageResponseTime, setAverageResponseTime] = useState(0);
+  const [averageRating, setAverageRating] = useState(0);
   const [timeRange, setTimeRange] = useState("all");
+  const [heatmapData, setHeatmapData] = useState([]);
 
   const [tagCounts, setTagCounts] = useState([]);
 
   useEffect(() => {
     console.log("fetching database");
     fetchIncidents(timeRange);
+    fetchRatings(timeRange);
 
     if (tagCounts.length > 0) {
       setTopTag({'name' : tagCounts[0].tag, 'count' : tagCounts[0].count});
@@ -38,9 +50,10 @@ const DashboardPage = () => {
         q = query(incidentsRef, where('timestamp', '>=', start), where('timestamp', '<=', end));
         break;
       case 'week':
-        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-        start = new Date(startOfWeek.setHours(0, 0, 0, 0));
-        end = new Date(now.setHours(23, 59, 59, 999));
+        const startOfWeek = new Date(now); // Start from current date
+        startOfWeek.setDate(now.getDate() - now.getDay()); // Set to the first day of the current week
+        start = new Date(startOfWeek.setHours(0, 0, 0, 0)); // Start of the week
+        end = new Date(now.setHours(23, 59, 59, 999)); // End of the current day
         q = query(incidentsRef, where('timestamp', '>=', start), where('timestamp', '<=', end));
         break;
       case 'month':
@@ -65,14 +78,141 @@ const DashboardPage = () => {
       id: doc.id,
       ...doc.data()
     }));
+
+
+
+    const incidentsWithResponders = await Promise.all(incidents.map(async incident => {
+      const respondersRef = collection(doc(firestore, 'incidents', incident.id), 'responders');
+      const respondersSnapshot = await getDocs(respondersRef);
+      const responders = respondersSnapshot.docs.map(resDoc => ({
+        id: resDoc.id,
+        ...resDoc.data()
+      }));
+      return { ...incident, responders };
+    }));
+
+    const incidentsWithCoordinates = incidents
+    .filter(incident => incident.coordinates && incident.coordinates.latitude && incident.coordinates.longitude)
+    .map(incident => ({
+      lat: incident.coordinates.latitude,
+      lng: incident.coordinates.longitude
+    }));
+
+    setHeatmapData(incidentsWithCoordinates);
+    console.log("this is coordinates", incidentsWithCoordinates);
+    console.log("this is heatmap data", heatmapData);
+
+
     setIncidentList(incidents);
 
     calculateTagCounts(incidents);
+    calculateAverageResponseTime(incidentsWithResponders);
   };
 
-  const calculateTagCounts = (incidents) => {
-    const tagCount = {};
+  const fetchRatings = async (range) => {
+    const ratingsRef = collection(firestore, 'ratings');
+    let q;
+
+    const now = new Date();
+    let start, end;
+
+    switch (range) {
+      case 'today':
+        start = new Date(now.setHours(0, 0, 0, 0));
+        end = new Date(now.setHours(23, 59, 59, 999));
+        q = query(ratingsRef, where('timestamp', '>=', start), where('timestamp', '<=', end));
+        break;
+      case 'week':
+        const startOfWeek = new Date(now); // Start from current date
+        startOfWeek.setDate(now.getDate() - now.getDay()); // Set to the first day of the current week
+        start = new Date(startOfWeek.setHours(0, 0, 0, 0)); // Start of the week
+        end = new Date(now.setHours(23, 59, 59, 999)); // End of the current day
+        q = query(ratingsRef, where('timestamp', '>=', start), where('timestamp', '<=', end));
+        break;
+      case 'month':
+        start = new Date(now.getFullYear(), now.getMonth(), 1);
+        end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        q = query(ratingsRef, where('timestamp', '>=', start), where('timestamp', '<=', end));
+        break;
+      case 'year':
+        start = new Date(now.getFullYear(), 0, 1);
+        end = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
+        q = query(ratingsRef, where('timestamp', '>=', start), where('timestamp', '<=', end));
+        break;
+      case 'all':
+        q = ratingsRef;
+        break;
+      default:
+        break;
+    }
+
+    const snapshot = await getDocs(q);
+    const ratings = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    setRatingsList(ratings);
+    calculateAverageRating(ratings);
+    calculateTanodRankings(ratings);
+  };
+
+  const calculateAverageResponseTime = (incidents) => {
+    let totalResponseTime = 0;
+    let count = 0;
+
     incidents.forEach(incident => {
+      incident.responders.forEach(responder => {
+        if (responder.status === "Responded") {
+          const start = responder.response_start.toDate();
+          const end = responder.response_end.toDate();
+          const responseTime = (end - start) / (1000 * 60); // Convert milliseconds to minutes
+          totalResponseTime += responseTime;
+          count++;
+        }
+      });
+    });
+
+    const avgResponseTime = (count > 0) ? (totalResponseTime / count) : 0;
+    setAverageResponseTime(avgResponseTime.toFixed(1));
+  };
+
+  const calculateTanodRankings = (ratings) => {
+    const ratingsByTanod = ratings.reduce((acc, rating) => {
+      if (acc[rating.tanod_id]) {
+        acc[rating.tanod_id].push(rating);
+      } else {
+        acc[rating.tanod_id] = [rating];
+      }
+      return acc;
+    }, {});
+
+    const tanodRankings = Object.keys(ratingsByTanod).map(tanodId => {
+      const tanodRatings = ratingsByTanod[tanodId];
+      const totalRating = tanodRatings.reduce((acc, rating) => acc + rating.rating, 0);
+      const avgRating = (tanodRatings.length > 0) ? (totalRating / tanodRatings.length) : 0;
+      return { tanodId, avgRating };
+    });
+
+    const sortedRankings = tanodRankings.sort((a, b) => b.avgRating - a.avgRating);
+
+    setTanodRankings(sortedRankings);
+  };
+
+  const calculateAverageRating = (ratings) => {
+    const totalRating = ratings.reduce((acc, rating) => acc + rating.rating, 0);
+    const avgRating = (ratings.length > 0) ? (totalRating / ratings.length) : 0;
+    setAverageRating(avgRating.toFixed(1));
+  };
+
+  const fetchTagName = async (tagId) => {
+    const tagDoc = await getDoc(doc(firestore, 'incident_tags', tagId));
+    return tagDoc.exists() ? tagDoc.data().tag_name : tagId;
+  };
+
+  const calculateTagCounts = async (incidents) => {
+    const tagCount = {};
+    for (const incident of incidents) {
       const tag = incident.incident_tag;
       if (tag) {
         if (!tagCount[tag]) {
@@ -80,21 +220,38 @@ const DashboardPage = () => {
         }
         tagCount[tag]++;
       }
-    });
+    }
 
-    const sortedTagCounts = Object.keys(tagCount).map(tag => ({
-      tag,
+    const tagCountEntries = await Promise.all(Object.keys(tagCount).map(async tag => ({
+      tag: await fetchTagName(tag),
       count: tagCount[tag]
-    })).sort((a, b) => b.count - a.count);
+    })));
+
+    const sortedTagCounts = tagCountEntries.sort((a, b) => b.count - a.count);
 
     setTagCounts(sortedTagCounts);
+  };
+
+  const getTimeUnit = (range) => {
+    switch (range) {
+      case 'today':
+        return 'hour';
+      case 'week':
+        return 'day';
+      case 'month':
+        return 'week';
+      case 'year':
+        return 'month';
+      default:
+        return 'day'; // Default to 'day' if 'all' or unexpected range
+    }
   };
 
   return (
     <>
         <div className="content">
             <Sidebar />
-            <div className="main-content">
+            <div className="main-content overflow-scroll">
                 <Header title="Dashboard"/>
                 <div id='dashboard-content' className="w-100 pad-16 flex col gap-16 h-100">
                   <div id='range' className="report-container w-100 flex gap-8">
@@ -141,7 +298,7 @@ const DashboardPage = () => {
                       </span>
                       <div className="flex main-between">
                         <div className="flex gap-8 main-start cross-center">
-                          <span className="heading-l">4.5</span>
+                          <span className="heading-l">{averageRating}</span>
                           <span className="body-m"> Average rating</span>
                         </div>
                         <div className="chart-section">
@@ -156,8 +313,8 @@ const DashboardPage = () => {
                       </span>
                       <div className="flex main-between">
                         <div className="flex gap-8 main-start cross-center">
-                          <span className="heading-l">15 minutes</span>
-                          <span className="body-m">from 69,123 incidents</span>
+                          <span className="heading-l">{averageResponseTime} minutes</span>
+                          
                         </div>
                         <div className="chart-section">
                           chart
@@ -166,32 +323,55 @@ const DashboardPage = () => {
                       <span className="body-m">-15% from last month</span>
                     </div>
                   </div>
-                  <div className="flex gap-8" style={{minHeight: '300px'}}>
-                    <div className="report-container grow-3">
+                  <div className="flex gap-8">
+                    <div className="report-container grow-3" style={{minHeight: '250px'}}>
                       <span className="body-l">
                         Incident Heat Map
                       </span>
+                      {heatmapData && <ReactHeatmap data={heatmapData}/>}
                     </div>
-                    <div className="report-container grow-1">
+                    <div className="report-container grow-1 flex col gap-8">
                       <span className="body-l">Trending Incidents</span>
                       {tagCounts.map(({ tag, count }, index) => (
-                        <div key={tag} className="flex gap-8 main-start cross-center">
-                          <span className="heading-l">{index + 1}. {tag}</span>
+                        <div key={tag} className="flex gap-8 main-between cross-center">
+                          <span className="subheading-l">#{index + 1} {tag}</span>
                           <span className="body-m">{count} reports</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div className="flex gap-8">
-                    <div className="report-container grow-1">
-                      <span className="body-l">Incidents Graph</span>
-                      
+                    <div className="report-container grow-1 overflow-scroll" style={{maxWidth: "600px"}}>
+                      <span className="body-l">Incidents</span>
+                      <br />
+                      <br />
+                      <div className="flex col gap-8">
+                      {incidentList.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds).map((incident) => (
+                        <div key={incident.id} className='flex gap-16 cross-center'>
+                          <span className='subheading-m'>{incident.title}</span>
+                          <span>{moment.unix(incident.timestamp.seconds).format('ddd, MMMM D, YYYY [at] h:mm A')}</span>
+                          <Link className='link' to={`/reports/${incident.id}`} style={{ marginTop: '0' }}>View</Link>
+                        </div>
+                      ))}
+                      </div>
                     </div>
-                    <div className="report-container grow-1">
-                      <span className="body-l">Satisfactory Levels</span>
+                    <div className="report-container grow-1" style={{maxWidth: "600px"}}>
+                      <span className="body-l">Incident Tags</span>
+                      <BarChart data={{ labels: tagCounts.map(tag => tag.tag), data: tagCounts.map(tag => tag.count) }} />
                     </div>
                     <div className="report-container grow-1">
                       <span className="body-l">Tanod Ranking</span>
+                      <div className='flex col gap-8'>
+                      {tanodRankings.map((tanod, index) => (
+                        <div key={tanod.tanodId} className="flex gap-8 main-between cross-center">
+                          <div className="flex gap-8">
+                            <span>{index + 1}.</span>
+                            <span>{tanod.tanodId}</span>
+                          </div>
+                          <span>{tanod.avgRating.toFixed(1)}</span>
+                        </div>
+                      ))}
+                      </div>
                     </div>
                   </div>
 

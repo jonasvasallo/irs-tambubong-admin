@@ -1,26 +1,23 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
+import React from 'react'
+import { Line } from 'react-chartjs-2'
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { lineChartData } from './FAKE_DATA';
 
-const LineChart = ({ data }) => {
-  const chartData = {
-    labels: data.map(entry => entry.timestamp), // Assuming 'timestamp' is a field in your data
-    datasets: [
-      {
-        label: 'Reported Incidents',
-        data: data.map(entry => entry.incidentsCount), // Assuming 'incidentsCount' is a field in your data
-        fill: false,
-        backgroundColor: 'rgba(75,192,192,0.2)',
-        borderColor: 'rgba(75,192,192,1)',
-      },
-    ],
-  };
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+const LineChart = ({ data, timeUnit }) => {
   const options = {
     scales: {
       x: {
         type: 'time',
         time: {
-          unit: 'day', // Adjust the unit as needed (day, week, month, etc.)
+          unit: timeUnit, // Dynamic time unit based on selected timeframe
+          displayFormats: {
+            day: 'MMM D',
+            week: 'MMM D',
+            month: 'MMM YYYY',
+            year: 'YYYY',
+          },
         },
         title: {
           display: true,
@@ -28,6 +25,7 @@ const LineChart = ({ data }) => {
         },
       },
       y: {
+        beginAtZero: true,
         title: {
           display: true,
           text: 'Number of Incidents',
@@ -35,8 +33,9 @@ const LineChart = ({ data }) => {
       },
     },
   };
+  return (
+    <Line options={options} data={data} />
+  )
+}
 
-  return <Line data={chartData} options={options} />;
-};
-
-export default LineChart;
+export default LineChart
