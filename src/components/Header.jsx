@@ -78,8 +78,6 @@ const Header = (props) => {
       )}
         <div className="actions">
           <Link><button className='button circular'><span class="material-symbols-outlined">admin_panel_settings</span></button></Link>
-          <button className="button circular"><span class="material-symbols-outlined">notifications</span></button>
-          <Link><button className="button circular"><span class="material-symbols-outlined">manage_accounts</span></button></Link>
         </div>
         
       </div>

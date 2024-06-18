@@ -272,10 +272,8 @@ const DashboardPage = () => {
                           <span className="body-m">reports</span>
                         </div>
                         <div className="chart-section">
-                          chart
                         </div>
                       </div>
-                      <span className="body-m">-15% from last month</span>
                     </div>
                     <div className="report-container grow-1 flex col gap-8">
                     <span className="body-m color-minor">
@@ -287,10 +285,8 @@ const DashboardPage = () => {
                           <span className="body-m">{(tagCounts.length > 0) ? <>{tagCounts[0].count}</> : <></>} reports</span>
                         </div>
                         <div className="chart-section">
-                          chart
                         </div>
                       </div>
-                      <span className="body-m">-15% from last month</span>
                     </div>
                     <div className="report-container grow-1 flex col gap-8">
                       <span className="body-m color-minor">
@@ -302,10 +298,8 @@ const DashboardPage = () => {
                           <span className="body-m"> Average rating</span>
                         </div>
                         <div className="chart-section">
-                          chart
                         </div>
                       </div>
-                      <span className="body-m">-15% from last month</span>
                     </div>
                     <div className="report-container grow-1 flex col gap-8">
                       <span className="body-m color-minor">
@@ -317,10 +311,8 @@ const DashboardPage = () => {
                           
                         </div>
                         <div className="chart-section">
-                          chart
                         </div>
                       </div>
-                      <span className="body-m">-15% from last month</span>
                     </div>
                   </div>
                   <div className="flex gap-8">
