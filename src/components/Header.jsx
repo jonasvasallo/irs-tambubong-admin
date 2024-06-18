@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import "../styles/header.css";
-import { collection, onSnapshot } from 'firebase/firestore';
-import { firestore } from '../config/firebase';
+import { collection, doc, onSnapshot } from 'firebase/firestore';
+import { auth, firestore } from '../config/firebase';
 import { IncidentContext } from '../core/IncidentContext';
 import {Link} from 'react-router-dom'
 
@@ -64,7 +64,10 @@ const Header = (props) => {
         }
       });
     }
+
   }, []);
+
+
 
   return (
     <>
@@ -77,7 +80,7 @@ const Header = (props) => {
         </div>
       )}
         <div className="actions">
-          <Link><button className='button circular'><span class="material-symbols-outlined">admin_panel_settings</span></button></Link>
+          <Link to={`/settings`}><button className='button circular'><span class="material-symbols-outlined">admin_panel_settings</span></button></Link>
         </div>
         
       </div>

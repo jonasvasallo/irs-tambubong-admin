@@ -140,5 +140,39 @@
     background-color: #5cdb5c;
 }
 
+.toggle-button{
+    display: inline-block;
+    background-color: #d2d2d2;
+    width: 30px;
+    height: 15px;
+    border-radius: 25px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+}
+.toggle-button::before{
+    display: inline-block;
+    position: absolute;
+    content: '';
+    background-color: #fff;
+    width: 11px;
+    height: 11px;
+    border-radius: 13px;
+    margin: 2px;
+    transition: 0.2s;
+}
+
+input[type="checkbox"].toggle:checked + .toggle-button{
+    background-color: #5cdb5c;
+}
+input[type="checkbox"].toggle:checked + .toggle-button::before{
+    transform: translateX(15px);
+}
+
+input[type="checkbox"].toggle{
+    display: none;
+}
+
+
 
 

@@ -1,0 +1,24 @@
+#side-actions{
+    background-color: rgb(249, 249, 250);
+    max-width: 400px;
+    
+}
+.side-button{
+    color: var(--major);
+    text-decoration: none;
+    padding: 16px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    text-align: left;
+    border-radius: 4px;
+}
+
+.side-button.selected{
+    background-color: var(--primary-light);
+    font-weight: 700;
+}
+
+.side-button:hover{
+    background-color: var(--primary-light);
+    color: var(--primary);
+}

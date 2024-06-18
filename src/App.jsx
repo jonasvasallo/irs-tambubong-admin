@@ -20,6 +20,7 @@ import UsersPage from "./pages/users/UsersPage";
 import UserDetailsPage from "./pages/users/UserDetailsPage";
 import SupportTicketsPage from "./pages/support/SupportTicketsPage";
 import TicketDetailsPage from "./pages/support/TicketDetailsPage";
+import SettingsPage from "./pages/settings/SettingsPage";
 
 function App() {
   const navigate = useNavigate();
@@ -78,6 +79,8 @@ function App() {
 
         <Route path="/login" element={<LoginPage />}/>
         <Route path="*" element={<NotFoundPage />}/>
+
+        <Route path="/settings" element={<SettingsPage/>}/>
       </Routes>
       </IncidentProvider>
     </>
