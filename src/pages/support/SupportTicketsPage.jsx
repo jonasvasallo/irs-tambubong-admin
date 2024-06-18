@@ -27,7 +27,7 @@ const SupportTicketsPage = () => {
             });
 
             Promise.all(promises).then((tickets) => {
-                const filteredData = tickets.filter((ticket) => ticket.status === 'Open');
+                const filteredData = tickets.filter((ticket) => ticket.status === 'Open').sort((a, b) => a.timestamp - b.timestamp);;
                 setTicketsList(filteredData);
             }).catch((error) => {
                 console.error('Error fetching ticket data:', error);

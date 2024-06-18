@@ -25,6 +25,11 @@ const ReportsPage = () => {
             doc.data().timestamp.seconds * 1000
           ).toLocaleString(),
         }))
+        .filter(
+          (incident) =>
+            incident.status !== "Resolved" && incident.status !== "Closed"
+        )
+        .sort((a, b) => a.timestamp - b.timestamp)
         setIncidentGroupList(filteredData);
       } catch(error){
         window.alert(error);
@@ -46,7 +51,9 @@ const ReportsPage = () => {
           .filter(
             (incident) =>
               incident.status !== "Resolved" && incident.status !== "Closed"
-          );
+          )
+          .sort((a, b) => a.timestamp - b.timestamp)
+          ;
         setIncidentList(filteredData);
       } catch (err) {
         window.alert(err);

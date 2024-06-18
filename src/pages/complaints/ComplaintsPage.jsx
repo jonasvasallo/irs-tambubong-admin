@@ -27,7 +27,7 @@ const ComplaintsPage = () => {
             });
 
             Promise.all(promises).then((complaints) => {
-                const filteredData = complaints.filter((complaint) => complaint.status == "Open");
+                const filteredData = complaints.filter((complaint) => complaint.status == "Open").sort((a, b) => a.issued_at - b.issued_at);
                 setComplaintsList(filteredData);
             }).catch((error) => {
                 console.log("Error fetching complaint collection: ", error);

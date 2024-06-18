@@ -24,8 +24,8 @@ const NewsPage = () => {
                     date: new Date(
                         doc.data().timestamp.seconds * 1000
                       ).toLocaleString(),
-                }))
-
+                })).sort((a, b) => a.timestamp - b.timestamp);
+                
                 setNewsList(filteredData);
             } catch(error){
                 console.log(error);

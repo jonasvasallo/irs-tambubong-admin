@@ -23,7 +23,7 @@ const SchedulesPage = () => {
         ...doc.data(),
         meeting_start: doc.data().meeting_start.toDate(), // Convert Firestore timestamp to Date
         meeting_end: doc.data().meeting_end.toDate(), // Convert Firestore timestamp to Date
-      }));
+      })).sort((a, b) => a.timestamp - b.timestamp);;
       
       setScheduleList(schedules);
       setFilteredSchedules(schedules);

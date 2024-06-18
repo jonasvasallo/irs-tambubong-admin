@@ -28,7 +28,7 @@ const EmergenciesPage = () => {
             });
 
             Promise.all(promises).then((emergencies) => {
-                const filteredData = emergencies.filter((emergency) => emergency.status === 'Active');
+                const filteredData = emergencies.filter((emergency) => emergency.status === 'Active').sort((a, b) => a.timestamp - b.timestamp);
                 setEmergencyList(filteredData);
             }).catch((error) => {
                 console.error('Error fetching emergency data:', error);
