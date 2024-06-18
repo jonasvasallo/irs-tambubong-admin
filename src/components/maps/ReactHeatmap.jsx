@@ -3,9 +3,10 @@ import {GoogleMap, HeatmapLayerF, useJsApiLoader, Marker} from '@react-google-ma
 
 
 const ReactHeatmap = ({data}) => {
+  const [ libraries ] = useState(['maps','visualization']);
     const {isLoaded} = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-        libraries:['maps','visualization']
+        libraries:libraries,
     })
 
     const center = {lat: 14.9704245, lng: 120.9254284};
