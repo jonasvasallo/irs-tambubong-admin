@@ -68,6 +68,7 @@ const IncidentTagsSection = () => {
                 <thead>
                     <tr>
                         <th>Tag ID</th>
+                        <th>Tag Icon</th>
                         <th>Tag Name</th>
                         <th>Action</th>
                     </tr>
@@ -76,6 +77,7 @@ const IncidentTagsSection = () => {
                     {filteredTags.map((tag) => (
                         <tr key={tag.id}>
                             <td>{tag.id}</td>
+                            <td><img src={tag.tag_image} alt="" width={40} height={40} style={{objectFit: 'contain'}}/></td>
                             <td>{tag.tag_name}</td>
                             <td>
                                 <button 
