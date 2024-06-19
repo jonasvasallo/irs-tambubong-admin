@@ -18,6 +18,7 @@ import IncidentStatus from "../../components/IncidentStatus";
 import { getDistance } from "geolib";
 import MergeIncidents from "../../components/MergeIncidents";
 import ReactMap from "../../components/maps/ReactMap";
+import RespondersSection from "./RespondersSection";
 
 const ReportDetailsPage = () => {
   const navigate = useNavigate();
@@ -205,7 +206,7 @@ const ReportDetailsPage = () => {
               <span className="body-m color-major">{incidentDetails.details}</span>
               <div className="flex main-between gap-32 flex-1">
                 <WitnessContainer id={id}/>
-                <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false}/>
+                {incidentDetails.status == "Closed" || incidentDetails.status == "Resolved" ? <RespondersSection id={id}/> : <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false}/>}
               </div>
             </div>
             <div className="flex col main-between w-100 flex-1 gap-16 overflow-scroll">

@@ -15,6 +15,7 @@ import AssignedPersonsContainer from '../../components/AssignedPersonsContainer'
 import ChatroomContainer from '../../components/ChatroomContainer';
 import AddIncident from '../../components/AddIncident';
 import ReactMap from "../../components/maps/ReactMap";
+import RespondersSection from '../incidents/RespondersSection';
 
 const EmergencyDetailsPage = () => {
   const navigate = useNavigate();
@@ -100,7 +101,8 @@ const EmergencyDetailsPage = () => {
                             <span className="status error">{emergencyDetails.status}</span>
                             <button className="button text" onClick={() => openModal("Update Status", "", <EmergencyStatus id={id} />, 'info', <></>)}>Change</button>
                           </div>
-                          <AssignedPersonsContainer id={id} emergency={true} />
+                          {emergencyDetails.status == "Resolved" || emergencyDetails.status == "Closed" ? <RespondersSection id={id} emergency={true}/> : <AssignedPersonsContainer id={id} emergency={true} />}
+                          
                         </div>
                         <div className="w-100 h-100 flex col">
                           {emergencyDetails.attachment && <div className="flex-1">
