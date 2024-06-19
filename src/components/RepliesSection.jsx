@@ -52,7 +52,7 @@ const RepliesSection = (props) => {
         <div className="flex col gap-8">
             {repliesList.map((reply) => (
                 <div key={reply.id} className="reply flex gap-8">
-                    <img src={reply.profile_pic} alt="" width={50} height={50} />
+                    <img src={reply.profile_pic} alt="" width={50} height={50} style={{objectFit: 'cover'}}/>
                     <div className="flex col">
                         <span className="subheading-m">{reply.userFullName}</span>
                         <span className="body-m color-minor">{reply.date}</span>

@@ -185,7 +185,7 @@ const ReportDetailsPage = () => {
                   </div>
                   {userDetails ? (
                     <div id="user_info" className="flex gap-8">
-                      <img src={userDetails.profile_path} alt="" width={60} height={60}/>
+                      <img src={userDetails.profile_path} alt="" width={60} height={60} style={{objectFit: 'cover'}}/>
                       <div className="flex col">
                           <span className="subheading-s">{`${userDetails.first_name} ${userDetails.last_name}`}</span>
                           <span className="color-minor">{`${userDetails.user_type.toString().toUpperCase()}`}</span>
@@ -198,17 +198,25 @@ const ReportDetailsPage = () => {
                   <div className="maps">
                     <ReactMap latitude={incidentDetails.coordinates.latitude} longitude={incidentDetails.coordinates.longitude}/>
                   </div>
-                  {incidentDetails.incident_group && <div className="status warning flex main-start cross-center">
-                    <span className="textalign-start">
-                      This incident is a part of an incident group. All actions are synced with all the incidents included in the incident group.
-                    </span>
-                    <button className="button text" onClick={() => navigate(`/incident_group/${incidentDetails.incident_group}`)}>Check</button>
+                  {incidentDetails.incident_group &&
+                  <div className="status warning flex col cross-end">
+                    <div className="flex gap-8">
+                      <span className="material-symbols-outlined">warning</span>
+                      <span className="textalign-start">
+                        This incident is a part of an incident group. All actions are synced with all the incidents included in the incident group.
+                      </span>
+                    </div>
+                    <button className="button secondary" onClick={() => navigate(`/incident_group/${incidentDetails.incident_group}`)}>Check</button>
                   </div>}
-                  {(nearbyIncidents && !incidentDetails.incident_group && nearbyIncidents.length >= 1) ? <div className="status warning flex main-start cross-center">
-                    <span className="textalign-start">
-                      The system has identified that this report was submitted in close proximity and within a short time frame to another similar report. Would you like to merge these incidents?
-                    </span>
-                    <button className="button text" onClick={() => openModal("Merge incidents", "", <MergeIncidents incidents={nearbyIncidents} title={incidentDetails.title} description={incidentDetails.details} status={incidentDetails.status} id={id} />, 'info', <></>)}>Check</button>
+                  {(nearbyIncidents && !incidentDetails.incident_group && nearbyIncidents.length >= 1) ? 
+                  <div className="status warning flex col cross-end">
+                    <div className="flex gap-8">
+                      <span className="material-symbols-outlined">warning</span>
+                      <span className="textalign-start">
+                        The system has identified that this report was submitted in close proximity and within a short time frame to another similar report. Would you like to merge these incidents?
+                      </span>
+                    </div>
+                    <button className="button secondary" onClick={() => openModal("Merge incidents", "", <MergeIncidents incidents={nearbyIncidents} title={incidentDetails.title} description={incidentDetails.details} status={incidentDetails.status} id={id} />, 'info', <></>)}>Check</button>
                   </div> : <></>}
                 </div>
               </div>

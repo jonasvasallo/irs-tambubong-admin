@@ -110,7 +110,6 @@ table, th, td {
 }
 
 thead th {
-    position: sticky;
     top: 0;
     left: 0;
     text-transform: capitalize;
@@ -119,6 +118,7 @@ thead th {
     font-weight: 400;
     text-decoration: none;
     color: #8fa79e;
+    background-color: white;
 }
 
 tbody tr:nth-child(even) {

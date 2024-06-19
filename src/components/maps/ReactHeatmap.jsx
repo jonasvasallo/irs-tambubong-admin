@@ -3,7 +3,7 @@ import {GoogleMap, HeatmapLayerF, useJsApiLoader, Marker} from '@react-google-ma
 
 
 const ReactHeatmap = ({data}) => {
-  const libraries = ['maps','visualization'];
+  const libraries = ['visualization'];
     const {isLoaded} = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
         libraries:libraries,
@@ -17,7 +17,7 @@ const ReactHeatmap = ({data}) => {
       if (data && data.length > 0) {
         setHeatmapData(data.map((point) => new google.maps.LatLng(point.lat, point.lng)));
       }
-    }, [data]);
+    }, []);
 
     if(!isLoaded){
         return <div>Loading... please wait</div>

@@ -76,7 +76,7 @@ const EmergenciesPage = () => {
                                         <td>{emergency.userFullName}</td>
                                         <td>{emergency.contact_no}</td>
                                         <td>{emergency.date}</td>
-                                        <td><Link to={`/emergencies/${emergency.id}`}>View</Link> Delete</td>
+                                        <td><Link className='button secondary' to={`/emergencies/${emergency.id}`}>View</Link></td>
                                         </tr>
                                     </>
                                     ))}

@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from 'react'
-import Modal from "./Modal";
+import React, {useState, useEffect} from 'react'
+import { useModal } from '../core/ModalContext'
+import Modal from './Modal';
+import AssignGroupPerson from './AssignGroupPerson';
 import { collection, getDocs, doc, onSnapshot, query, where, getDoc, updateDoc, arrayRemove  } from "firebase/firestore";
 import { firestore } from '../config/firebase';
-import { useModal } from '../core/ModalContext';
-import PersonsAvailable from './PersonsAvailable';
 
-
-const AssignedPersonsContainer = (props) => {
+const IncidentGroupAssignPerson = (props) => {
     const [error, setError] = useState('');
     const [assignedPersonnelList, setAssignedPersonnelList] = useState([]);
     let incidentDocRef = doc(firestore, "incidents", props.id);
@@ -18,19 +17,6 @@ const AssignedPersonsContainer = (props) => {
     }
 
     const { openModal } = useModal();
-
-    const modalToggle = () => {
-
-        const bodyClassList = document.body.classList;
-        if(bodyClassList.contains("open")){
-            bodyClassList.remove("open");
-            bodyClassList.add("closed");
-        } else{
-            bodyClassList.remove("closed");
-            bodyClassList.add("open");
-        }
-    }
-
 
     useEffect(() => {
         const fetchUserDetails = async (uIDs) => {
@@ -75,7 +61,7 @@ const AssignedPersonsContainer = (props) => {
     
                 if(props.emergency == null || (props.emergency != null && props.emergency == false)){
                     if (status !== "Verifying" && status !== "Verified") {
-                        setError("Cannot remove responder unless status is verifying, verified or handling!");
+                        setError("Cannot remove responder unless status is verifying, verified!");
                         return;
                     }
                 } else{
@@ -101,32 +87,36 @@ const AssignedPersonsContainer = (props) => {
             setError("Error removing person from responders.");
         }
     };
-
   return (
-    <div id="responders" className="w-100 flex col gap-8">
-        <div className="flex main-between">
-        <span className="subheading-m color-major">Assigned Persons</span>
-        <button onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id} emergency={props.emergency}/>, 'info', <button>Action</button>)} className='button text'>Add</button>
-        </div>
-        {assignedPersonnelList.map((person) => (
-        <div key={person.id} className="responder-row flex gap-8 cross-center main-between">
-            
-                <div className="flex gap-8 cross-center">
-                <img src={person.profile_path} alt="" width={40} height={40} style={{objectFit: 'cover', borderRadius: '50%'}}/>
-                <div className="flex col main-center">
-                    <span className="subheading-m color-major">{`${person.first_name} ${person.last_name}`}</span>
-                    <span className="body-m color-minor">{person.contact_no}</span>
+    <div className='flex-1 col flex main-between'>
+        <div>
+            <span className='subheading-m color-major'>Assigned Personnel</span>
+            <br />
+            <span className="body-s color-minor">Individuals that are assigned here will be propagated to all the incidents within the group upon the resolvation of the incident.</span>
+            <br />
+            <br />
+            <div className="flex col gap-8">
+            {assignedPersonnelList.map((person) => (
+                <div key={person.id} id="personnel-row" className='flex main-between'>
+                    <div className='flex gap-8'>
+                    <img src={person.profile_path} alt="" width={40}  height={40} style={{objectFit: 'cover', borderRadius: '50%'}}/>
+                    <div className="flex col">
+                        <span className="subheading-m color-major">{`${person.first_name} ${person.last_name}`}</span>
+                        <span className="body-m color-minor">{person.user_type.toUpperCase()}</span>
+                    </div>
+                    </div>
+                    <button className="button filled error" onClick={()=>handleRemovePerson(person.id)}><span className='material-symbols-outlined'>delete</span></button>
                 </div>
-                </div>
+            ))}
             
-        <button className='button filled' onClick={() => handleRemovePerson(person.id)}>Delete</button>
-        
+            </div>
         </div>
-        ))}
+        <div>
         {error && <span className='status error'>{error}</span>}
-        
+        </div>
+        <button className="button filled" onClick={()=>openModal("Assign a person", "", <AssignGroupPerson id={props.id}/>, "info", <></>)}>Add</button>
     </div>
   )
 }
 
-export default AssignedPersonsContainer
+export default IncidentGroupAssignPerson

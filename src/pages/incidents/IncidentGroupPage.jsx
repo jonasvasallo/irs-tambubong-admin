@@ -9,6 +9,7 @@ import Modal from '../../components/Modal';
 import IncidentGroupStatus from '../../components/IncidentGroupStatus'
 import LiveStatusContainer from '../../components/LiveStatusContainer'
 import RemoveIncidentHead from '../../components/RemoveIncidentHead'
+import IncidentGroupAssignPerson from '../../components/IncidentGroupAssignPerson'
 
 const IncidentGroupPage = () => {
   const { openModal } = useModal();
@@ -35,6 +36,10 @@ const IncidentGroupPage = () => {
   }
 
   const validateIncidentGroup = async () => {
+    if(incidentGroupDetails.status != "Verifying" && incidentGroupDetails.status != "Verified"){
+      alert("You cannot remove a member of an incident group once it is being handled / resolved!");
+      return;
+    }
     if(incidentGroupDetails.incidents <= 2){
       openModal("Remove Incident Head", "", <>A group needs to have atleast 2 incidents in it. This will remove the incident group altogether. Do you want to proceed? <div><button className='button filled' onClick={() => removeIncidentGroup()}>Proceed</button></div></>, 'info', <></>)
       return;
@@ -44,6 +49,10 @@ const IncidentGroupPage = () => {
   }
 
   const removeIncident = async (incident_id) => {
+    if(incidentGroupDetails.status != "Verifying" && incidentGroupDetails.status != "Verified"){
+      alert("You cannot remove a member of an incident group once it is being handled / resolved!");
+      return;
+    }
     if(incidentGroupDetails.incidents <= 2){
       openModal("Remove Incident Head", "", <>A group needs to have atleast 2 incidents in it. This will remove the incident group altogether. Do you want to proceed? <div><button className='button filled' onClick={() => removeIncidentGroup()}>Proceed</button></div></>, 'info', <></>)
       return;
@@ -100,28 +109,38 @@ const IncidentGroupPage = () => {
         <div className="main-content">
             <Header title="Incident Group"/>
             <div className="content-here">
-                <div className="container w-100">
-                    {incidentGroupDetails ?  <div className="flex gap-16">
-                      <div className="flex col gap-8 flex-1">
-                        <span className="subheading-l">{incidentGroupDetails.title}</span>
-                        <span className="body-m">{incidentGroupDetails.description}</span>
-                        <span className='subheading-m'>Created at <span className='body-m'>05/14/2024 11:29 AM</span></span>
-                        <div className="flex gap-8">
-                          <span className='status error'>{incidentGroupDetails.status}</span>
-                          <button className="button text" onClick={() => openModal("Update Status", "", <IncidentGroupStatus id={id}/>, 'info', <></>)}>Change</button>
+                <div className="h-100 w-100">
+                    {incidentGroupDetails ?  
+                    <div className="flex gap-16 h-100">
+                      <div className="container flex col main-between gap-16 flex-3">
+                        <div className="flex main-between gap-16 flex-1">
+                          <div className='flex col gap-8 flex-1'>
+                            <span className="subheading-l">{incidentGroupDetails.title}</span>
+                            <span className="body-m">{incidentGroupDetails.description}</span>
+                            <span className='subheading-m'>Created at <span className='body-m'>05/14/2024 11:29 AM</span></span>
+                            <div className="flex gap-8">
+                              <span className='status error'>{incidentGroupDetails.status}</span>
+                              <button className="button text" onClick={() => openModal("Update Status", "", <IncidentGroupStatus id={id}/>, 'info', <></>)}>Change</button>
+                            </div>
+                            <span className='subheading-m'>Incidents: <span className='body-m'>{incidentGroupDetails.incidents}</span></span>
+                          </div>
+                          <div className="flex-1">
+                            Map Here
+                          </div>
                         </div>
-                        <span className='subheading-m'>Incidents: <span className='body-m'>{incidentGroupDetails.incidents}</span></span>
-                        <LiveStatusContainer id={id} group={true}/>
+                        <div className='flex gap-8 main-between flex-1'>
+                          <LiveStatusContainer id={id} group={true}/>
+                          <IncidentGroupAssignPerson id={incidentGroupDetails.head} />
+                        </div>
                       </div>
                       
-                      <div className="flex col flex-1 gap-8">
+                      <div className="container flex col flex-1 gap-8">
                         <div className='flex col gap-8'>
-                          <span className="subheading-l">Head Incident</span>
+                          <span className="subheading-l">Members</span>
                           {includedIncidents.map((incident) => {
                             if(incident.id == incidentGroupDetails.head){
                               return <div className="flex gap-8 cross-center main-between">
                               <span className="subheading-m">{incident.title}</span>
-                              <span className="body-m color-minor">{incident.status}</span>
                               <div className="flex gap-16">
                                 <button className="button text" onClick={() => navigate(`/reports/${incident.id}`)}>View</button>
                                 <button className="button filled" onClick={() => validateIncidentGroup()}>Remove</button>
@@ -138,7 +157,6 @@ const IncidentGroupPage = () => {
                             if(incident.id != incidentGroupDetails.head){
                               return <div className="flex gap-8 cross-center main-between">
                               <span className="subheading-m">{incident.title}</span>
-                              <span className="body-m color-minor">{incident.status}</span>
                               <div className="flex gap-16">
                                 <button className="button text" onClick={() => navigate(`/reports/${incident.id}`)}>View</button>
                                 <button className="button filled" onClick={() => removeIncident(incident.id)}>Remove</button>

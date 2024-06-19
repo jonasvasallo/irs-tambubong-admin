@@ -88,7 +88,7 @@ const ComplaintsPage = () => {
                                             <td>{complaint.email}</td>
                                             <td>{complaint.date}</td>
                                             <td>{complaint.status}</td>
-                                            <td><Link to={`/complaints/${complaint.id}`}>View</Link> Delete</td>
+                                            <td><Link className='button secondary' to={`/complaints/${complaint.id}`}>View</Link></td>
                                         </tr>
                                     </>
                                     ))}

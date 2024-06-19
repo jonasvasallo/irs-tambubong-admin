@@ -90,7 +90,7 @@ const SupportTicketsPage = () => {
                                             <td>{ticket.id}</td>
                                             <td>{ticket.title}</td>
                                             <td>
-                                                <img src={ticket.profile_pic} alt="" width={40} height={40}/>
+                                                <img src={ticket.profile_pic} alt="" width={40} height={40} style={{objectFit: 'cover'}}/>
                                                 <span>{ticket.userFullName}</span>
                                             </td>
                                             <td>{ticket.date}</td>

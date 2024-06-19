@@ -41,7 +41,7 @@ const UserDetailsPage = () => {
                         <div className="flex">
                             <div className="w-100 flex col gap-8">
                                 <div className="flex gap-8">
-                                    <img src={userDetails.profile_path} alt="" width={80} height={80}/>
+                                    <img src={userDetails.profile_path} alt="" width={80} height={80} style={{objectFit: 'cover'}}/>
                                     <div className="flex col gap-8 main-center">
                                         <span className="subheading-m">User ID: {id}</span>
                                         <span className="body-m">{userDetails.email}</span>

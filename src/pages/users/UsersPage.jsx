@@ -92,7 +92,7 @@ const UsersPage = () => {
                             <tbody>
                                 {filteredUsersList.map((user) => (
                                     <tr>
-                                        <td><img src={user.profile_path} alt="" /></td>
+                                        <td><img src={user.profile_path} alt="" style={{objectFit: 'cover'}}/></td>
                                         <td><span className='subheading-m'>{`${user.first_name} ${user.last_name}`}</span></td>
                                         <td><span>{`${user.user_type.toUpperCase()}`}</span></td>
                                         <td>{(user.verified) ? <span className='status success'>Verified</span> : <span className='status error'>Not Verified</span>}</td>
