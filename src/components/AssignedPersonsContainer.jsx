@@ -73,9 +73,14 @@ const AssignedPersonsContainer = (props) => {
                 console.log(responders);
                 const status = incidentData.status;
     
-                if(props.emergency == null){
+                if(props.emergency == null || (props.emergency != null && props.emergency == false)){
                     if (status !== "Verifying" && status !== "Verified") {
-                        setError("Cannot remove responder unless status is verifying or verified.");
+                        setError("Cannot remove responder unless status is verifying, verified or handling!");
+                        return;
+                    }
+                } else{
+                    if(status !== "Active" && status !== "Handling"){
+                        setError("Cannot remove responder unless status is Active or Handling!");
                         return;
                     }
                 }

@@ -25,6 +25,23 @@ const IncidentGroupStatus = (props) => {
   
       const data = docSnap.data();
       const incidentIds = data.in_group;
+
+      const incident_head = data.head;
+
+      /* 
+      Check if head has responders or not before updating
+      */
+     if(status == "Resolved" || status == "Closed"){
+      const headDocRef = doc(firestore, "incidents", incident_head);
+      const headSnapshot = await getDoc(headDocRef);
+      const headData = headSnapshot.data();
+
+      if(headData.responders.length < 1){
+        alert("You cannot set an incident to Resolved or Closed without assigning a person to handle that incident first!");
+        return;
+      }
+     }
+     
   
       if (incidentIds && incidentIds.length > 0) {
         const addStatusPromises = [];
@@ -75,6 +92,7 @@ const IncidentGroupStatus = (props) => {
             <option value="Handling">Handling</option>
             <option value="Resolved">Resolved</option>
             <option value="Closed">Closed</option>
+            <option value="Rejected">Rejected</option>
         </select>
         <br />
         <br />
