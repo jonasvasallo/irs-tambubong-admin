@@ -3,7 +3,7 @@ import {GoogleMap, HeatmapLayerF, useJsApiLoader, Marker} from '@react-google-ma
 
 
 const ReactHeatmap = ({data}) => {
-  const [ libraries ] = useState(['maps','visualization']);
+  const libraries = ['maps','visualization'];
     const {isLoaded} = useJsApiLoader({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
         libraries:libraries,
