@@ -1,4 +1,4 @@
-import { addDoc, collection, query, where, getDocs, doc, updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, query, where, getDocs, doc, updateDoc, getDoc, serverTimestamp, arrayUnion, documentId, FieldPath } from 'firebase/firestore';
 import React, { useState, useEffect } from 'react';
 import { firestore } from '../config/firebase';
 import { Link } from 'react-router-dom';
@@ -50,12 +50,21 @@ const CreateSchedule = (props) => {
 
 
         const scheduleCollectionRef = collection(firestore, "schedules");
-
-        const overlappingMeetingsQuery = query(
-            scheduleCollectionRef,
-            where("meeting_start", "<", newEndDate),
-            where("meeting_end", ">", newStartDate)
-        );
+        let overlappingMeetingsQuery;
+        if (Scheduled) {
+            overlappingMeetingsQuery = query(
+                scheduleCollectionRef,
+                where("meeting_start", "<", newEndDate),
+                where("meeting_end", ">", newStartDate),
+                where(documentId(), "!=", props.schedule_id)
+            );
+        } else {
+            overlappingMeetingsQuery = query(
+                scheduleCollectionRef,
+                where("meeting_start", "<", newEndDate),
+                where("meeting_end", ">", newStartDate)
+            );
+        }
 
         try {
             const querySnapshot = await getDocs(overlappingMeetingsQuery);
@@ -76,6 +85,11 @@ const CreateSchedule = (props) => {
                 const complaintDocRef = doc(firestore, "complaints", props.id);
                 await updateDoc(complaintDocRef, {
                     schedule_id: scheduleDocRef.id,
+                    status: 'In Progress',
+                    hearings: arrayUnion({
+                        schedule_id: scheduleDocRef.id,
+                        status : 'Pending',
+                    }),
                 });
 
                 const complainantDocRef = doc(firestore, "users", props.complainant);
@@ -91,7 +105,7 @@ const CreateSchedule = (props) => {
                     const respondentNotificationsCollectionRef = collection(respondentDocRef, "notifications");
                     await addDoc(respondentNotificationsCollectionRef, {
                         'title': 'You are being summoned',
-                        'content': `You have received a complaint from a fellow resident. You are hereby summoned to appear at the barangay hall on the ${formattedDate} then and there to answer to a compaint made before you for mediation/conciliation of your dispute with the complainant. Please bring any relevant documents or evidence that you may need for your defense. You are hereby warned that if you refuse or willfully fail to appear in obedience of this summon, you may be barred from filing any counterclaim arising from said complaint. If you wish to reschedule, file a support ticket found within the app's directory given that the reason for the reschedule is reasonable.`,
+                        'content': `You are hereby summoned to appear at the barangay hall on the ${formattedDate} then and there to answer to a compaint made before you for mediation/conciliation of your dispute with the complainant. Please bring any relevant documents or evidence that you may need for your defense. You are hereby warned that if you refuse or willfully fail to appear in obedience of this summon, you may be barred from filing any counterclaim arising from said complaint. If you wish to reschedule, file a support ticket found within the app's directory given that the reason for the reschedule is reasonable.`,
                         'timestamp': serverTimestamp(),
                     });
                 }
@@ -99,6 +113,14 @@ const CreateSchedule = (props) => {
                 setSuccess("Successfully scheduled hearing");
             } else {
                 const scheduleDocRef = doc(firestore, "schedules", props.schedule_id);
+
+                const scheduleSnapshot = await getDoc(scheduleDocRef);
+                const existingScheduleData = scheduleSnapshot.data();
+
+                const scheduleChanged = (
+                    existingScheduleData.meeting_start.toMillis() !== newStartDate.getTime() ||
+                    existingScheduleData.meeting_end.toMillis() !== newEndDate.getTime()
+                );
                 await updateDoc(scheduleDocRef, {
                     complaint_id: props.id,
                     title: Title.trim(),
@@ -106,28 +128,31 @@ const CreateSchedule = (props) => {
                     meeting_start: newStartDate,
                     meeting_end: newEndDate,
                 });
+                
+                if(scheduleChanged){
+                    const complaintDocRef = doc(firestore, "complaints", props.id);
+                    const complaintSnapshot = await getDoc(complaintDocRef);
+                    const complaintData = complaintSnapshot.data();
 
-                const complaintDocRef = doc(firestore, "complaints", props.id);
-                const complaintSnapshot = await getDoc(complaintDocRef);
-                const complaintData = complaintSnapshot.data();
-
-                const complainantDocRef = doc(firestore, "users", complaintData.issued_by);
-                const complainantNotificationsCollectionRef = collection(complainantDocRef, "notifications");
-                await addDoc(complainantNotificationsCollectionRef, {
-                    'title': 'Scheduled hearing has been updated',
-                    'content': `Please be advised that the date and time for your scheduled mediation/conciliation hearing regarding your complaint have been changed. The updated schedule is the ${formattedDate}. Kindly take note of this update."`,
-                    'timestamp': serverTimestamp(),
-                });
-
-                if (complaintData.respondent_id) {
-                    const respondentDocRef = doc(firestore, "users", complaintData.respondent_id);
-                    const respondentNotificationsCollectionRef = collection(respondentDocRef, "notifications");
-                    await addDoc(respondentNotificationsCollectionRef, {
+                    const complainantDocRef = doc(firestore, "users", complaintData.issued_by);
+                    const complainantNotificationsCollectionRef = collection(complainantDocRef, "notifications");
+                    await addDoc(complainantNotificationsCollectionRef, {
                         'title': 'Scheduled hearing has been updated',
-                        'content': `Please be advised that the date and time for your scheduled mediation/conciliation hearing regarding the complaint you have received have been changed. The updated schedule is ${StartDate}. Kindly take note of this update.`,
+                        'content': `Please be advised that the date and time for your scheduled hearing regarding your complaint has been changed. The updated schedule is the ${formattedDate}. Kindly take note of this update.`,
                         'timestamp': serverTimestamp(),
                     });
+
+                    if (complaintData.respondent_id) {
+                        const respondentDocRef = doc(firestore, "users", complaintData.respondent_id);
+                        const respondentNotificationsCollectionRef = collection(respondentDocRef, "notifications");
+                        await addDoc(respondentNotificationsCollectionRef, {
+                            'title': 'Scheduled hearing has been updated',
+                            'content': `Please be advised that the date and time for your scheduled hearing regarding the complaint you have received has been changed. The updated schedule is ${StartDate}. Kindly take note of this update.`,
+                            'timestamp': serverTimestamp(),
+                        });
+                    }
                 }
+                
                 setSuccess("Successfully updated hearing schedule");
             }
 

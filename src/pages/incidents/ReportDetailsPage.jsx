@@ -168,7 +168,7 @@ const ReportDetailsPage = () => {
                   <span className="body-m color-major">{incidentDetails.location_address}</span>
                   <div className="flex gap-8">
                     <span className="status error">Status: {incidentDetails.status}</span>
-                    <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id} reported_by={incidentDetails.reported_by}/>, 'info', <></>)}>Update</button>
+                    {!incidentDetails.incident_group && <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id} reported_by={incidentDetails.reported_by}/>, 'info', <></>)}>Update</button>}
                   </div>
                   <div className="flex gap-8">
                     <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>

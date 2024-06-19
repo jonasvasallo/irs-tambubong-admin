@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "../config/firebase";
 
 const IncidentStatus = (props) => {
@@ -13,8 +13,25 @@ const IncidentStatus = (props) => {
       setError("Please select a status first");
       return;
     }
+
+    const docRef = doc(firestore, "incidents", props.id);
     try {
-      const docRef = doc(firestore, "incidents", props.id);
+      /* 
+      VALIDATION
+      - There must be assigned personnel before updating to Resolved or Closed
+      */
+
+      if(status == "Resolved" || status == "Closed"){
+        const docSnapshot = await getDoc(docRef);
+        const docData = docSnapshot.data();
+        console.log(docData.responders.length);
+        if(docData.responders.length < 1){
+          alert("You cannot set an incident to Resolved or Closed without assigning a person to handle that incident first!");
+          return;
+        }
+      }
+
+
       await updateDoc(docRef, {
           status: status.trim()
       });
@@ -57,6 +74,7 @@ const IncidentStatus = (props) => {
             <option value="Handling">Handling</option>
             <option value="Resolved">Resolved</option>
             <option value="Closed">Closed</option>
+            <option value="Rejected">Rejected</option>
         </select>
         <br />
         <br />

@@ -12,6 +12,7 @@ const PersonsAvailable = (props) => {
     }
     const [availablePersons, setAvailablePersons] = useState([]);
     const [error, setError] = useState(null);
+    const [status, setStatus] = useState();
 
     useEffect(() => {
         
@@ -20,6 +21,7 @@ const PersonsAvailable = (props) => {
                 const incidentDoc = await getDoc(incidentDocRef);
                 if (incidentDoc.exists()) {
                     const incidentData = incidentDoc.data();
+                    
                     const responders = incidentData.responders || [];
 
                     const usersRef = collection(firestore, "users");
@@ -31,6 +33,7 @@ const PersonsAvailable = (props) => {
                         .filter(person => !responders.includes(person.id));
 
                     setAvailablePersons(availablePersons);
+                    setStatus(incidentData.status);
                 } else {
                     setError("No such incident document!");
                 }
@@ -44,12 +47,36 @@ const PersonsAvailable = (props) => {
     }, []);
 
     const handleAddPerson = async (personId) => {
+        setError("");
         try {
             const incidentDoc = await getDoc(incidentDocRef);
             if (incidentDoc.exists()) {
                 const incidentData = incidentDoc.data();
                 const responders = incidentData.responders || [];
 
+                if(incidentData.incident_group){
+                   const groupDocRef = doc(firestore, "incident_groups", incidentData.incident_group);
+                   const groupSnapshot = await getDoc(groupDocRef);
+                   const groupData = groupSnapshot.data();
+
+                   if(groupData.head != props.id){
+                    setError("Cannot update responders as this is a part of an incident group!");
+                    return;
+                   }
+                }
+                
+                if(props.emergency == null || (props.emergency != null && props.emergency == false)){
+                    if (status !== "Verifying" && status !== "Verified" && status !== "Handling") {
+                        setError("Cannot add responder unless status is verifying, verified, or handling!");
+                        return;
+                    }
+                } else{
+                    if(status !== "Active" && status !== "Handling"){
+                        console.log(props.emergency);
+                        setError("Cannot add responder unless status is Active or Handling!");
+                        return;
+                    }
+                }
                 if (responders.includes(personId)) {
                     setError("User is already in the responders list.");
                 } else {
@@ -74,7 +101,7 @@ const PersonsAvailable = (props) => {
         <div id="personsAvailable">
             {error && (
                 <div id="error-section">
-                    <span>{error}</span>
+                    <span className='status error'>{error}</span>
                 </div>
             )}
             <div className="flex col">

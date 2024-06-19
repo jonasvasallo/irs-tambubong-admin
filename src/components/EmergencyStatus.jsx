@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 
 const EmergencyStatus = (props) => {
@@ -13,8 +13,22 @@ const EmergencyStatus = (props) => {
       setError("Please select a status first");
       return;
     }
+    const docRef = doc(firestore, "sos", props.id);
     try {
-      const docRef = doc(firestore, "sos", props.id);
+      /* 
+      VALIDATION
+      - There must be assigned personnel before updating to Resolved or Closed
+      */
+      if(status == "Resolved" || status == "Closed"){
+        const docSnapshot = await getDoc(docRef);
+        const docData = docSnapshot.data();
+        console.log(docData.responders.length);
+        if(docData.responders.length < 1){
+          alert("You cannot set an emergency to Resolved or Closed without assigning a person to handle that emergency first!");
+          return;
+        }
+      }
+      
       await updateDoc(docRef, {
           status: status.trim()
       });
@@ -32,7 +46,10 @@ const EmergencyStatus = (props) => {
         <select name="" id="" className="dropdown" onChange={(e) => setStatus(e.target.value)}>
           <option value="" selected disabled>Select a status</option>
             <option value="Active">Active</option>
+            <option value="Handling">Handling</option>
+            <option value="Resolved">Resolved</option>
             <option value="Closed">Closed</option>
+            <option value="Dismissed">Dismissed</option>
         </select>
         <br />
         <br />
