@@ -163,16 +163,25 @@ const ReportDetailsPage = () => {
             <div className="flex col w-100 flex-2 gap-16 h-100">
               <div className="flex gap-32 main-between flex-1">
                 <div id="incident-details" className="flex col gap-8 flex-2">
-                  <span className="subheading-l color-major">{incidentDetails.title}</span>
-                  <span className="body-l color-minor">{new Date(incidentDetails.timestamp.seconds * 1000).toLocaleString()}</span>
-                  <span className="body-m color-major">{incidentDetails.location_address}</span>
-                  <div className="flex gap-8">
-                    <span className="status error">Status: {incidentDetails.status}</span>
-                    {!incidentDetails.incident_group && <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id} reported_by={incidentDetails.reported_by}/>, 'info', <></>)}>Update</button>}
-                  </div>
-                  <div className="flex gap-8">
-                    <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
-                    <button className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
+                  <div className="flex main-between">
+                    <div className="flex-1 flex col gap-8 flex-2">
+                      <span className="subheading-l color-major">{incidentDetails.title}</span>
+                      <span className="body-l color-minor">{new Date(incidentDetails.timestamp.seconds * 1000).toLocaleString()}</span>
+                      <span className="body-m color-major">{incidentDetails.location_address}</span>
+                      <div className="flex gap-8">
+                        <span className="status error">Status: {incidentDetails.status}</span>
+                        {!incidentDetails.incident_group && <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id} reported_by={incidentDetails.reported_by}/>, 'info', <></>)}>Update</button>}
+                      </div>
+                      <div className="flex gap-8">
+                        <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
+                        <button className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
+                      </div>
+                    </div>
+                    <div className="flex col gap-8">
+                      {incidentDetails.media_attachments.length > 0 && incidentDetails.media_attachments.map((attachment) => (
+                        <a href={attachment} target="__blank" className="button secondary" style={{width: 'fit-content', textDecoration: 'none'}}><span class="material-symbols-outlined">photo</span></a>
+                      ))}
+                    </div>
                   </div>
                   {userDetails ? (
                     <div id="user_info" className="flex gap-8">
