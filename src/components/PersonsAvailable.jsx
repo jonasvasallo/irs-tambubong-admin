@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 
@@ -30,7 +31,8 @@ const PersonsAvailable = (props) => {
 
                     const availablePersons = querySnapshot.docs
                         .map(doc => ({ id: doc.id, ...doc.data() }))
-                        .filter(person => !responders.includes(person.id));
+                        .filter(person => !responders.includes(person.id) && 
+                        person.isOnline === true,);
 
                     setAvailablePersons(availablePersons);
                     setStatus(incidentData.status);
@@ -115,6 +117,15 @@ const PersonsAvailable = (props) => {
                         <div className="flex gap-16 cross-center">
                             <img src={person.profile_path || ''} alt="" width={40} height={40} />
                             <span>{person.first_name} {person.last_name}</span>
+                            <div className="flex col">
+                                {
+                                (person.isOnline) ?
+                                <span className='status success'>Online</span>
+                                :
+                                <span className='status error'>Offline</span>
+                                }
+                                <span>Last activity: {moment(person.lastLogin.toDate()).fromNow()}</span>
+                            </div>
                         </div>
                         <div>
                             <button className='button filled' onClick={() => handleAddPerson(person.id)}>Add</button>
