@@ -64,6 +64,11 @@ const PersonsAvailable = (props) => {
                     return;
                    }
                 }
+
+                if(incidentData.emergency_id){
+                    setError("You cannot add a responder to this incident since it is already linked to an emergency!");
+                    return;
+                }
                 
                 if(props.emergency == null || (props.emergency != null && props.emergency == false)){
                     if (status !== "Verifying" && status !== "Verified" && status !== "Handling") {

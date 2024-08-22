@@ -21,7 +21,7 @@ const DashboardPage = () => {
   const [tanodRankings, setTanodRankings] = useState([]);
   const [averageResponseTime, setAverageResponseTime] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
-  const [timeRange, setTimeRange] = useState("all");
+  const [timeRange, setTimeRange] = useState("today");
   const [heatmapData, setHeatmapData] = useState([]);
 
   const [tagCounts, setTagCounts] = useState([]);
@@ -177,7 +177,7 @@ const DashboardPage = () => {
     setAverageResponseTime(avgResponseTime.toFixed(1));
   };
 
-  const calculateTanodRankings = (ratings) => {
+  const calculateTanodRankings = async (ratings) => {
     const ratingsByTanod = ratings.reduce((acc, rating) => {
       if (acc[rating.tanod_id]) {
         acc[rating.tanod_id].push(rating);
@@ -187,15 +187,19 @@ const DashboardPage = () => {
       return acc;
     }, {});
 
-    const tanodRankings = Object.keys(ratingsByTanod).map(tanodId => {
+    const tanodRankings = await Promise.all(Object.keys(ratingsByTanod).map(async tanodId => {
       const tanodRatings = ratingsByTanod[tanodId];
       const totalRating = tanodRatings.reduce((acc, rating) => acc + rating.rating, 0);
       const avgRating = (tanodRatings.length > 0) ? (totalRating / tanodRatings.length) : 0;
-      return { tanodId, avgRating };
-    });
+
+      const userDoc = await getDoc(doc(firestore, 'users', tanodId));
+      const userData = userDoc.data();
+      const tanodName = userData ? `${userData.first_name} ${userData.last_name}` : tanodId;
+
+      return { tanodId, avgRating, tanodName };
+    }));
 
     const sortedRankings = tanodRankings.sort((a, b) => b.avgRating - a.avgRating);
-
     setTanodRankings(sortedRankings);
   };
 
@@ -358,7 +362,7 @@ const DashboardPage = () => {
                         <div key={tanod.tanodId} className="flex gap-8 main-between cross-center">
                           <div className="flex gap-8">
                             <span>{index + 1}.</span>
-                            <span>{tanod.tanodId}</span>
+                            <span>{tanod.tanodName}</span>
                           </div>
                           <span>{tanod.avgRating.toFixed(1)}</span>
                         </div>

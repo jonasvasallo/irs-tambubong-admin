@@ -91,7 +91,7 @@ const ComplaintDetailsPage = () => {
         <div className="main-content">
             <Header title="Complaint Details"/>
             <div className="content-here">
-                <div className="container w-100 h-100">
+                <div className="container w-100 h-100 overflow-scroll">
                     {ComplaintDetails ?  
                     <div className="flex col">
                         <div className="flex main-between gap-32">
@@ -112,7 +112,7 @@ const ComplaintDetailsPage = () => {
                                     </div>
                                     <div className='flex-1'>
                                         {limit && !ScheduleDetails && <button className='button filled' onClick={()=>closeCase()}>Close</button>}
-                                        {((ComplaintDetails.status != "Dismissed" && ComplaintDetails.status != "Closed") && (!ScheduleDetails && !limit)) ? 
+                                        {((ComplaintDetails.status != "Dismissed" && ComplaintDetails.status != "Closed" && ComplaintDetails.status != "Dismissed") && (!ScheduleDetails && !limit)) ? 
                                         <button className="button filled" onClick={() => openModal("Schedule Hearing", "", <CreateSchedule id={id} complainant={ComplaintDetails.issued_by} respondent={ComplaintDetails.respondent_id}/>, 'info', <></>)}>Schedule</button> 
                                         : 
                                         ScheduleDetails && <div className='status success textalign-start flex main-between gap-16'>
@@ -122,6 +122,29 @@ const ComplaintDetailsPage = () => {
                                         }
                                     </div>
                                 </div>
+                                
+                                <br />
+                                <span><span className="subheading-m">Nature of Compaint: <span className="body-m">{ComplaintDetails.description}</span></span></span>
+                                <br />
+                                <span className="subheading-m">Supporting Documents</span>
+                                <div id="supporting-documents-links" className='flex gap-8'>
+                                    {ComplaintDetails.supporting_docs.map((image, index) => (
+                                        <a href={image} target="_blank">Document {index + 1}</a>
+                                    ))}
+                                </div>
+                                <div id="supporting-documents" className='flex gap-8 wrap'>
+                                    {ComplaintDetails.supporting_docs.map((image, index) => (
+                                        <img src={image} width={200} height={100} style={{objectFit: 'cover'}}></img>
+                                    ))}
+                                </div>
+                            </div>
+                            <div id="respondent" className='flex col gap-8 flex-1'>
+                                <span className="subheading-l">Respondent</span>
+                                <span><span className="subheading-m">Full Name: <span className="body-m">{ComplaintDetails.respondent_info[0]}</span></span></span>
+                                <span><span className="subheading-m">Contact Number: <span className="body-m">{ComplaintDetails.respondent_info[1]}</span></span></span>
+                                <span><span className="subheading-m">Address: <span className="body-m">{ComplaintDetails.respondent_info[2]}</span></span></span>
+                                <span><span className="subheading-m">Description: <span className="body-m">{ComplaintDetails.respondent_description}</span></span></span>
+                                <br />
                                 <div>
                                     <span className="subheading-m">Hearing History:</span>
                                     <div className="flex col gap-8">
@@ -135,22 +158,6 @@ const ComplaintDetailsPage = () => {
                                     ))}
                                     </div>
                                 </div>
-                                <br />
-                                <span><span className="subheading-m">Nature of Compaint: <span className="body-m">{ComplaintDetails.description}</span></span></span>
-                                <br />
-                                <span className="subheading-m">Supporting Documents</span>
-                                <div id="supporting-documents" className='flex gap-8'>
-                                    {ComplaintDetails.supporting_docs.map((image, index) => (
-                                        <a href={image} target="_blank">Document 1</a>
-                                    ))}
-                                </div>
-                            </div>
-                            <div id="respondent" className='flex col gap-8 flex-1'>
-                                <span className="subheading-l">Respondent</span>
-                                <span><span className="subheading-m">Full Name: <span className="body-m">{ComplaintDetails.respondent_info[0]}</span></span></span>
-                                <span><span className="subheading-m">Contact Number: <span className="body-m">{ComplaintDetails.respondent_info[1]}</span></span></span>
-                                <span><span className="subheading-m">Address: <span className="body-m">{ComplaintDetails.respondent_info[2]}</span></span></span>
-                                <span><span className="subheading-m">Description: <span className="body-m">{ComplaintDetails.respondent_description}</span></span></span>
                             </div>
                         </div>
                     </div>

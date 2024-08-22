@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 
 const ComplaintStatus = (props) => {
@@ -16,7 +16,11 @@ const ComplaintStatus = (props) => {
     }
 
     try{
-      if(props.complainant && props.respondent && status == "Dismissed"){
+      console.log(props.complainant);
+      console.log(props.respondent);
+      console.log(status);
+
+      if(props.complainant && status == "Dismissed"){
         if(!dismissalReason){
           setError("Please add a dismissal reason first!");
           return;
@@ -28,19 +32,52 @@ const ComplaintStatus = (props) => {
           content: `Your complaint got dismissed. Reason: ${dismissalReason}.`,
           timestamp: serverTimestamp(),
         })
-        const respondentDocRef = doc(firestore, "users", props.respondent);
-        const respondentNotifRef = collection(respondentDocRef, "notifications");
-        await addDoc(respondentNotifRef, {
-          title: 'Complaint was dismissed',
-          content: 'The complaint that you had received has been dismissed. If you have any questions please submit a support ticket.',
-          timestamp: serverTimestamp(),
-        })
-      }
+        if(props.respondent){
+          const respondentDocRef = doc(firestore, "users", props.respondent);
+          const respondentNotifRef = collection(respondentDocRef, "notifications");
+          await addDoc(respondentNotifRef, {
+            title: 'Complaint was dismissed',
+            content: 'The complaint that you had received has been dismissed. If you have any questions please submit a support ticket.',
+            timestamp: serverTimestamp(),
+          })
+        }
+       
 
+        const complaintDocRef = doc(firestore, "complaints", props.id);
+        console.log(props.id);
+        // Fetch the current complaint document
+        const complaintDocSnapshot = await getDoc(complaintDocRef);
+        if (complaintDocSnapshot.exists()) {
+            const complaintData = complaintDocSnapshot.data();
+
+            // Update the status of each hearing within the hearings array
+            const updatedHearings = complaintData.hearings.map(hearing => ({
+                ...hearing,
+                status: "Dismissed"
+            }));
+
+            console.log(updatedHearings);
+
+            // Update the complaint document with the new status and updated hearings array
+            await updateDoc(complaintDocRef, {
+                status: status.trim(),
+                hearings: updatedHearings
+            });
+
+            setSuccess("Status updated successfully");
+            setError('');
+            window.location.reload();
+            return;
+        } else {
+            setError("Complaint document does not exist");
+            return;
+        }
+      }
       console.log("this happened why");
       const complaintDocRef = doc(firestore, "complaints", props.id);
       await updateDoc(complaintDocRef, {
         status: status.trim(),
+
       });
       
       setSuccess("Status updated successfully");
