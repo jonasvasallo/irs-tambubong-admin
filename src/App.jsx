@@ -11,6 +11,7 @@ import IncidentGroupPage from "./pages/incidents/IncidentGroupPage";
 import EmergenciesPage from "./pages/emergencies/EmergenciesPage";
 import EmergencyDetailsPage from "./pages/emergencies/EmergencyDetailsPage";
 import { IncidentProvider } from "./core/IncidentContext";
+import { ReportProvider } from "./core/ReportContext";
 import ComplaintsPage from "./pages/complaints/ComplaintsPage";
 import ComplaintDetailsPage from "./pages/complaints/ComplaintDetailsPage";
 import SchedulesPage from "./pages/schedule/SchedulesPage";
@@ -37,7 +38,8 @@ function App() {
   return (
     <>
       <IncidentProvider>
-      <Routes>
+        <ReportProvider>
+        <Routes>
         <Route path="/" element={<DashboardPage />}/>
 
         <Route path="/reports" >
@@ -82,6 +84,7 @@ function App() {
 
         <Route path="/settings" element={<SettingsPage/>}/>
       </Routes>
+        </ReportProvider>
       </IncidentProvider>
     </>
   );

@@ -3,29 +3,33 @@ import "../styles/header.css";
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import { auth, firestore } from '../config/firebase';
 import { IncidentContext } from '../core/IncidentContext';
+import { ReportContext } from '../core/ReportContext';
 import {Link} from 'react-router-dom'
 
 
 import alert from "../assets/alarm.m4a";
+import ding from "../assets/notification_ding.mp3";
 import { useNavigate } from 'react-router-dom';
 
 const Header = (props) => {
   const navigate = useNavigate();
   const initialDocIds = useContext(IncidentContext);
+  const reportInitialDocIds = useContext(ReportContext);
   const [loaded, setLoaded] = useState(false);
+  const [incidentloaded, setIncidentLoaded] = useState(false);
   const [recentDocId, setRecentDocId] = useState(null);
 
-  const playSound = () => {
-    const audio = new Audio(alert);
+  const playSound = (type) => {
+    const audio = (type == 'emergency') ? new Audio(alert) : new Audio(ding);
     audio.play();
   };
 
-  const showNotification = (data) => {
+  const showNotification = (type) => {
     if (Notification.permission === 'granted') {
       
       setTimeout(() => {
-        new Notification('New Incident Reported', {
-          body: `hahahah`,
+        new Notification(`${(type == 'emergency') ? 'Incoming emergency request' : 'New incident reported'}`, {
+          body: `${(type == 'emergency') ? 'Please check the SOS module' : 'Please check the reports module'}`,
         });
         
       console.log("notification")
@@ -34,6 +38,7 @@ const Header = (props) => {
     }
   };
 
+  //for emergency notification
   useEffect(() => {
     const sosCollection = collection(firestore, 'sos');
     const unsubscribe = onSnapshot(sosCollection, (snapshot) => {
@@ -44,8 +49,8 @@ const Header = (props) => {
 
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added' && !initialDocIds.has(change.doc.id)) {
-          playSound();
-          showNotification(change.doc.data());
+          playSound('emergency');
+          showNotification('emergency');
           setRecentDocId(change.doc.id);
         }
       });
@@ -54,6 +59,27 @@ const Header = (props) => {
     // Cleanup the listener on unmount
     return () => unsubscribe();
   }, [loaded, initialDocIds]);
+
+    //for incident report notification
+    useEffect(() => {
+      const incidentCollection = collection(firestore, 'incidents');
+      const unsubscribe = onSnapshot(incidentCollection, (snapshot) => {
+        if (!incidentloaded) {
+          setIncidentLoaded(true);
+          return;
+        }
+  
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added' && !reportInitialDocIds.has(change.doc.id)) {
+            playSound('report');
+            showNotification('report');
+          }
+        });
+      });
+  
+      // Cleanup the listener on unmount
+      return () => unsubscribe();
+    }, [incidentloaded, reportInitialDocIds]);
 
   // Request permission for browser notifications on component mount
   useEffect(() => {
@@ -80,7 +106,7 @@ const Header = (props) => {
         </div>
       )}
         <div className="actions">
-          <Link to={`/settings`}><button className='button circular'><span class="material-symbols-outlined">admin_panel_settings</span></button></Link>
+          <Link to={`/settings`}><button className='button circular'><span className="material-symbols-outlined">admin_panel_settings</span></button></Link>
         </div>
         
       </div>
