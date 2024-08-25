@@ -4,8 +4,12 @@ import Modal from './Modal';
 import AssignGroupPerson from './AssignGroupPerson';
 import { collection, getDocs, doc, onSnapshot, query, where, getDoc, updateDoc, arrayRemove  } from "firebase/firestore";
 import { firestore } from '../config/firebase';
+import { useAuth } from '../core/AuthContext';
 
 const IncidentGroupAssignPerson = (props) => {
+
+    const { user_type, userPermissions } = useAuth();
+
     const [error, setError] = useState('');
     const [assignedPersonnelList, setAssignedPersonnelList] = useState([]);
     let incidentDocRef = doc(firestore, "incidents", props.id);
@@ -105,7 +109,7 @@ const IncidentGroupAssignPerson = (props) => {
                         <span className="body-m color-minor">{person.user_type.toUpperCase()}</span>
                     </div>
                     </div>
-                    <button className="button filled error" onClick={()=>handleRemovePerson(person.id)}><span className='material-symbols-outlined'>delete</span></button>
+                    {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className="button filled error" onClick={()=>handleRemovePerson(person.id)}><span className='material-symbols-outlined'>delete</span></button> : <></>}
                 </div>
             ))}
             
@@ -114,7 +118,7 @@ const IncidentGroupAssignPerson = (props) => {
         <div>
         {error && <span className='status error'>{error}</span>}
         </div>
-        <button className="button filled" onClick={()=>openModal("Assign a person", "", <AssignGroupPerson id={props.id}/>, "info", <></>)}>Add</button>
+        {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className="button filled" onClick={()=>openModal("Assign a person", "", <AssignGroupPerson id={props.id}/>, "info", <></>)}>Add</button> : <></>}
     </div>
   )
 }

@@ -122,7 +122,7 @@ const RoleModal = (props) => {
         {successMsg && <span className='status success'>{successMsg}</span>}
       </div>
       <br />
-      <button className="button filled" onClick={createRole}>Create</button>
+      <button className="button filled" onClick={createRole}>Save</button>
     </div>
   );
 };

@@ -17,7 +17,12 @@ import AddIncident from '../../components/AddIncident';
 import ReactMap from "../../components/maps/ReactMap";
 import RespondersSection from '../incidents/RespondersSection';
 
+import { useAuth } from '../../core/AuthContext';
+
 const EmergencyDetailsPage = () => {
+
+  const [user_type, userPermissions] = useAuth();
+
   const navigate = useNavigate();
   const {id} = useParams();
   const emergencyDocRef = doc(firestore, "sos", id);
@@ -90,16 +95,22 @@ const EmergencyDetailsPage = () => {
                               </div>
                             </div>}
                             <div>
-                              {!emergencyDetails.incident_id ? <button className="button filled" onClick={() => openModal("Add New Incident", "", <AddIncident id={id} attachment={emergencyDetails.attachment} location={emergencyDetails.location} reported_by={emergencyDetails.user_id}/>, 'info')}>Add as an incident</button> : 
-                              <div className='status warning flex gap-8'>
-                                <span className="body-m textalign-start">This emergency report is attached to an incident.</span>
-                                <button className="button text" onClick={() => navigate(`/reports/${emergencyDetails.incident_id}`)}>Check</button>
-                              </div>}
+                              {
+                              (user_type == 'admin' || userPermissions['manage_emergencies']) ?
+                              (!emergencyDetails.incident_id ? 
+                                <button className="button filled" onClick={() => openModal("Add New Incident", "", <AddIncident id={id} attachment={emergencyDetails.attachment} location={emergencyDetails.location} reported_by={emergencyDetails.user_id}/>, 'info')}>Add as an incident</button>
+                                : 
+                                <div className='status warning flex gap-8'>
+                                  <span className="body-m textalign-start">This emergency report is attached to an incident.</span>
+                                  <button className="button text" onClick={() => navigate(`/reports/${emergencyDetails.incident_id}`)}>Check</button>
+                                </div>) :
+                                <></>
+                              }
                             </div>
                           </div>
                           <div className="flex gap-8">
                             <span className="status error">{emergencyDetails.status}</span>
-                            <button className="button text" onClick={() => openModal("Update Status", "", <EmergencyStatus id={id} />, 'info', <></>)}>Change</button>
+                            {(user_type == 'admin' || userPermissions['manage_emergencies']) ? <button className="button text" onClick={() => openModal("Update Status", "", <EmergencyStatus id={id} />, 'info', <></>)}>Change</button> : <></>}
                           </div>
                           {emergencyDetails.status == "Resolved" || emergencyDetails.status == "Closed" ? <RespondersSection id={id} emergency={true}/> : <AssignedPersonsContainer id={id} emergency={true} />}
                           

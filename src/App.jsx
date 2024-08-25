@@ -22,6 +22,9 @@ import UserDetailsPage from "./pages/users/UserDetailsPage";
 import SupportTicketsPage from "./pages/support/SupportTicketsPage";
 import TicketDetailsPage from "./pages/support/TicketDetailsPage";
 import SettingsPage from "./pages/settings/SettingsPage";
+import NoAccessPage from "./pages/NoAccessPage";
+import ProtectedRoute from "./core/ProtectedRoute";
+import { AuthProvider } from "./core/AuthContext";
 
 function App() {
   const navigate = useNavigate();
@@ -39,51 +42,53 @@ function App() {
     <>
       <IncidentProvider>
         <ReportProvider>
-        <Routes>
-        <Route path="/" element={<DashboardPage />}/>
+          <AuthProvider>
+          <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/no-access" element={<NoAccessPage />} />
+        <Route path="*" element={<NotFoundPage />} />
 
-        <Route path="/reports" >
-          <Route index element={<ReportsPage />} />
-          <Route path=":id" element={<ReportDetailsPage />}/>
-          <Route path="new" />
+        <Route element={<ProtectedRoute requiredPermission="view_incidents" />}>
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/reports/:id" element={<ReportDetailsPage />} />
+          <Route path="/incident_group/:id" element={<IncidentGroupPage />}></Route>
         </Route>
 
-        <Route path="/incident_group/:id" element={<IncidentGroupPage />}></Route>
-
-        <Route path="/emergencies">
-          <Route index element={<EmergenciesPage />} />
-          <Route path=":id" element={<EmergencyDetailsPage />} />
+        <Route element={<ProtectedRoute requiredPermission="view_emergencies" />}>
+          <Route path="/emergencies" element={<EmergenciesPage />} />
+          <Route path="/emergencies/:id" element={<EmergencyDetailsPage />} />
         </Route>
 
-        <Route path="/complaints">
-          <Route index element={<ComplaintsPage />} />
-          <Route path=":id" element={<ComplaintDetailsPage />}/>
+        <Route element={<ProtectedRoute requiredPermission="view_complaints" />}>
+          <Route path="/complaints" element={<ComplaintsPage />} />
+          <Route path="/complaints/:id" element={<ComplaintDetailsPage />} />
+          <Route path="/schedules" element={<SchedulesPage />} />
         </Route>
 
-        <Route path="/schedules">
-          <Route index element={<SchedulesPage/>}/>
+        <Route element={<ProtectedRoute requiredPermission="view_news" />}>
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/news/:id" element={<NewsDetailsPage />} />
         </Route>
 
-        <Route path="/news">
-          <Route index element={<NewsPage/>}/>
-          <Route path=":id" element={<NewsDetailsPage/>}/>
+        <Route element={<ProtectedRoute requiredPermission="view_users" />}>
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/users/:id" element={<UserDetailsPage />} />
         </Route>
 
-        <Route path="/users">
-          <Route index element={<UsersPage/>}/>
-          <Route path=":id" element={<UserDetailsPage/>}/>
+        <Route element={<ProtectedRoute requiredPermission="view_tickets" />}>
+          <Route path="/tickets" element={<SupportTicketsPage />} />
+          <Route path="/tickets/:id" element={<TicketDetailsPage />} />
         </Route>
 
-        <Route path="/tickets">
-          <Route index element={<SupportTicketsPage />}/>
-          <Route path=":id" element={<TicketDetailsPage/>}/>
+        <Route element={<ProtectedRoute requiredPermission="view_settings" />}>
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
 
-        <Route path="/login" element={<LoginPage />}/>
-        <Route path="*" element={<NotFoundPage />}/>
-
-        <Route path="/settings" element={<SettingsPage/>}/>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<DashboardPage />} />
+        </Route>
       </Routes>
+          </AuthProvider>
         </ReportProvider>
       </IncidentProvider>
     </>

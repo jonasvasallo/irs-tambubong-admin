@@ -12,7 +12,12 @@ import '../../styles/complaintpage.css';
 import ComplaintStatus from '../../components/ComplaintStatus'
 import CreateSchedule from '../../components/CreateSchedule'
 
+import { useAuth } from '../../core/AuthContext'
+
 const ComplaintDetailsPage = () => {
+
+    const [user_type, userPermissions] = useAuth();
+
     const { openModal } = useModal();
     const {id} = useParams();
     const [ComplaintDetails, setComplaintDetails] = useState();
@@ -107,20 +112,24 @@ const ComplaintDetailsPage = () => {
                                         <span><span className="subheading-m">Issued at: <span className="body-m">{new Date(ComplaintDetails.issued_at.seconds * 1000).toLocaleString()}</span></span></span>
                                         <div className="flex gap-8">
                                             <span className="status error">{ComplaintDetails.status}</span>
-                                            <button className="button text" onClick={() => openModal("Update Status", "", <ComplaintStatus id={id} complainant={ComplaintDetails.issued_by} respondent={ComplaintDetails.respondent_id}/>, 'info', <></>)}>Change</button>
+                                            {(user_type == 'admin' || userPermissions['manage_complaints']) ? <button className="button text" onClick={() => openModal("Update Status", "", <ComplaintStatus id={id} complainant={ComplaintDetails.issued_by} respondent={ComplaintDetails.respondent_id}/>, 'info', <></>)}>Change</button> : <></>}
                                         </div>
                                     </div>
+                                    {(user_type == 'admin' || userPermissions['manage_complaints']) ? 
                                     <div className='flex-1'>
-                                        {limit && !ScheduleDetails && <button className='button filled' onClick={()=>closeCase()}>Close</button>}
-                                        {((ComplaintDetails.status != "Dismissed" && ComplaintDetails.status != "Closed" && ComplaintDetails.status != "Dismissed") && (!ScheduleDetails && !limit)) ? 
-                                        <button className="button filled" onClick={() => openModal("Schedule Hearing", "", <CreateSchedule id={id} complainant={ComplaintDetails.issued_by} respondent={ComplaintDetails.respondent_id}/>, 'info', <></>)}>Schedule</button> 
-                                        : 
-                                        ScheduleDetails && <div className='status success textalign-start flex main-between gap-16'>
-                                        This complaint has been scheduled for a hearing on {new Date(ScheduleDetails.meeting_start.seconds * 1000).toLocaleString()}. 
-                                        <button className='button text' onClick={() => window.location.href = "/schedules"}>Update</button>
-                                        </div>
-                                        }
+                                    {limit && !ScheduleDetails && <button className='button filled' onClick={()=>closeCase()}>Close</button>}
+                                    {((ComplaintDetails.status != "Dismissed" && ComplaintDetails.status != "Closed" && ComplaintDetails.status != "Dismissed") && (!ScheduleDetails && !limit)) ? 
+                                    <button className="button filled" onClick={() => openModal("Schedule Hearing", "", <CreateSchedule id={id} complainant={ComplaintDetails.issued_by} respondent={ComplaintDetails.respondent_id}/>, 'info', <></>)}>Schedule</button> 
+                                    : 
+                                    ScheduleDetails && <div className='status success textalign-start flex main-between gap-16'>
+                                    This complaint has been scheduled for a hearing on {new Date(ScheduleDetails.meeting_start.seconds * 1000).toLocaleString()}. 
+                                    <button className='button text' onClick={() => window.location.href = "/schedules"}>Update</button>
                                     </div>
+                                    }
+                                    </div>
+                                    :
+                                    <></>
+                                    }
                                 </div>
                                 
                                 <br />

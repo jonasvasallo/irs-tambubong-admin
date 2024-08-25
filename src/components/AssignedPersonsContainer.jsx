@@ -5,8 +5,13 @@ import { firestore } from '../config/firebase';
 import { useModal } from '../core/ModalContext';
 import PersonsAvailable from './PersonsAvailable';
 
+import { useAuth } from '../core/AuthContext';
+
 
 const AssignedPersonsContainer = (props) => {
+
+    const { user_type, userPermissions } = useAuth();
+
     const [error, setError] = useState('');
     const [assignedPersonnelList, setAssignedPersonnelList] = useState([]);
     let incidentDocRef = doc(firestore, "incidents", props.id);
@@ -106,7 +111,7 @@ const AssignedPersonsContainer = (props) => {
     <div id="responders" className="w-100 flex col gap-8">
         <div className="flex main-between">
         <span className="subheading-m color-major">Assigned Persons</span>
-        <button onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id} emergency={props.emergency}/>, 'info', <button>Action</button>)} className='button text'>Add</button>
+        {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id} emergency={props.emergency}/>, 'info', <button>Action</button>)} className='button text'>Add</button> : <></>}
         </div>
         {assignedPersonnelList.map((person) => (
         <div key={person.id} className="responder-row flex gap-8 cross-center main-between">
@@ -119,7 +124,7 @@ const AssignedPersonsContainer = (props) => {
                 </div>
                 </div>
             
-        <button className='button filled' onClick={() => handleRemovePerson(person.id)}>Delete</button>
+        {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className='button filled' onClick={() => handleRemovePerson(person.id)}>Delete</button> : <></>}
         
         </div>
         ))}

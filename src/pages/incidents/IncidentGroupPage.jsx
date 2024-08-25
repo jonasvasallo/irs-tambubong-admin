@@ -11,7 +11,12 @@ import LiveStatusContainer from '../../components/LiveStatusContainer'
 import RemoveIncidentHead from '../../components/RemoveIncidentHead'
 import IncidentGroupAssignPerson from '../../components/IncidentGroupAssignPerson'
 
+import { useAuth } from '../../core/AuthContext'
+
 const IncidentGroupPage = () => {
+  
+  const { user_type, userPermissions } = useAuth();
+
   const { openModal } = useModal();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -120,7 +125,7 @@ const IncidentGroupPage = () => {
                             <span className='subheading-m'>Created at <span className='body-m'>05/14/2024 11:29 AM</span></span>
                             <div className="flex gap-8">
                               <span className='status error'>{incidentGroupDetails.status}</span>
-                              <button className="button text" onClick={() => openModal("Update Status", "", <IncidentGroupStatus id={id}/>, 'info', <></>)}>Change</button>
+                              {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className="button text" onClick={() => openModal("Update Status", "", <IncidentGroupStatus id={id}/>, 'info', <></>)}>Change</button> : <></>}
                             </div>
                             <span className='subheading-m'>Incidents: <span className='body-m'>{incidentGroupDetails.incidents}</span></span>
                           </div>
@@ -143,7 +148,7 @@ const IncidentGroupPage = () => {
                               <span className="subheading-m">{incident.title}</span>
                               <div className="flex gap-16">
                                 <button className="button text" onClick={() => navigate(`/reports/${incident.id}`)}>View</button>
-                                <button className="button filled" onClick={() => validateIncidentGroup()}>Remove</button>
+                                {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className="button filled" onClick={() => validateIncidentGroup()}>Remove</button> : <></>}
                               </div>
                             </div>;
                             } else{
@@ -159,7 +164,7 @@ const IncidentGroupPage = () => {
                               <span className="subheading-m">{incident.title}</span>
                               <div className="flex gap-16">
                                 <button className="button text" onClick={() => navigate(`/reports/${incident.id}`)}>View</button>
-                                <button className="button filled" onClick={() => removeIncident(incident.id)}>Remove</button>
+                                {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className="button filled" onClick={() => removeIncident(incident.id)}>Remove</button> : <></>}
                               </div>
                             </div>;
                             } else{

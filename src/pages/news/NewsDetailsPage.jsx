@@ -12,7 +12,12 @@ import { useModal } from '../../core/ModalContext';
 import Modal from '../../components/Modal';
 import AddNewPost from '../../components/AddNewPost';
 
+import { useAuth } from '../../core/AuthContext';
+
 const NewsDetailsPage = () => {
+
+    const [user_type, userPermissions] = useAuth();
+
     const {openModal} = useModal();
     const {id} = useParams();
     const [NewsDetails, setNewsDetails] = useState();
@@ -58,7 +63,7 @@ const NewsDetailsPage = () => {
                                 <span className="body-s color-minor">{formatDate(NewsDetails.timestamp)}</span>
                                 <span className="body-m color-major">{NewsDetails.body}</span>
                                 <div className="flex main-end">
-                                    <button className="button filled" onClick={() => openModal("Edit Post", "", <AddNewPost id={id}/>, "info", <></>)}>Edit</button>
+                                    {(user_type == 'admin' || userPermissions['manage_news']) ? <button className="button filled" onClick={() => openModal("Edit Post", "", <AddNewPost id={id}/>, "info", <></>)}>Edit</button> : <></>}
                                 </div>
                                 <div className="flex gap-8 wrap">
                                     {NewsDetails.media_attachments.map((image) => (

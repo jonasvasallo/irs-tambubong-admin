@@ -5,7 +5,13 @@ import { useState, useEffect } from 'react'
 import { collection, getDocs, doc, onSnapshot, addDoc, serverTimestamp, updateDoc, getDoc } from "firebase/firestore";
 import { firestore, auth } from "../config/firebase";
 
+import { useAuth } from '../core/AuthContext';
+
 const LiveStatusContainer = (props) => {
+
+const { user_type, userPermissions } = useAuth();
+
+
 const [status, setStatus] = useState('');
 const [statusList, setStatusList] = useState([]);
 const incidentDocRef = doc(firestore, "incidents", props.id);
@@ -119,12 +125,17 @@ useEffect(() => {
                 </div>
             ))}
         </div>
-        <div className="send-message flex-1">
-            <div className="flex gap-8">
-                <input type="text" name="" id="" placeholder='Enter timeline here...' onChange={(e) => setStatus(e.target.value)} value={status}/>
-                <button className="button filled" onClick={()=>addStatus()}>Update</button>
+        {
+            (user_type == 'admin' | userPermissions['manage_incidents']) ?
+            <div className="send-message flex-1">
+                <div className="flex gap-8">
+                    <input type="text" name="" id="" placeholder='Enter timeline here...' onChange={(e) => setStatus(e.target.value)} value={status}/>
+                    <button className="button filled" onClick={()=>addStatus()}>Update</button>
+                </div>
             </div>
-        </div>
+            :
+            <></>
+        }
         
     </div>
   )

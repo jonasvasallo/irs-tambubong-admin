@@ -8,7 +8,12 @@ import { useModal } from '../../core/ModalContext';
 import Modal from '../../components/Modal';
 import AddNewPost from '../../components/AddNewPost';
 
+import { useAuth } from '../../core/AuthContext';
+
 const NewsPage = () => {
+
+    const [user_type, userPermissions] = useAuth();
+
     const {openModal} = useModal();
     const [NewsList, setNewsList] = useState([]);
 
@@ -56,7 +61,12 @@ const NewsPage = () => {
                 <div className="content-here">
                     <div className="container">
                         <div className="flex main-end">
-                            <button className="button filled" onClick={() => openModal("Add New Post", "", <AddNewPost />, "info", <></>)}>Add New Post</button>
+                            {
+                                (user_type == 'admin' || userPermissions['manage_news']) ?
+                                <button className="button filled" onClick={() => openModal("Add New Post", "", <AddNewPost />, "info", <></>)}>Add New Post</button>
+                                :
+                                <></>
+                            }
                         </div>
                         <br />
                         <table>
@@ -76,7 +86,7 @@ const NewsPage = () => {
                                         <td>{news.date}</td>
                                         <td>
                                             <button className="button secondary" onClick={() => window.location.href = `/news/${news.id}`}>View</button>
-                                            <button className="button filled error" onClick={() => deletePost(news.id)}>Delete</button>
+                                            {(user_type == 'admin' || userPermissions['manage_news']) ? <button className="button filled error" onClick={() => deletePost(news.id)}>Delete</button> : <></>}
                                         </td>
                                     </tr>
                                 ))}

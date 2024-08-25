@@ -4,6 +4,7 @@ import logo from "../assets/logo.jpg";
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { useAuth } from '../core/AuthContext';
 
 const Sidebar = () => {
     const navigate = useNavigate();
@@ -12,6 +13,8 @@ const Sidebar = () => {
             navigate('/login');
         })
     }
+
+    const { user_type, userPermissions } = useAuth();
     return (
         <div className="sidebar">
             <div>
@@ -21,12 +24,13 @@ const Sidebar = () => {
                 </div>
                 <div className="sidebar-menu">
                     <Link className='nav-button body-l' to={'/'}>Dashboard</Link>
-                    <Link className='nav-button body-l' to={'/reports'}>Reports</Link>
-                    <Link className='nav-button body-l' to={'/emergencies'}>Emergencies</Link>
-                    <Link className='nav-button body-l' to={'/complaints'}>Complaints</Link>
-                    <Link className='nav-button body-l' to={'/news'}>News</Link>
-                    <Link className='nav-button body-l' to={'/users'}>Users</Link>
-                    <Link className='nav-button body-l' to={'/tickets'}>Tickets</Link>
+                    {(userPermissions['view_incidents'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/reports'}>Reports</Link> : <></>}
+                    {(userPermissions['view_emergencies'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/emergencies'}>Emergencies</Link> : <></>}
+                    {(userPermissions['view_complaints'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/complaints'}>Complaints</Link> : <></>}
+                    {(userPermissions['view_news'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/news'}>News</Link> : <></>}
+                    {(userPermissions['view_users'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/users'}>Users</Link> : <></>}
+                    {(userPermissions['view_tickets'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/tickets'}>Tickets</Link> : <></>}
+                    
                 </div>
             </div>
             <div className="sidebar-footer">

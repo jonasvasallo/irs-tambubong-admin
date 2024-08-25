@@ -8,8 +8,10 @@ import { useModal } from '../../core/ModalContext'
 import Modal from '../../components/Modal'
 import VerifyUser from '../../components/VerifyUser'
 import ChangeUserType from '../../components/ChangeUserType'
-
+import { useAuth } from '../../core/AuthContext'
 const UserDetailsPage = () => {
+    const { user_type, userPermissions } = useAuth();
+
     const {openModal} = useModal();
     const {id} = useParams();
     const [userDetails, setUserDetails] = useState();
@@ -47,7 +49,7 @@ const UserDetailsPage = () => {
                                         <span className="body-m">{userDetails.email}</span>
                                         <div className="flex gap-8">
                                             <span className="subheading-m color-minor">{userDetails.user_type.toUpperCase()}</span>
-                                            <button className="button text" onClick={() => openModal("Update User Type", "", <ChangeUserType id={id}/>, "info", <></>)}>Change</button>
+                                            {(user_type == 'admin') ? <button className="button text" onClick={() => openModal("Update User Type", "", <ChangeUserType id={id}/>, "info", <></>)}>Change</button> : <></>}
                                         </div>
                                     </div>
                                 </div>
@@ -73,7 +75,7 @@ const UserDetailsPage = () => {
                                             {(!userDetails.verified) ?
                                             <>
                                                 <span className="body-m status error">Not Verified</span>
-                                                <button className="button text" onClick={() => openModal("Verify User", "", <VerifyUser id={id} image={userDetails.verification_photo ?? ''}/>, "info", <></>)}>Verify</button>
+                                                {(userPermissions['verify_users']) ? <button className="button text" onClick={() => openModal("Verify User", "", <VerifyUser id={id} image={userDetails.verification_photo ?? ''}/>, "info", <></>)}>Verify</button> : <></>}
                                             </> : 
                                             <span className="body-m status success">Verified</span>
                                             }

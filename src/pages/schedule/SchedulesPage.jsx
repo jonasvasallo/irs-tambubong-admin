@@ -8,7 +8,12 @@ import { useModal } from '../../core/ModalContext';
 import Modal from '../../components/Modal';
 import CreateSchedule from '../../components/CreateSchedule';
 
+import { useAuth } from '../../core/AuthContext';
+
 const SchedulesPage = () => {
+
+  const [user_type, userPermissions] = useAuth();
+
   const { openModal } = useModal();
   const [ScheduleList, setScheduleList] = useState([]);
   const [filteredSchedules, setFilteredSchedules] = useState([]);
@@ -153,8 +158,16 @@ const SchedulesPage = () => {
                                 {Math.round((new Date(schedule.meeting_end) - new Date(schedule.meeting_start)) / 60000)} minutes
                               </td>
                               <td>
-                                <button className="button secondary" onClick={() => handleEdit(schedule)}>Edit</button>
-                                <button className="button filled" onClick={() => deleteSchedule(schedule.id, schedule.complaint_id)}>Delete</button>
+                                {
+                                  (user_type == 'admin' || userPermissions['manage_complaints'])
+                                  ?
+                                  <>
+                                    <button className="button secondary" onClick={() => handleEdit(schedule)}>Edit</button>
+                                    <button className="button filled" onClick={() => deleteSchedule(schedule.id, schedule.complaint_id)}>Delete</button>
+                                  </>
+                                  :
+                                  <></>
+                                }
                               </td>
                             </tr>
                           ))

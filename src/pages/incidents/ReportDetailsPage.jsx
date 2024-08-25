@@ -19,8 +19,12 @@ import { getDistance } from "geolib";
 import MergeIncidents from "../../components/MergeIncidents";
 import ReactMap from "../../components/maps/ReactMap";
 import RespondersSection from "./RespondersSection";
+import { useAuth } from "../../core/AuthContext";
 
 const ReportDetailsPage = () => {
+
+  const { user_type, userPermissions } = useAuth();
+
   const navigate = useNavigate();
   const { id } = useParams();
   const [incidentDetails, setIncidentDetails] = useState(null);
@@ -170,11 +174,33 @@ const ReportDetailsPage = () => {
                       <span className="body-m color-major">{incidentDetails.location_address}</span>
                       <div className="flex gap-8">
                         <span className="status error">Status: {incidentDetails.status}</span>
-                        {!incidentDetails.incident_group && <button className="button text" onClick={() => openModal("Update Status", "", <IncidentStatus id={id} reported_by={incidentDetails.reported_by}/>, 'info', <></>)}>Update</button>}
+                        {
+                          (user_type === 'admin' || userPermissions['manage_incidents']) 
+                          ? (!incidentDetails.incident_group && 
+                              <button 
+                                className="button text" 
+                                onClick={() => openModal(
+                                  "Update Status", 
+                                  "", 
+                                  <IncidentStatus id={id} reported_by={incidentDetails.reported_by} />, 
+                                  'info', 
+                                  <></>
+                                )}
+                              >
+                                Update
+                              </button>
+                            ) 
+                          : <></>
+                        }
                       </div>
                       <div className="flex gap-8">
                         <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
-                        <button className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
+                        {
+                          (user_type === 'admin' || userPermissions['manage_incidents']) 
+                          ? <button className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
+                          : <></>
+                        }
+                        
                       </div>
                     </div>
                     <div className="flex col gap-8">
@@ -213,10 +239,10 @@ const ReportDetailsPage = () => {
                     <div className="flex gap-8">
                       <span className="material-symbols-outlined">warning</span>
                       <span className="textalign-start">
-                        The system has identified that this report was submitted in close proximity and within a short time frame to another similar report. Would you like to merge these incidents?
+                        The system has identified that this report was submitted in close proximity and within a short time frame to another similar report.
                       </span>
                     </div>
-                    <button className="button secondary" onClick={() => openModal("Merge incidents", "", <MergeIncidents incidents={nearbyIncidents} title={incidentDetails.title} description={incidentDetails.details} status={incidentDetails.status} id={id} />, 'info', <></>)}>Check</button>
+                    {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className="button secondary" onClick={() => openModal("Merge incidents", "", <MergeIncidents incidents={nearbyIncidents} title={incidentDetails.title} description={incidentDetails.details} status={incidentDetails.status} id={id} />, 'info', <></>)}>Check</button> : <></>}
                   </div> : <></>}
                 </div>
               </div>

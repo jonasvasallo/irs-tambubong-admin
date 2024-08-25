@@ -6,7 +6,12 @@ import { useParams } from 'react-router-dom'
 import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { auth, firestore } from '../../config/firebase'
 import RepliesSection from '../../components/RepliesSection'
+
+import { useAuth } from '../../core/AuthContext'
 const TicketDetailsPage = () => {
+
+    const [user_type, userPermissions] = useAuth();
+
     const {id} = useParams();
 
     const [ticketDetails, setTicketDetails] = useState();
@@ -129,20 +134,24 @@ const TicketDetailsPage = () => {
                                 <RepliesSection id={id}/>
                             </div>
                             <div className="flex col gap-8 flex-1">
-                                <div>
-                                    <span className="subheading-m">Ticket Actions</span>
-                                    <div id="update-status">
-                                        <select name="" id="" className="dropdown" onChange={(e) => setStatus(e.target.value)}>
-                                            <option value="" selected disabled>Select a status</option>
-                                            <option value="Open">Open</option>
-                                            <option value="Closed">Closed</option>
-                                        </select>
-                                        <div></div>
+                                {
+                                    (user_type == 'admin' || userPermissions['manage_tickets']) ?
+                                    <div>
+                                        <span className="subheading-m">Ticket Actions</span>
+                                        <div id="update-status">
+                                            <select name="" id="" className="dropdown" onChange={(e) => setStatus(e.target.value)}>
+                                                <option value="" selected disabled>Select a status</option>
+                                                <option value="Open">Open</option>
+                                                <option value="Closed">Closed</option>
+                                            </select>
+                                            <div></div>
+                                            <br />
+                                            <button className="button filled" onClick={() => updateTicketStatus()}>Save</button>
+                                        </div>
                                         <br />
-                                        <button className="button filled" onClick={() => updateTicketStatus()}>Save</button>
-                                    </div>
-                                    <br />
-                                </div>
+                                    </div> :
+                                    <></>
+                                }
                                 <div>
                                     <span className="subheading-m">Resident Information</span>
                                     <br />
