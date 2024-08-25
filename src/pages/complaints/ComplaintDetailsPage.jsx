@@ -16,7 +16,7 @@ import { useAuth } from '../../core/AuthContext'
 
 const ComplaintDetailsPage = () => {
 
-    const [user_type, userPermissions] = useAuth();
+    const { user_type, userPermissions } = useAuth();
 
     const { openModal } = useModal();
     const {id} = useParams();

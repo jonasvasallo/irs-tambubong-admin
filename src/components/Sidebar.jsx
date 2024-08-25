@@ -36,10 +36,10 @@ const Sidebar = () => {
             <div className="sidebar-footer">
                 <img src={logo} alt="" width={40} height={40}/>
                 <div className="user-details">
-                    <span className='subheading-m'>Jonas Vasallo</span>
-                    <span className='body-s'>ADMIN</span>
+                    <span className='subheading-m'>USER TYPE:</span>
+                    <span className='body-s'>{`${user_type.toUpperCase()}`}</span>
                 </div>
-                <button onClick={logout}>Logout</button>
+                <button className='button outlined' onClick={logout}>Logout</button>
             </div>
         </div>
       )

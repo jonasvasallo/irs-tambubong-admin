@@ -21,7 +21,7 @@ import { useAuth } from '../../core/AuthContext';
 
 const EmergencyDetailsPage = () => {
 
-  const [user_type, userPermissions] = useAuth();
+  const { user_type, userPermissions } = useAuth();
 
   const navigate = useNavigate();
   const {id} = useParams();

@@ -10,7 +10,7 @@ import RepliesSection from '../../components/RepliesSection'
 import { useAuth } from '../../core/AuthContext'
 const TicketDetailsPage = () => {
 
-    const [user_type, userPermissions] = useAuth();
+    const { user_type, userPermissions } = useAuth();
 
     const {id} = useParams();
 

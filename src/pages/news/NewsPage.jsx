@@ -12,7 +12,7 @@ import { useAuth } from '../../core/AuthContext';
 
 const NewsPage = () => {
 
-    const [user_type, userPermissions] = useAuth();
+    const { user_type, userPermissions } = useAuth();
 
     const {openModal} = useModal();
     const [NewsList, setNewsList] = useState([]);
