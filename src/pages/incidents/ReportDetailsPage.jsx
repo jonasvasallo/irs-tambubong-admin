@@ -96,7 +96,7 @@ const ReportDetailsPage = () => {
     const checkIncidents = async (incident) => {
       console.log("Checking incidents fired");
       const {coordinates, timestamp} = incident;
-      const RADIUS = 500;
+      const RADIUS = 100;
       const TIME_FRAME = 3600000;
 
       const incidentsRef = collection(firestore, 'incidents');
