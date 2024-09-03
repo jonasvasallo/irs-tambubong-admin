@@ -96,8 +96,8 @@ const ReportDetailsPage = () => {
     const checkIncidents = async (incident) => {
       console.log("Checking incidents fired");
       const {coordinates, timestamp} = incident;
-      const RADIUS = 100;
-      const TIME_FRAME = 3600000;
+      const RADIUS = 500; //in meters
+      const TIME_FRAME = 900000; //in milliseconds (15 minutes)
 
       const incidentsRef = collection(firestore, 'incidents');
       const incidentTimestamp = timestamp.seconds * 1000;
@@ -249,7 +249,7 @@ const ReportDetailsPage = () => {
               <span className="body-m color-major">{incidentDetails.details}</span>
               <div className="flex main-between gap-32 flex-1">
                 <WitnessContainer id={id}/>
-                {incidentDetails.status == "Closed" || incidentDetails.status == "Resolved" ? <RespondersSection id={id}/> : <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false}/>}
+                {incidentDetails.status == "Closed" || incidentDetails.status == "Resolved" ? <RespondersSection id={id}/> : <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false} latitude={incidentDetails.coordinates.latitude} longitude={incidentDetails.coordinates.longitude}/>}
               </div>
             </div>
             <div className="flex col main-between w-100 flex-1 gap-16 overflow-scroll">

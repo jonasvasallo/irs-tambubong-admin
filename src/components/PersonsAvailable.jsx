@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { firestore } from "../config/firebase";
+import { getDistance } from 'geolib';
 
 const PersonsAvailable = (props) => {
     let incidentDocRef = doc(firestore, "incidents", props.id);
@@ -124,7 +125,12 @@ const PersonsAvailable = (props) => {
                                 :
                                 <span className='status error'>Offline</span>
                                 }
-                                <span>Last activity: {moment(person.lastLogin.toDate()).fromNow()}</span>
+                                <span>Distance: 
+                                {
+                                    (person.current_location != null) ? `${getDistance({latitude: props.latitude, longitude: props.longitude}, {latitude: person.current_location.latitude, longitude: person.current_location.longitude})}` : 'UNKNOWN'
+                                }
+                                m
+                                </span>
                             </div>
                         </div>
                         <div>

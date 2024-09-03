@@ -112,7 +112,7 @@ const EmergencyDetailsPage = () => {
                             <span className="status error">{emergencyDetails.status}</span>
                             {(user_type == 'admin' || userPermissions['manage_emergencies']) ? <button className="button text" onClick={() => openModal("Update Status", "", <EmergencyStatus id={id} />, 'info', <></>)}>Change</button> : <></>}
                           </div>
-                          {emergencyDetails.status == "Resolved" || emergencyDetails.status == "Closed" ? <RespondersSection id={id} emergency={true}/> : <AssignedPersonsContainer id={id} emergency={true} />}
+                          {emergencyDetails.status == "Resolved" || emergencyDetails.status == "Closed" ? <RespondersSection id={id} emergency={true}/> : <AssignedPersonsContainer id={id} emergency={true} latitude={emergencyDetails.location.latitude} longitude={emergencyDetails.location.longitude}/>}
                           
                         </div>
                         <div className="w-100 h-100 flex col">
