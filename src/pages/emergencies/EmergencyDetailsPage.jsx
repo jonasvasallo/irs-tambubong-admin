@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
 
 import '../../styles/emergencypage.css';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
 import { firestore } from '../../config/firebase';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useModal } from '../../core/ModalContext';
@@ -18,6 +18,7 @@ import ReactMap from "../../components/maps/ReactMap";
 import RespondersSection from '../incidents/RespondersSection';
 
 import { useAuth } from '../../core/AuthContext';
+import { getDistance } from "geolib";
 
 const EmergencyDetailsPage = () => {
 
@@ -33,6 +34,8 @@ const EmergencyDetailsPage = () => {
 
   const [emergencyDetails, setemergencyDetails] = useState();
 
+  const [flaggedEmergencies, setFlaggedEmergencies] = useState([]);
+
   useEffect(() => {
     const fetchEmergencyDetails = async () => {
       try{
@@ -44,6 +47,7 @@ const EmergencyDetailsPage = () => {
 
         setemergencyDetails(docSnap.data());
         await fetchUserDetails(docSnap.data().user_id);
+        await flagRelatedCalls(docSnap.data());
       } catch(error){
         alert("Error fetching document: " + error.message);
         console.log(error);
@@ -66,8 +70,55 @@ const EmergencyDetailsPage = () => {
       }
     };
 
+    const flagRelatedCalls = async (sos) => {
+      console.log("Checking sos fired");
+      const {location, timestamp} = sos;
+      const RADIUS = 500; //in meters
+      const TIME_FRAME = 900000; //in milliseconds (15 minutes)
+
+      const sosRef = collection(firestore, 'sos');
+      const sosTimestamp = timestamp.seconds * 1000;
+      const lowerTimeThreshold = new Date(sosTimestamp - TIME_FRAME);
+      const upperTimeThreshold = new Date(sosTimestamp + TIME_FRAME);
+      console.log("Timestamp:", new Date(sosTimestamp));
+      console.log('Time Thresholds:', lowerTimeThreshold, upperTimeThreshold);
+
+      try {
+        const q = query(sosRef,
+          where('timestamp', '>=', lowerTimeThreshold),
+          where('timestamp', '<=', upperTimeThreshold),
+          where('status', 'not-in', ['Resolved', 'Closed', 'Dismissed', 'Cancelled'])
+        );
+
+        const snapshot = await getDocs(q);
+        console.log('Number of documents found:', snapshot.size);
+
+        const relatedCallsList = [];
+        snapshot.forEach(doc => {
+          if(doc.id != id){
+            const sos = doc.data();
+            const sosLocation = sos.location;
+
+            const distance = getDistance(
+              { latitude: location.latitude, longitude: location.longitude },
+              { latitude: sosLocation.latitude, longitude: sosLocation.longitude }
+            );
+
+            if (distance <= RADIUS) {
+              relatedCallsList.push({ id: doc.id, ...sos, distanceDiff: distance, });
+            }
+          }
+        });
+
+        setFlaggedEmergencies(relatedCallsList);
+        console.log("Related Calls:", relatedCallsList);
+      } catch (err) {
+        console.error("Error fetching related calls:", err);
+      }
+    }
+
     fetchEmergencyDetails();
-  }, []);
+  }, [id]);
 
 
   return (
@@ -92,6 +143,7 @@ const EmergencyDetailsPage = () => {
                                 <span className="body-m">{userDetails.gender}</span>
                                 <span className="body-m color-minor">{userDetails.contact_no}</span>
                                 {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${emergencyDetails.user_id}`}>Check User</Link></span>}
+                                
                               </div>
                             </div>}
                             <div>
@@ -107,6 +159,22 @@ const EmergencyDetailsPage = () => {
                                 <></>
                               }
                             </div>
+                          </div>
+                          {(flaggedEmergencies && flaggedEmergencies.length >= 1) ? 
+                                <div className='status danger flex col cross-start'>
+                                  <div>This request is flagged as potentially related to another request. </div>
+                                  <br />
+                                  {flaggedEmergencies.map((emergency) => (
+                                    <div id={emergency.id} className='flex main-between gap-32'>
+                                    <div><b>Request #{emergency.id}</b></div>
+                                    <div>{emergency.distanceDiff}m away</div>
+                                    <div><Link to={`/emergencies/${emergency.id}`}>View</Link></div>
+                                    </div>
+                                  ))}
+                                </div> : 
+                                <></>}
+                          <div>
+                            <span className="body-l color-minor">{new Date(emergencyDetails.timestamp.seconds * 1000).toLocaleString()}</span>
                           </div>
                           <div className="flex gap-8">
                             <span className="status error">{emergencyDetails.status}</span>
