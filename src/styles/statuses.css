@@ -1,0 +1,47 @@
+#statusFilter, .selector{
+    border: none;
+    outline: 2px solid rgb(0, 0, 0);
+    appearance: none;
+    padding: 3px 4px;
+    min-width: 60px;
+    font-size: 14px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+.status-value{
+    display: inline-block;
+    width: fit-content;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+.status-value.verifying, .status-value.open{
+    color: rgb(0, 204, 255);
+    background-color: rgb(214, 246, 255);
+}
+
+.status-value.verified{
+    color: rgb(0, 119, 255);
+    background-color: rgb(205, 221, 255);
+}
+
+.status-value.handling, .status-value.active, .status-value.in-progress{
+    color: rgb(255, 136, 0);
+    background-color: rgb(255, 229, 207);
+}
+
+.status-value.resolved{
+    background-color: rgb(211, 255, 207);
+    color: rgb(24, 173, 19);
+}
+
+.status-value.closed{
+    background-color: rgb(152, 255, 142);
+    color: rgb(6, 138, 2);
+}
+
+.status-value.dismissed, .status-value.rejected, .status-value.cancelled{
+    background-color: rgb(255, 188, 188);
+    color: red;
+}

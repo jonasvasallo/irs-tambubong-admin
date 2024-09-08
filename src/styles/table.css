@@ -68,7 +68,7 @@
     background-color: #fffb;
     height: 100% !important;
     max-height: 90% !important;
-
+    overflow-y: scroll;
     overflow: auto;
     overflow: overlay;
 }

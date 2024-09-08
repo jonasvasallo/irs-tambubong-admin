@@ -25,6 +25,7 @@ import SettingsPage from "./pages/settings/SettingsPage";
 import NoAccessPage from "./pages/NoAccessPage";
 import ProtectedRoute from "./core/ProtectedRoute";
 import { AuthProvider } from "./core/AuthContext";
+import './styles/statuses.css';
 
 function App() {
   const navigate = useNavigate();

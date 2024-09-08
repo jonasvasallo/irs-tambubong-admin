@@ -3,15 +3,24 @@ import moment from 'moment';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import { Link } from 'react-router-dom';
-import { collection, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
 import { firestore } from '../../config/firebase';
 
 const SupportTicketsPage = () => {
     const [ticketsList, setTicketsList] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
 
+    const [filterField, setFilterField] = useState("Open");
+
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(firestore, 'help'), (snapshot) => {
+
+        const ticketsQuery = query(
+            collection(firestore, 'help'),
+            where('status',  '==', filterField),
+            orderBy('timestamp', 'asc')
+        );
+
+        const unsubscribe = onSnapshot(ticketsQuery, (snapshot) => {
             const promises = snapshot.docs.map(async (ticketDoc) => {
                 const ticketData = ticketDoc.data();
                 const userDocRef = doc(firestore, 'users', ticketData.created_by);
@@ -27,8 +36,7 @@ const SupportTicketsPage = () => {
             });
 
             Promise.all(promises).then((tickets) => {
-                const filteredData = tickets.filter((ticket) => ticket.status === 'Open').sort((a, b) => a.timestamp - b.timestamp);;
-                setTicketsList(filteredData);
+                setTicketsList(tickets);
             }).catch((error) => {
                 console.error('Error fetching ticket data:', error);
                 alert('An error occurred while fetching ticket data.');
@@ -36,7 +44,7 @@ const SupportTicketsPage = () => {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [filterField]);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -47,6 +55,12 @@ const SupportTicketsPage = () => {
         ticket.userFullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         ticket.id.includes(searchQuery)
     );
+
+    const handleFilterChange = (event) => {
+        
+        setFilterField(event.target.value);
+        
+    };
 
     return (
         <>
@@ -59,7 +73,18 @@ const SupportTicketsPage = () => {
                             <div className="flex main-between">
                                 <div className="flex col gap-8 flex-3">
                                     <span className="heading-s">Latest Support Tickets</span>
-                                    <span className="body-m">Here are your latest support tickets</span>
+                                    <span className="body-m color-minor">Here are your latest support tickets</span>
+                                    <div className="filter-section">
+                                        <label htmlFor="statusFilter"><span className='body-m'>Filter by Status: </span></label>
+                                        <select
+                                            id="statusFilter"
+                                            value={filterField}
+                                            onChange={handleFilterChange}
+                                        >
+                                            <option value="Open">Open</option>
+                                            <option value="Closed">Closed</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="flex-1">
                                     <div className="input-field">
@@ -94,7 +119,7 @@ const SupportTicketsPage = () => {
                                                 <span>{ticket.userFullName}</span>
                                             </td>
                                             <td>{ticket.date}</td>
-                                            <td>{ticket.status}</td>
+                                            <td><span className={`status-value ${ticket.status.toString().toLowerCase()}`}>{ticket.status}</span></td>
                                             <td>
                                                 <Link to={`/tickets/${ticket.id}`}>
                                                     <button className="button secondary">View</button>

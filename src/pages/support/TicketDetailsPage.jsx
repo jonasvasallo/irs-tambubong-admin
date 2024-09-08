@@ -109,7 +109,7 @@ const TicketDetailsPage = () => {
                                 <div id="ticket-heading" className='flex col gap-8'>
                                     <span className="subheading-l">{ticketDetails.title}</span>
                                     <div className="flex gap-8 cross-center">
-                                        <span className='status success'>{ticketDetails.status}</span>
+                                        <span className={`status-value ${ticketDetails.status.toString().toLowerCase()}`}>{ticketDetails.status}</span>
                                         <span className="body-m color-minor">{moment.unix(ticketDetails.timestamp.seconds).format('ddd, MMMM D, YYYY [at] h:mm A')}</span>
                                     </div>
                                 </div>
