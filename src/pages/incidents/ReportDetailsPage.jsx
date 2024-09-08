@@ -221,8 +221,8 @@ const ReportDetailsPage = () => {
                     ) : (<p>Loading...</p>)}
                 </div>
                 <div className="flex col flex-1 gap-16">
-                  <div className="maps">
-                    <ReactMap latitude={incidentDetails.coordinates.latitude} longitude={incidentDetails.coordinates.longitude}/>
+                  <div style={{'width' : '400px'}}>
+                    <ReactMap positions={[{lat: incidentDetails.coordinates.latitude, lng: incidentDetails.coordinates.longitude}]}/>
                   </div>
                   {incidentDetails.incident_group &&
                   <div className="status warning flex col cross-end">

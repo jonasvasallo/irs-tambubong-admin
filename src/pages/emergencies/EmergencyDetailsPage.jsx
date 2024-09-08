@@ -131,9 +131,9 @@ const EmergencyDetailsPage = () => {
                       {emergencyDetails && 
                       <div className="flex gap-32 h-100">
                         <div className="w-100 flex col gap-8">
-                        <div className="google-map-container">
-                          <ReactMap latitude={emergencyDetails.location.latitude} longitude={emergencyDetails.location.longitude}/>
-                        </div>
+                          <div style={{'width' : '100%', 'height' : '250px'}}>
+                            <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/>
+                          </div>
                           <div className="flex main-between cross-start">
                             {userDetails && 
                             <div className="flex gap-8 cross-start">

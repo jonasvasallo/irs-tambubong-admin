@@ -10,6 +10,7 @@ import IncidentGroupStatus from '../../components/IncidentGroupStatus'
 import LiveStatusContainer from '../../components/LiveStatusContainer'
 import RemoveIncidentHead from '../../components/RemoveIncidentHead'
 import IncidentGroupAssignPerson from '../../components/IncidentGroupAssignPerson'
+import ReactMap from "../../components/maps/ReactMap";
 
 import { useAuth } from '../../core/AuthContext'
 
@@ -23,6 +24,8 @@ const IncidentGroupPage = () => {
   const incidentGroupDocRef = doc(firestore, "incident_groups", id);
   const [incidentGroupDetails, setIncidentGroupDetails] = useState(null);
   const [includedIncidents, setIncludedIncidents] = useState([]);
+
+  const [incidentPositions, setIncidentPositions] = useState([]);
 
   const removeIncidentGroup = async () => {
     try{
@@ -108,6 +111,16 @@ const IncidentGroupPage = () => {
 
   }, []);
 
+  useEffect(() => {
+    if (incidentGroupDetails && includedIncidents.length > 0) {
+      const positions = [
+        ...includedIncidents.filter(incident => incident.id === incidentGroupDetails.head),
+        ...includedIncidents.filter(incident => incident.id !== incidentGroupDetails.head)
+      ].map(incident => ({ lat: incident.coordinates.latitude, lng: incident.coordinates.longitude }));
+      setIncidentPositions(positions);
+    }
+  }, [includedIncidents, incidentGroupDetails]);
+
   return (
     <div className="content">
         <Sidebar />
@@ -130,7 +143,9 @@ const IncidentGroupPage = () => {
                             <span className='subheading-m'>Incidents: <span className='body-m'>{incidentGroupDetails.incidents}</span></span>
                           </div>
                           <div className="flex-1">
-                            Map Here
+                            {(incidentPositions && incidentPositions.length > 0) ?
+                              <ReactMap positions={(incidentPositions && incidentPositions.length > 0) ? incidentPositions : []}/> : <>Error loading Google Maps</>
+                            }
                           </div>
                         </div>
                         <div className='flex gap-8 main-between flex-1'>

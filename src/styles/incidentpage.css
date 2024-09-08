@@ -1,6 +1,5 @@
 .maps{
-    width: 400px;
-    max-width: 400px;
+    width: 100%;
     background-color: grey;
     height: 200px;
 }
