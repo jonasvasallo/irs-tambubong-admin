@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { auth, firestore } from "../config/firebase";
+import { auth, firestore, messaging } from "../config/firebase";
 
 const IncidentStatus = (props) => {
   const [status, setStatus] = useState('');
@@ -28,6 +28,23 @@ const IncidentStatus = (props) => {
         if(docData.responders.length < 1){
           alert("You cannot set an incident to Resolved or Closed without assigning a person to handle that incident first!");
           return;
+        }
+      } 
+
+      /* 
+      PUSH NOTIFICATION FEATURE 
+      thru Firebase Cloud Messaging
+
+      - all users will be alerted that are subscribed to the topic
+      - This will only happen when previous status comes from 'Verifying' to 'Verified' or 'Handling'
+      */
+      if(status == 'Verified' || status == 'Handling'){
+        const docSnapshot = await getDoc(docRef);
+        const docData = docSnapshot.data();
+        if(docData.status == 'Verifying'){
+          await sendAlertNotification();
+        } else{
+          console.log("status is not verifying. continuing...");
         }
       }
 
@@ -65,6 +82,24 @@ const IncidentStatus = (props) => {
         setSuccess('');
     }
   }
+
+  const sendAlertNotification = async () => {
+    try {
+      console.log("running cloud function");
+      const response = await fetch('https://us-central1-irs-capstone.cloudfunctions.net/sendIncidentNotification', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        console.log('Notification sent successfully');
+      } else {
+        console.error('Failed to send notification');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+  
   return (
     <div>
         <select name="" id="" className="dropdown" onChange={(e) => setStatus(e.target.value)}>

@@ -88,6 +88,7 @@ const PersonsAvailable = (props) => {
                 if (responders.includes(personId)) {
                     setError("User is already in the responders list.");
                 } else {
+                    await sendNotificationToUser(personId);
                     await updateDoc(incidentDocRef, {
                         responders: arrayUnion(personId)
                     });
@@ -104,6 +105,26 @@ const PersonsAvailable = (props) => {
             setError("Error adding person to responders.");
         }
     };
+
+    const sendNotificationToUser = async (userId) => {
+        try {
+          const response = await fetch('https://us-central1-irs-capstone.cloudfunctions.net/sendUserNotification', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId }), // Send the userId to the cloud function
+          });
+      
+          if (response.ok) {
+            console.log('Notification sent successfully');
+          } else {
+            console.error('Failed to send notification');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
 
     return (
         <div id="personsAvailable">
