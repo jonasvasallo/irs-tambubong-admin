@@ -26,6 +26,7 @@ import NoAccessPage from "./pages/NoAccessPage";
 import ProtectedRoute from "./core/ProtectedRoute";
 import { AuthProvider } from "./core/AuthContext";
 import './styles/statuses.css';
+import AuditLogsPage from "./pages/audit/AuditLogsPage";
 
 function App() {
   const navigate = useNavigate();
@@ -79,6 +80,10 @@ function App() {
         <Route element={<ProtectedRoute requiredPermission="view_tickets" />}>
           <Route path="/tickets" element={<SupportTicketsPage />} />
           <Route path="/tickets/:id" element={<TicketDetailsPage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute requiredPermission="view_audits" />}>
+          <Route path="/audits" element={<AuditLogsPage/>}/>
         </Route>
 
         <Route element={<ProtectedRoute requiredPermission="view_settings" />}>

@@ -75,7 +75,7 @@ const UserDetailsPage = () => {
                                             {(!userDetails.verified) ?
                                             <>
                                                 <span className="body-m status error">Not Verified</span>
-                                                {(userPermissions['verify_users']) ? <button className="button text" onClick={() => openModal("Verify User", "", <VerifyUser id={id} image={userDetails.verification_photo ?? ''}/>, "info", <></>)}>Verify</button> : <></>}
+                                                {(userPermissions['verify_users'] || user_type == 'admin') ? <button className="button text" onClick={() => openModal("Verify User", "", <VerifyUser id={id} image={userDetails.verification_photo ?? ''}/>, "info", <></>)}>Verify</button> : <></>}
                                             </> : 
                                             <span className="body-m status success">Verified</span>
                                             }

@@ -1,6 +1,6 @@
 import { addDoc, collection, query, where, getDocs, doc, updateDoc, getDoc, serverTimestamp, arrayUnion, documentId, FieldPath } from 'firebase/firestore';
 import React, { useState, useEffect } from 'react';
-import { firestore } from '../config/firebase';
+import { auth, firestore } from '../config/firebase';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 
@@ -82,6 +82,14 @@ const CreateSchedule = (props) => {
                     meeting_end: newEndDate,
                 });
 
+                await addDoc(collection(firestore, "audits"), {
+                    uid: auth.currentUser.uid,
+                    action: 'create',
+                    module: 'complaints',
+                    description: `Scheduled a hearing for complaint ID ${props.id}`,
+                    timestamp: serverTimestamp(),
+                });
+
                 const complaintDocRef = doc(firestore, "complaints", props.id);
                 await updateDoc(complaintDocRef, {
                     schedule_id: scheduleDocRef.id,
@@ -127,6 +135,14 @@ const CreateSchedule = (props) => {
                     notes: Notes.trim(),
                     meeting_start: newStartDate,
                     meeting_end: newEndDate,
+                });
+
+                await addDoc(collection(firestore, "audits"), {
+                    uid: auth.currentUser.uid,
+                    action: 'update',
+                    module: 'complaints',
+                    description: `Updated hearing schedule for complaint ID ${props.id}`,
+                    timestamp: serverTimestamp(),
                 });
                 
                 if(scheduleChanged){

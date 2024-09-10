@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react'
 import Sidebar from '../../components/Sidebar'
 import Header from '../../components/Header'
 import '../../styles/schedulepage.css';
-import { collection, deleteDoc, onSnapshot, doc, updateDoc, FieldValue, deleteField, getDoc } from 'firebase/firestore';
-import { firestore } from '../../config/firebase';
+import { collection, deleteDoc, onSnapshot, doc, updateDoc, FieldValue, deleteField, getDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, firestore } from '../../config/firebase';
 import { useModal } from '../../core/ModalContext';
 import Modal from '../../components/Modal';
 import CreateSchedule from '../../components/CreateSchedule';
@@ -64,6 +64,14 @@ const SchedulesPage = () => {
     }
 
       await deleteDoc(scheduleDocRef);
+
+      await addDoc(collection(firestore, "audits"), {
+        uid: auth.currentUser.uid,
+        action: 'delete',
+        module: 'complaints',
+        description: `Removed schedule for complaint id ${complaint_id}`,
+        timestamp: serverTimestamp(),
+      });
 
     // Fetch the complaint document
     const complaintDoc = await getDoc(complaintDocRef);

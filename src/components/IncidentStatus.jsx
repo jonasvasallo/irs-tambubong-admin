@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { auth, firestore, messaging } from "../config/firebase";
+import { auth, firestore} from "../config/firebase";
 
 const IncidentStatus = (props) => {
   const [status, setStatus] = useState('');
@@ -51,6 +51,13 @@ const IncidentStatus = (props) => {
 
       await updateDoc(docRef, {
           status: status.trim()
+      });
+      await addDoc(collection(firestore, "audits"), {
+        uid: auth.currentUser.uid,
+        action: 'update',
+        module: 'incidents',
+        description: `Updated an incident status to ${status.trim()} for incident ID ${props.id}`,
+        timestamp: serverTimestamp(),
       });
       const userDocRef = doc(firestore, "users", props.reported_by);
       const notificationsCollectionRef = collection(userDocRef, "notifications");

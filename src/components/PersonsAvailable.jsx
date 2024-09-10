@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion, addDoc, serverTimestamp } from "firebase/firestore";
+import { auth, firestore } from "../config/firebase";
 import { getDistance } from 'geolib';
 
 const PersonsAvailable = (props) => {
@@ -91,6 +91,13 @@ const PersonsAvailable = (props) => {
                     await sendNotificationToUser(personId);
                     await updateDoc(incidentDocRef, {
                         responders: arrayUnion(personId)
+                    });
+                    await addDoc(collection(firestore, "audits"), {
+                        uid: auth.currentUser.uid,
+                        action: 'update',
+                        module: 'incidents',
+                        description: `Added user ${personId} as a responder for incident ID ${props.id}`,
+                        timestamp: serverTimestamp(),
                     });
                     setError(null);
                 }

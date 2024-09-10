@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { auth, firestore } from "../config/firebase";
 
 const EmergencyStatus = (props) => {
   const [status, setStatus] = useState('');
@@ -31,6 +31,13 @@ const EmergencyStatus = (props) => {
       
       await updateDoc(docRef, {
           status: status.trim()
+      });
+      await addDoc(collection(firestore, "audits"), {
+        uid: auth.currentUser.uid,
+        action: 'update',
+        module: 'sos',
+        description: `Updated status to ${status.trim()} for sos ID ${props.id}`,
+        timestamp: serverTimestamp(),
       });
       setSuccess('Status updated successfully.');
       setError('');

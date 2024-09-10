@@ -30,6 +30,7 @@ const Sidebar = () => {
                     {(userPermissions['view_news'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/news'}>News</Link> : <></>}
                     {(userPermissions['view_users'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/users'}>Users</Link> : <></>}
                     {(userPermissions['view_tickets'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/tickets'}>Tickets</Link> : <></>}
+                    {(userPermissions['view_audits'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/audits'}>Audit Logs</Link> : <></>}
                     
                 </div>
             </div>

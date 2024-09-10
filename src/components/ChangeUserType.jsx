@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { firestore } from '../config/firebase';
-import { doc, collection, getDocs, updateDoc } from 'firebase/firestore';
+import { auth, firestore } from '../config/firebase';
+import { doc, collection, getDocs, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 
 
 const ChangeUserType = (props) => {
@@ -57,6 +57,13 @@ const ChangeUserType = (props) => {
           await updateDoc(doc(firestore, "users", props.id), {
             'user_type' : userType.trim(),
           })
+          await addDoc(collection(firestore, "audits"), {
+            uid: auth.currentUser.uid,
+            action: 'update',
+            module: 'users',
+            description: `Changed the user type for a user with an id of ${props.id} to ${userType.trim()}`,
+            timestamp: serverTimestamp(),
+          });
           setSuccess(`Successfully updated user type to ${userType.toUpperCase()}`);
           window.location.reload();
           return;
@@ -65,7 +72,14 @@ const ChangeUserType = (props) => {
         await updateDoc(doc(firestore, "users", props.id), {
           'user_type' : userType.trim(),
           'moderator_role' : moderatorRole.trim(),
-        })
+        });
+        await addDoc(collection(firestore, "audits"), {
+          uid: auth.currentUser.uid,
+          action: 'update',
+          module: 'users',
+          description: `Changed the user type for a user with an id of ${props.id} to ${userType.trim()}`,
+          timestamp: serverTimestamp(),
+        });
         setSuccess(`Successfully updated user type to ${userType.toUpperCase()} with role ${moderatorRole.toUpperCase()}`);
         window.location.reload();
       } catch(error){

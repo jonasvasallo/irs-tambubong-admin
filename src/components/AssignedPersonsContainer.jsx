@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import Modal from "./Modal";
-import { collection, getDocs, doc, onSnapshot, query, where, getDoc, updateDoc, arrayRemove  } from "firebase/firestore";
-import { firestore } from '../config/firebase';
+import { collection, getDocs, doc, onSnapshot, query, where, getDoc, updateDoc, arrayRemove, addDoc, serverTimestamp  } from "firebase/firestore";
+import { auth, firestore } from '../config/firebase';
 import { useModal } from '../core/ModalContext';
 import PersonsAvailable from './PersonsAvailable';
 import { getDistance } from "geolib";
@@ -96,6 +96,13 @@ const AssignedPersonsContainer = (props) => {
                 } else {
                     await updateDoc(incidentDocRef, {
                         responders: arrayRemove(personId)
+                    });
+                    await addDoc(collection(firestore, "audits"), {
+                        uid: auth.currentUser.uid,
+                        action: 'delete',
+                        module: 'incidents',
+                        description: `Removed user ${personId} as a responder for incident ID ${props.id}`,
+                        timestamp: serverTimestamp(),
                     });
                     setError(null);
                 }

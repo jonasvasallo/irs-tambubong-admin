@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import Sidebar from '../../components/Sidebar'
 import Header from '../../components/Header'
-import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
-import { firestore } from '../../config/firebase';
+import { addDoc, serverTimestamp, collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { auth, firestore } from '../../config/firebase';
 
 import { useModal } from '../../core/ModalContext';
 import Modal from '../../components/Modal';
@@ -46,6 +46,13 @@ const NewsPage = () => {
         const newsDocRef = doc(firestore, "news", news_id);
         try{
             await deleteDoc(newsDocRef);
+            await addDoc(collection(firestore, "audits"), {
+                uid: auth.currentUser.uid,
+                action: 'delete',
+                module: 'news',
+                description: `Deleted a news post with an id of ${news_id}`,
+                timestamp: serverTimestamp(),
+            });
             window.location.reload();
         } catch(error){
             console.log(error);

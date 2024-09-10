@@ -51,6 +51,13 @@ const TicketDetailsPage = () => {
             await updateDoc(ticketDocRef, {
                 status : status.trim(),
             })
+            await addDoc(collection(firestore, "audits"), {
+                uid: auth.currentUser.uid,
+                action: 'update',
+                module: 'tickets',
+                description: `Updated the status of ticket with an id of ${id} to ${status.trim()}`,
+                timestamp: serverTimestamp(),
+            });
             setStatus("");
             window.location.reload();
         } catch(error){

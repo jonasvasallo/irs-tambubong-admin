@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { auth, firestore } from "../config/firebase";
 
 const ComplaintStatus = (props) => {
     const [status, setStatus] = useState('');
@@ -79,7 +79,13 @@ const ComplaintStatus = (props) => {
         status: status.trim(),
 
       });
-      
+      await addDoc(collection(firestore, "audits"), {
+        uid: auth.currentUser.uid,
+        action: 'update',
+        module: 'complaints',
+        description: `Updated status to ${status.trim()} for complaint ID ${props.id}`,
+        timestamp: serverTimestamp(),
+      });
       setSuccess("Status updated successfully");
       setError('');
       window.location.reload();

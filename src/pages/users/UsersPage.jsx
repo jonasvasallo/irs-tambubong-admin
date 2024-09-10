@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react'
 import Sidebar from '../../components/Sidebar'
 import Header from '../../components/Header'
 import { Link } from 'react-router-dom'
-import { collection, doc, getDocs, updateDoc } from 'firebase/firestore'
-import { firestore } from '../../config/firebase'
+import { collection, doc, getDocs, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore'
+import { auth, firestore } from '../../config/firebase'
 
 const UsersPage = () => {
 
@@ -44,7 +44,13 @@ const UsersPage = () => {
             await updateDoc(userDocRef, {
                 disabled : true,
             })
-
+            await addDoc(collection(firestore, "audits"), {
+                uid: auth.currentUser.uid,
+                action: 'update',
+                module: 'users',
+                description: `Banned a user with an id of ${user_id}`,
+                timestamp: serverTimestamp(),
+            });
             window.location.reload();
         } catch(error){
             alert(error.message);
@@ -58,7 +64,13 @@ const UsersPage = () => {
             await updateDoc(userDocRef, {
                 disabled : false,
             })
-
+            await addDoc(collection(firestore, "audits"), {
+                uid: auth.currentUser.uid,
+                action: 'update',
+                module: 'users',
+                description: `Unbanned a user with an id of ${user_id}`,
+                timestamp: serverTimestamp(),
+            });
             window.location.reload();
         } catch(error){
             alert(error.message);

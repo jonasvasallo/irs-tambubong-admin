@@ -1,7 +1,7 @@
 import { FieldValue, addDoc, collection, deleteField, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import React, {useState} from 'react'
 import { Link } from 'react-router-dom';
-import { firestore } from '../config/firebase';
+import { auth, firestore } from '../config/firebase';
 
 const VerifyUser = (props) => {
     const userDocRef = doc(firestore, "users", props.id);
@@ -22,7 +22,13 @@ const VerifyUser = (props) => {
             await updateDoc(userDocRef, {
                 verified: true,
             });
-
+            await addDoc(collection(firestore, "audits"), {
+                uid: auth.currentUser.uid,
+                action: 'update',
+                module: 'users',
+                description: `Verified a user with an id of ${props.id}`,
+                timestamp: serverTimestamp(),
+            });
             setSuccess("User has been verified");
             window.location.reload();
         } catch(error){
@@ -50,7 +56,13 @@ const VerifyUser = (props) => {
                 content: `Your account verification has been denied. Reason: ${denyReason}. Please upload your identification once again in update profile section.`,
                 timestamp: serverTimestamp(),
             })
-
+            await addDoc(collection(firestore, "audits"), {
+                uid: auth.currentUser.uid,
+                action: 'update',
+                module: 'users',
+                description: `Denied verification for a user with an id of ${props.id}`,
+                timestamp: serverTimestamp(),
+            });
             
             setSuccess("Verification has been denied.");
             window.location.reload();

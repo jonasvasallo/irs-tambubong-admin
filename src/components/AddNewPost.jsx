@@ -47,6 +47,13 @@ const AddNewPost = (props) => {
                 };
         
                 await addDoc(collection(firestore, 'news'), newsData);
+                await addDoc(collection(firestore, "audits"), {
+                    uid: auth.currentUser.uid,
+                    action: 'create',
+                    module: 'news',
+                    description: `Created a news post`,
+                    timestamp: serverTimestamp(),
+                });
                 setSuccess("News posted successfully");
                 window.location.reload();
             } catch(error){
@@ -62,7 +69,13 @@ const AddNewPost = (props) => {
                     body: Body.trim(),
                     media_attachments: MediaAttachments,
                 })
-
+                await addDoc(collection(firestore, "audits"), {
+                    uid: auth.currentUser.uid,
+                    action: 'update',
+                    module: 'news',
+                    description: `Updated a news post with an id of ${props.id}`,
+                    timestamp: serverTimestamp(),
+                });
                 setSuccess("Successfully updated post");
                 window.location.reload();
             } catch(error){

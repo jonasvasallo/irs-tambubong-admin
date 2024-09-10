@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { collection, getDocs, doc, updateDoc, addDoc } from "firebase/firestore";
-import { firestore } from "../config/firebase";
+import { collection, getDocs, doc, updateDoc, addDoc, serverTimestamp } from "firebase/firestore";
+import { auth, firestore } from "../config/firebase";
 
 const IncidentTags = (props) => {
     const [tags, setTags] = useState([]);
@@ -45,6 +45,13 @@ const IncidentTags = (props) => {
                 const docRef = doc(firestore, "incidents", props.id);
                 await updateDoc(docRef, {
                     incident_tag: selectedTag.trim()
+                });
+                await addDoc(collection(firestore, "audits"), {
+                    uid: auth.currentUser.uid,
+                    action: 'update',
+                    module: 'incidents',
+                    description: `Updated an incident tag to ${selectedTag.trim()} for incident ID ${props.id}`,
+                    timestamp: serverTimestamp(),
                 });
                 setSuccess('Incident tag updated successfully.');
                 setErrorMsg('');
