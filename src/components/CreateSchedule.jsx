@@ -201,8 +201,14 @@ const CreateSchedule = (props) => {
         }
     }, [props.schedule_id]);
 
-    const now = new Date();
-    const localNow = moment(now).format("YYYY-MM-DDTHH:mm");
+    // Get the current date and time
+    const now = moment();
+
+    // Calculate the next day
+    const nextDay = now.clone().add(1, 'days');
+
+    // Set the time to 7 AM on the next day
+    const localNow = nextDay.set({ hour: 7, minute: 0, second: 0, millisecond: 0 }).format("YYYY-MM-DDTHH:mm");
 
     const handleStartDateChange = (e) => {
         const newStartDate = e.target.value;
