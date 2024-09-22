@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "../styles/login.css";
 import { InputField } from '../components/InputField';
 import { InputButton } from '../components/InputButton';
@@ -12,13 +12,49 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
+
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutTimer, setLockoutTimer] = useState(0);
+
   const navigate = useNavigate();
+
+  const MAX_ATTEMPTS = 3;
+  const LOCKOUT_DURATION = 2 * 60 * 1000;
+
+  useEffect(() => {
+    let timerInterval;
+
+    if (isLocked) {
+      setLockoutTimer(LOCKOUT_DURATION / 1000); // Initialize timer in seconds
+
+      timerInterval = setInterval(() => {
+        setLockoutTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timerInterval);
+            setIsLocked(false);
+            setLoginAttempts(0);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(timerInterval);
+  }, [isLocked]);
 
   const login = async (e) => {
     e.preventDefault();
     setErrorMsg("");
-    setButtonLoading(true);
 
+    if (isLocked) {
+      setErrorMsg(`Too many failed attempts. Please wait ${lockoutTimer} seconds before trying again.`);
+      return;
+    }
+
+    setButtonLoading(true);
+    
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -36,13 +72,24 @@ const LoginPage = () => {
       } else {
         throw new Error("User document does not exist.");
       }
-
+      
+      setLoginAttempts(0);
       setEmail("");
       setPassword("");
       setErrorMsg("");
       navigate("/");
     } catch (error) {
-      setErrorMsg(error.message);
+      if(error.code == "auth/wrong-password"){
+        setLoginAttempts(prev => prev + 1);
+        if (loginAttempts + 1 >= MAX_ATTEMPTS) {
+          setIsLocked(true);
+          setErrorMsg("Too many failed attempts. Please wait 2 minutes before trying again.");
+        } else {
+          setErrorMsg(`Login failed. You have ${MAX_ATTEMPTS - (loginAttempts + 1)} attempt(s) left.`);
+        }
+      } else{
+        setErrorMsg(error.message);
+      }
     } finally {
       setButtonLoading(false);
     }

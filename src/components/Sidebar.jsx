@@ -24,7 +24,7 @@ const Sidebar = () => {
                 </div>
                 <div className="sidebar-menu">
                     <Link className='nav-button body-l' to={'/'}>Dashboard</Link>
-                    {(userPermissions['view_incidents'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/reports'}>Reports</Link> : <></>}
+                    {(userPermissions['view_incidents'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/reports'}>Incidents</Link> : <></>}
                     {(userPermissions['view_emergencies'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/emergencies'}>Emergencies</Link> : <></>}
                     {(userPermissions['view_complaints'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/complaints'}>Complaints</Link> : <></>}
                     {(userPermissions['view_news'] || user_type == 'admin') ? <Link className='nav-button body-l' to={'/news'}>News</Link> : <></>}

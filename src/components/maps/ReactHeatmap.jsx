@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {GoogleMap, HeatmapLayerF, useJsApiLoader, Marker} from '@react-google-maps/api'
+import {GoogleMap, HeatmapLayer, useJsApiLoader, Marker} from '@react-google-maps/api'
 
 
 const ReactHeatmap = ({data}) => {
@@ -19,6 +19,11 @@ const ReactHeatmap = ({data}) => {
       }
     }, []);
 
+      // Log heatmapData when it updates
+  useEffect(() => {
+    console.log('Heatmap Data:', heatmapData);
+  }, [heatmapData]);
+
     if(!isLoaded){
         return <div>Loading... please wait</div>
     }
@@ -34,7 +39,7 @@ const ReactHeatmap = ({data}) => {
         >
         {map && heatmapData.length > 0 && (
           <>
-            <HeatmapLayerF
+            <HeatmapLayer
               data={heatmapData}
               options={{
                 radius: 30,

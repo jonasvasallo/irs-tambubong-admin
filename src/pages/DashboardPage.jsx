@@ -21,7 +21,7 @@ const DashboardPage = () => {
   const [tanodRankings, setTanodRankings] = useState([]);
   const [averageResponseTime, setAverageResponseTime] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
-  const [timeRange, setTimeRange] = useState("today");
+  const [timeRange, setTimeRange] = useState("week");
   const [heatmapData, setHeatmapData] = useState([]);
 
   const [tagCounts, setTagCounts] = useState([]);
@@ -35,6 +35,11 @@ const DashboardPage = () => {
       setTopTag({'name' : tagCounts[0].tag, 'count' : tagCounts[0].count});
     }
   }, [timeRange]);
+
+  // UseEffect to log heatmapData whenever it changes
+useEffect(() => {
+  console.log("Updated heatmap data:", heatmapData);
+}, [heatmapData]);
 
   const fetchIncidents = async (range) => {
     const incidentsRef = collection(firestore, 'incidents');
@@ -98,9 +103,8 @@ const DashboardPage = () => {
       lng: incident.coordinates.longitude
     }));
 
+    console.log("This is coordinates", incidentsWithCoordinates); // Log the filtered coordinates
     setHeatmapData(incidentsWithCoordinates);
-    console.log("this is coordinates", incidentsWithCoordinates);
-    console.log("this is heatmap data", heatmapData);
 
 
     setIncidentList(incidents);
@@ -108,6 +112,7 @@ const DashboardPage = () => {
     calculateTagCounts(incidents);
     calculateAverageResponseTime(incidentsWithResponders);
   };
+  
 
   const fetchRatings = async (range) => {
     const ratingsRef = collection(firestore, 'ratings');
@@ -324,7 +329,7 @@ const DashboardPage = () => {
                       <span className="body-l">
                         Incident Heat Map
                       </span>
-                      {heatmapData && <ReactHeatmap data={heatmapData}/>}
+                      {(heatmapData && heatmapData.length > 0) ? <ReactHeatmap data={heatmapData}/> : <></>}
                     </div>
                     <div className="report-container grow-1 flex col gap-8">
                       <span className="body-l">Trending Incidents</span>

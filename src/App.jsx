@@ -27,6 +27,7 @@ import ProtectedRoute from "./core/ProtectedRoute";
 import { AuthProvider } from "./core/AuthContext";
 import './styles/statuses.css';
 import AuditLogsPage from "./pages/audit/AuditLogsPage";
+import UpdatePasswordPage from "./pages/UpdatePasswordPage";
 
 function App() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ function App() {
 
       setCurrentUser(user);
     });
-  });
+  }, []);
   return (
     <>
       <IncidentProvider>
@@ -48,6 +49,7 @@ function App() {
           <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/no-access" element={<NoAccessPage />} />
+        
         <Route path="*" element={<NotFoundPage />} />
 
         <Route element={<ProtectedRoute requiredPermission="view_incidents" />}>

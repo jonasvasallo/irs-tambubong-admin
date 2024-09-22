@@ -30,6 +30,12 @@ const CreateSchedule = (props) => {
         const newStartDate = new Date(StartDate);
         const newEndDate = new Date(EndDate);
 
+        // Validate time range
+        if (!validateTimeRange(StartDate) || !validateTimeRange(EndDate)) {
+            setErrorMsg("The hearing times must be between 7 AM and 5 PM.");
+            return;
+        }
+
         const currentDate = new Date();
         if (newStartDate < currentDate) {
             setErrorMsg(`The hearing start date and time cannot be in the past.`);
@@ -210,6 +216,15 @@ const CreateSchedule = (props) => {
     // Set the time to 7 AM on the next day
     const localNow = nextDay.set({ hour: 7, minute: 0, second: 0, millisecond: 0 }).format("YYYY-MM-DDTHH:mm");
 
+    // Calculate the minimum start date (day before today)
+    const minStartDate = now.clone().subtract(1, 'days').set({ hour: 7, minute: 0, second: 0, millisecond: 0 });
+    const minStartDateFormatted = minStartDate.format("YYYY-MM-DDTHH:mm");
+
+    const validateTimeRange = (dateTime) => {
+        const hour = moment(dateTime).hour();
+        return hour >= 7 && hour <= 17; // 7 AM to 5 PM
+    };
+
     const handleStartDateChange = (e) => {
         const newStartDate = e.target.value;
         setStartDate(newStartDate);
@@ -226,7 +241,7 @@ const CreateSchedule = (props) => {
             <textarea name="" id="" className="multi-line" placeholder="Notes" rows={5} onChange={(e) => setNotes(e.target.value)} value={Notes}></textarea>
             <div className="input-field">
                 <label htmlFor="">Hearing Start Date</label>
-                <input type="datetime-local" required onChange={handleStartDateChange} value={StartDate} min={localNow} />
+                <input type="datetime-local" required onChange={handleStartDateChange} value={StartDate} min={minStartDateFormatted} />
             </div>
             <div className="input-field">
                 <label htmlFor="">Hearing End Date</label>
