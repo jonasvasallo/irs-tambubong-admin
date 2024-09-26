@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import "../styles/login.css";
 import { InputField } from '../components/InputField';
 import { InputButton } from '../components/InputButton';
@@ -6,6 +6,8 @@ import { auth, firestore } from '../config/firebase';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import logo from '../assets/logo.jpg';
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -44,6 +46,10 @@ const LoginPage = () => {
     return () => clearInterval(timerInterval);
   }, [isLocked]);
 
+  useEffect(() => {
+    auth.signOut();
+  }, []);
+
   const login = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -69,7 +75,13 @@ const LoginPage = () => {
           setErrorMsg("Unauthorized access.");
           return;
         }
+
+        if(userData.mfa_enabled != null && userData.mfa_enabled == true){
+          navigate('/phone-auth');
+          return;
+        }
       } else {
+        setErrorMsg("User document does not exist");
         throw new Error("User document does not exist.");
       }
       
@@ -99,10 +111,11 @@ const LoginPage = () => {
     <div className='main'>
       <div className="head">
         <img
-          src="https://scontent.fmnl4-6.fna.fbcdn.net/v/t1.6435-9/36347143_115056176069864_1083116285908221952_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeHrCWnJOJQez0Io7WSUv8qolKwTUflGxR-UrBNR-UbFH_P7hdCfbZevBSBsCLOco4Y8DGT3ESTcPEAJt6tDlpu_&_nc_ohc=3Kl8tyEKm-EQ7kNvgF69L96&_nc_ht=scontent.fmnl4-6.fna&oh=00_AYCbYbPuRNCesdq17hVd1IxzcUR-5HyoKYxwjVvHkPPFVg&oe=6674F6C0"
+          src={logo}
           alt=""
           width={120}
           height={120}
+          style={{'borderRadius' : '120px'}}
         />
         <span className='heading-m color-major'>Tambubong IRS</span>
       </div>
@@ -137,7 +150,7 @@ const LoginPage = () => {
           />
         </form>
 
-        <a href="" className='link'>Forgot Password?</a>
+        <Link to={'/forgot-password'} className='link'>Forgot Password?</Link>
       </div>
     </div>
   );

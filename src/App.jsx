@@ -27,20 +27,25 @@ import ProtectedRoute from "./core/ProtectedRoute";
 import { AuthProvider } from "./core/AuthContext";
 import './styles/statuses.css';
 import AuditLogsPage from "./pages/audit/AuditLogsPage";
-import UpdatePasswordPage from "./pages/UpdatePasswordPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import { useLocation } from "react-router-dom";
+import TwoFactorAuthPage from "./pages/TwoFactorAuthPage";
+import VerifyPhonePage from "./pages/VerifyPhonePage";
 
 function App() {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
+  const location = useLocation();
   useEffect(() => {
     auth.onAuthStateChanged(function (user) {
-      if (user == null) {
+      if (user == null && location.pathname !== "/forgot-password" && location.pathname !== "/phone-auth") {
         navigate("/login");
+        return;
       }
 
       setCurrentUser(user);
     });
-  }, []);
+  }, [location.pathname]);
   return (
     <>
       <IncidentProvider>
@@ -48,6 +53,9 @@ function App() {
           <AuthProvider>
           <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/phone-auth" element={<TwoFactorAuthPage />}/>
+        <Route path="/verify-phone" element={<VerifyPhonePage />}/>
         <Route path="/no-access" element={<NoAccessPage />} />
         
         <Route path="*" element={<NotFoundPage />} />
