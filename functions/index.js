@@ -31,6 +31,29 @@ exports.sendIncidentNotification = onRequest(async (req, res) => {
   }
 });
 
+exports.sendSOSNotification = onRequest(async (req, res) => {
+  const topic = 'sos-alert';
+
+  // Define the notification payload
+  const message = {
+    notification: {
+      title: 'SOS REQUEST!',
+      body: 'A resident is requesting emergency services!',
+    },
+    topic: topic,
+  };
+
+  // Try to send the message
+  try {
+    const response = await admin.messaging().send(message);
+    logger.info('Successfully sent message:', response);
+    res.status(200).send('Notification sent successfully');
+  } catch (error) {
+    logger.error('Error sending message:', error);
+    res.status(500).send('Error sending notification');
+  }
+});
+
 // Define the cloud function to send FCM notifications to a specific user
 exports.sendUserNotification = onRequest((req, res) => {
   cors(req, res, async () => {
