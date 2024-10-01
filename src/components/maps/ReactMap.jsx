@@ -13,6 +13,7 @@ const ReactMap = (props) => {
 
     const [centerLat, setCenterLat] = useState(0);
     const [centerLng, setCenterLng] = useState(0);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const { positions } = props;
 
@@ -26,13 +27,22 @@ const ReactMap = (props) => {
 
   return (
     
-    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} onLoad={() => setIsLoaded(true)}>
         <div className='maps'>
-            <Map zoom={17} center={{ lat: centerLat, lng: centerLng }} mapId={import.meta.env.VITE_MAP_ID} disableDefaultUI={true}>
+            {/* <Map zoom={17} center={{ lat: centerLat, lng: centerLng }} mapId={import.meta.env.VITE_MAP_ID} disableDefaultUI={true}>
                 {positions && positions.map((position, index) =>(
                     <AdvancedMarker key={index} position={position}></AdvancedMarker>
                 ))}
+            </Map> */}
+            {(isLoaded && isLoaded == true) ? 
+            <Map zoom={17} center={{ lat: centerLat, lng: centerLng }} mapId={import.meta.env.VITE_MAP_ID} disableDefaultUI={true}>
+            {positions && positions.map((position, index) =>(
+                <AdvancedMarker key={index} position={position}></AdvancedMarker>
+            ))}
             </Map>
+            :
+            <>React Map</>
+            }
         </div>
     </APIProvider>
     

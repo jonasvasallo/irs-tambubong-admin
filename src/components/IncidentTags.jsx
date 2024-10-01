@@ -97,10 +97,10 @@ const IncidentTags = (props) => {
                     <option key={tag.id} value={tag.id}>{tag.tag_name}</option>
                 ))}
         </select>
-        <span>or create a new one</span>
+        {/* <span>or create a new one</span>
         <div className="input-field">
             <input type="text" placeholder='Incident Tag Name' onChange={(e) => setInputTag(e.target.value)}/>
-        </div>
+        </div> */}
         {errorMsg && <div>
             <span className='status error'>{errorMsg}</span>
         </div>}
