@@ -114,6 +114,7 @@ const TicketDetailsPage = () => {
                         <div className="flex main-between gap-16">
                             <div className="flex col gap-16 flex-2">
                                 <div id="ticket-heading" className='flex col gap-8'>
+                                <span className="body-s color-minor">{id}</span>
                                     <span className="subheading-l">{ticketDetails.title}</span>
                                     <div className="flex gap-8 cross-center">
                                         <span className={`status-value ${ticketDetails.status.toString().toLowerCase()}`}>{ticketDetails.status}</span>
