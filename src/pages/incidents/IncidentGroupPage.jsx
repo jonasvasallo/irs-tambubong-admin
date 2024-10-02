@@ -133,6 +133,7 @@ const IncidentGroupPage = () => {
                       <div className="container flex col main-between gap-16 flex-3">
                         <div className="flex main-between gap-16 flex-1">
                           <div className='flex col gap-8 flex-1'>
+                            <span className="body-s color-minor">{id}</span>
                             <span className="subheading-l">{incidentGroupDetails.title}</span>
                             <span className="body-m">{incidentGroupDetails.description}</span>
                             <span className='subheading-m'>Created at <span className='body-m'>05/14/2024 11:29 AM</span></span>

@@ -169,6 +169,7 @@ const ReportDetailsPage = () => {
                 <div id="incident-details" className="flex col gap-8 flex-2">
                   <div className="flex main-between">
                     <div className="flex-1 flex col gap-8 flex-2">
+                      <span className="body-s color-minor">{id}</span>
                       <span className="subheading-l color-major">{incidentDetails.title}</span>
                       <span className="body-l color-minor">{new Date(incidentDetails.timestamp.seconds * 1000).toLocaleString()}</span>
                       <span className="body-m color-major">{incidentDetails.location_address}</span>

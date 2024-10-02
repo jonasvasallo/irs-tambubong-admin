@@ -5,6 +5,7 @@ import "../../styles/table.css";
 import { collection, onSnapshot, doc, getDoc, where, query, orderBy } from "firebase/firestore";
 import { firestore } from "../../config/firebase";
 import { Link } from "react-router-dom";
+import SearchModulesField from "../../components/SearchModulesField";
 
 const ReportsPage = () => {
   const [incidentList, setIncidentList] = useState([]);
@@ -107,11 +108,13 @@ const ReportsPage = () => {
         <div className="content-here">
           <div className="flex gap-32 h-100">
             <div className="container w-100">
-              <div className="flex col gap-8">
+              <div className="flex main-between">
+                <div>
+                <div className="flex col gap-8">
                 <span className="heading-m color-major block">Incidents</span>
-                <span className="body-m color-minor block">
+                {/* <span className="body-m color-minor block">
                   Reported non-emergency incidents from residents
-                </span>
+                </span> */}
                 <div className="filter-section">
                     <label htmlFor="incidentStatusFilter"><span className='body-m'>Filter by Status: </span></label>
                     <select
@@ -129,6 +132,9 @@ const ReportsPage = () => {
                         <option value="Dismissed">Rejected</option>
                     </select>
                 </div>
+              </div>
+                </div>
+                <SearchModulesField module='incidents'/>
               </div>
               <br />
               <div style={{'overflow-y': 'scroll', 'height': '80%'}}>
@@ -163,13 +169,15 @@ const ReportsPage = () => {
               </div>
             </div>
             <div className="container w-100">
-              <div className="flex col gap-8">
+              <div className="flex main-between">
+                <div>
+                <div className="flex col gap-8">
                 <span className="heading-m color-major block">
-                  Incident Groups
+                  Grouped Incidents
                 </span>
-                <span className="body-m color-minor block">
+                {/* <span className="body-m color-minor block">
                   Same incidents reported that are grouped together
-                </span>
+                </span> */}
                 <div className="filter-section">
                     <label htmlFor="incidentGroupStatusFilter"><span className='body-m'>Filter by Status: </span></label>
                     <select
@@ -187,6 +195,9 @@ const ReportsPage = () => {
                         <option value="Dismissed">Rejected</option>
                     </select>
                 </div>
+              </div>
+                </div>
+                <SearchModulesField module='incident_groups' />
               </div>
               <br />
               <div style={{'overflow-y': 'scroll', 'height': '80%'}}>

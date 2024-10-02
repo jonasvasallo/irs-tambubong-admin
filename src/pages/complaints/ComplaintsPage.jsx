@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Header from '../../components/Header'
 import { collection, doc, onSnapshot, getDoc, query, where, orderBy } from 'firebase/firestore';
 import { firestore } from '../../config/firebase';
+import SearchModulesField from '../../components/SearchModulesField';
 
 const ComplaintsPage = () => {
 
@@ -63,28 +64,34 @@ const ComplaintsPage = () => {
             <Header title="Submitted Complaints"/>
             <div className="content-here">
                 <div className="container w-100 h-100">
-                    <div className="flex col gap-8">
-                        <div className="flex gap-8 cross-center">
-                            <span className="heading-m color-major block">Complaints</span>
-                            <Link to={`/schedules`} className='anchor'>View Scheduled</Link>
+                    <div className="flex main-between">
+                        <div>
+                        <div className="flex col gap-8">
+                            <div className="flex gap-8 cross-center">
+                                <span className="heading-m color-major block">Complaints</span>
+                                <Link to={`/schedules`} className='anchor'>View Scheduled</Link>
+                            </div>
                         </div>
-                    </div>
-                    <div className="filter-section">
-                        <label htmlFor="statusFilter"><span className='body-m'>Filter by Status: </span></label>
-                        <select
-                            id="statusFilter"
-                            value={filterField}
-                            onChange={handleFilterChange}
-                        >
-                            <option value="Active">Active</option>
-                            <option value="Open">Open</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Dismissed">Dismissed</option>
-                        </select>
+                        <div className="filter-section">
+                            <label htmlFor="statusFilter"><span className='body-m'>Filter by Status: </span></label>
+                            <select
+                                id="statusFilter"
+                                value={filterField}
+                                onChange={handleFilterChange}
+                            >
+                                <option value="Active">Active</option>
+                                <option value="Open">Open</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Dismissed">Dismissed</option>
+                            </select>
+                        </div>
+                        
+                        </div>
+                        <SearchModulesField module="complaints"/>
                     </div>
                     <br />
-                    <div>
+                    <div style={{'overflow-y': 'scroll', 'height' : '80%'}}>
                         <table>
                             <thead>
                                 <tr>

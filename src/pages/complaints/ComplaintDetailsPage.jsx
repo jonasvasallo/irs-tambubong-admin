@@ -99,8 +99,10 @@ const ComplaintDetailsPage = () => {
                 <div className="container w-100 h-100 overflow-scroll">
                     {ComplaintDetails ?  
                     <div className="flex col">
+                        <span className="body-s color-minor">{id}</span>
                         <div className="flex main-between gap-32">
                             <div id="complainant" className='flex col gap-8 flex-1'>
+                                
                                 <span className="subheading-l">Complainant</span>
                                 <span className="body-m">{ComplaintDetails.full_name}</span>
                                 <span className="body-m">{ComplaintDetails.contact_no}</span>

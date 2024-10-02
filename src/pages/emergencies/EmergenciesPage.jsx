@@ -4,6 +4,7 @@ import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
 import { collection, getDocs, doc, getDoc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { firestore } from '../../config/firebase';
+import SearchModulesField from '../../components/SearchModulesField';
 
 const EmergenciesPage = () => {
 
@@ -58,25 +59,30 @@ const EmergenciesPage = () => {
                 <div className="content-here">
                     <div className="container w-100">
 
-                        <div className="flex col gap-8">
+                        <div className="flex main-between">
+                            <div>
+                            <div className="flex col gap-8">
 
-                            <span className="heading-m color-major block">Emergencies</span>
+<span className="heading-m color-major block">Emergencies</span>
 
-                            <div className="filter-section">
-                                <label htmlFor="statusFilter"><span className='body-m'>Filter by Status: </span></label>
-                                <select
-                                    id="statusFilter"
-                                    value={filterField}
-                                    onChange={handleFilterChange}
-                                >
-                                    <option value="Active">Active</option>
-                                    <option value="Handling">Handling</option>
-                                    <option value="Resolved">Resolved</option>
-                                    <option value="Closed">Closed</option>
-                                    <option value="Dismissed">Dismissed</option>
-                                </select>
+<div className="filter-section">
+    <label htmlFor="statusFilter"><span className='body-m'>Filter by Status: </span></label>
+    <select
+        id="statusFilter"
+        value={filterField}
+        onChange={handleFilterChange}
+    >
+        <option value="Active">Active</option>
+        <option value="Handling">Handling</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Closed">Closed</option>
+        <option value="Dismissed">Dismissed</option>
+    </select>
+</div>
+
+</div>
                             </div>
-
+                            <SearchModulesField module='sos'/>
                         </div>
                         <br />
                         <section className="table__body">

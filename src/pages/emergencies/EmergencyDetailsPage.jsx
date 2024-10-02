@@ -131,6 +131,7 @@ const EmergencyDetailsPage = () => {
                       {emergencyDetails && 
                       <div className="flex gap-32 h-100">
                         <div className="w-100 flex col gap-8">
+                        <span className="body-s color-minor">{id}</span>
                           <div style={{'width' : '100%', 'height' : '250px'}}>
                             <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/>
                           </div>
