@@ -21,7 +21,7 @@ const DashboardPage = () => {
   const [tanodRankings, setTanodRankings] = useState([]);
   const [averageResponseTime, setAverageResponseTime] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
-  const [timeRange, setTimeRange] = useState("week");
+  const [timeRange, setTimeRange] = useState("today");
   const [heatmapData, setHeatmapData] = useState([]);
 
   const [tagCounts, setTagCounts] = useState([]);
@@ -329,7 +329,8 @@ useEffect(() => {
                       <span className="body-l">
                         Incident Heat Map
                       </span>
-                      {(heatmapData && heatmapData.length > 0) ? <ReactHeatmap data={heatmapData}/> : <></>}
+                      <br />
+                      {(heatmapData && heatmapData.length > 0) ? <ReactHeatmap key={`${timeRange}-${heatmapData.length}`} data={heatmapData}/> : <>No data given...</>}
                     </div>
                     <div className="report-container grow-1 flex col gap-8">
                       <span className="body-l">Trending Incidents</span>
