@@ -3,7 +3,6 @@ import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
 import '../../styles/incidentpage.css';
 import { useParams, useNavigate, Link } from "react-router-dom";
-
 import { collection, doc, getDoc, query, where, getDocs } from "firebase/firestore";
 import { firestore } from "../../config/firebase";
 import LiveStatusContainer from "../../components/LiveStatusContainer";
@@ -20,6 +19,7 @@ import MergeIncidents from "../../components/MergeIncidents";
 import ReactMap from "../../components/maps/ReactMap";
 import RespondersSection from "./RespondersSection";
 import { useAuth } from "../../core/AuthContext";
+import html2pdf from "html2pdf.js";
 
 const ReportDetailsPage = () => {
 
@@ -154,6 +154,48 @@ const ReportDetailsPage = () => {
         bodyClassList.add("open");
     }
 }
+async function generatePDF() {
+  // Create a container div that includes the logo, title, report content, and footer
+  const container = document.createElement('div');
+  
+  // HTML structure for the logo, header, report content, and footer
+  container.innerHTML = `
+    <div style="text-align: center; margin: auto; margin-bottom: 40px;">
+      <img src="/src/assets/logo.jpg" alt="Tambubong IRS Logo" style="width: 80px; margin: 0 auto 10px;" />
+      <div class="flex col gap-8">
+        <h5>REPUBLIC OF THE PHILIPPINES</h5>
+        <p>Province of Bulacan</p>
+        <p>Municipality of San Rafael</p>
+        <p>Barangay Tambubong</p>
+      </div>
+      <br/>
+      <h2>Tambubong IRS Incident Report</h2>
+    </div>
+  `;
+
+  // Clone the existing report content and append it to the container
+  const reportContent = document.querySelector("#report").cloneNode(true);
+  container.appendChild(reportContent);
+
+  // Add the footer to the container
+  const footer = document.createElement('div');
+  footer.innerHTML = `
+    <div style="text-align: center; margin-top: 50px; font-size: 12px;">
+      <p>This is a system-generated report.</p>
+    </div>
+  `;
+  container.appendChild(footer);
+
+  // Now pass the container with the logo, header, report content, and footer to html2pdf
+  html2pdf(container, {
+    margin: 20,
+    filename: 'incident_report.pdf',
+    html2canvas: { scale: 2, useCORS: true },
+  });
+}
+
+
+
     
   return (
     <div className="content">
@@ -161,7 +203,7 @@ const ReportDetailsPage = () => {
       <div className="main-content">
         <Header title="Incident Details" />
         <div className="content-here">
-          <div className="container w-100">
+          <div className="container w-100" id="report">
           {incidentDetails ? (
             <div className="flex main-between gap-32 h-100">
             <div className="flex col w-100 flex-2 gap-16 h-100">
@@ -171,14 +213,12 @@ const ReportDetailsPage = () => {
                     <div className="flex-1 flex col gap-8 flex-2">
                       <span className="body-s color-minor">{id}</span>
                       <span className="subheading-l color-major">{incidentDetails.title}</span>
-                      <span className="body-l color-minor">{new Date(incidentDetails.timestamp.seconds * 1000).toLocaleString()}</span>
-                      <span className="body-m color-major">{incidentDetails.location_address}</span>
                       <div className="flex gap-8">
-                        <span className="status error">Status: {incidentDetails.status}</span>
+                        <span className="status error">{incidentDetails.status}</span>
                         {
                           (user_type === 'admin' || userPermissions['manage_incidents']) 
                           ? (!incidentDetails.incident_group && 
-                              <button 
+                              <button data-html2canvas-ignore
                                 className="button text" 
                                 onClick={() => openModal(
                                   "Update Status", 
@@ -194,17 +234,20 @@ const ReportDetailsPage = () => {
                           : <></>
                         }
                       </div>
+                      <span className="body-l color-minor">{new Date(incidentDetails.timestamp.seconds * 1000).toLocaleString()}</span>
+                      <span className="body-m color-major">{incidentDetails.location_address}</span>
                       <div className="flex gap-8">
                         <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
                         {
                           (user_type === 'admin' || userPermissions['manage_incidents']) 
-                          ? <button className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
+                          ? <button data-html2canvas-ignore className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
                           : <></>
                         }
                         
                       </div>
+                      
                     </div>
-                    <div className="flex col gap-8">
+                    <div className="flex col gap-8" data-html2canvas-ignore>
                       {incidentDetails.media_attachments.length > 0 && incidentDetails.media_attachments.map((attachment) => (
                         <a href={attachment} target="__blank" className="button secondary" style={{width: 'fit-content', textDecoration: 'none'}}><span class="material-symbols-outlined">photo</span></a>
                       ))}
@@ -212,21 +255,22 @@ const ReportDetailsPage = () => {
                   </div>
                   {userDetails ? (
                     <div id="user_info" className="flex gap-8">
-                      <img src={userDetails.profile_path} alt="" width={60} height={60} style={{objectFit: 'cover'}}/>
+                      <img data-html2canvas-ignore src={userDetails.profile_path} alt="" width={60} height={60} style={{objectFit: 'cover'}}/>
                       <div className="flex col">
                           <span className="subheading-s">{`${userDetails.first_name} ${userDetails.last_name}`}</span>
                           <span className="color-minor">{`${userDetails.user_type.toString().toUpperCase()}`}</span>
-                          {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${incidentDetails.reported_by}`}>Check User</Link></span>}
+                          {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span data-html2canvas-ignore className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${incidentDetails.reported_by}`}>Check User</Link></span>}
                       </div>
                     </div>
                     ) : (<p>Loading...</p>)}
                 </div>
-                <div className="flex col flex-1 gap-16">
-                  <div style={{'width' : '400px'}}>
+                <div className="flex col flex-1 gap-16 cross-end" style={{'width' : '450px'}}>
+                <button data-html2canvas-ignore style={{maxWidth : '200px'}} className="button outlined" onClick={() => generatePDF()}>Download PDF</button>
+                  <div style={{'width' : '250px'}}>
                     <ReactMap positions={[{lat: incidentDetails.coordinates.latitude, lng: incidentDetails.coordinates.longitude}]}/>
                   </div>
                   {incidentDetails.incident_group &&
-                  <div className="status warning flex col cross-end">
+                  <div data-html2canvas-ignore className="status warning flex col cross-end">
                     <div className="flex gap-8">
                       <span className="material-symbols-outlined">warning</span>
                       <span className="textalign-start">
@@ -236,7 +280,7 @@ const ReportDetailsPage = () => {
                     <button className="button secondary" onClick={() => navigate(`/incident_group/${incidentDetails.incident_group}`)}>Check</button>
                   </div>}
                   {(nearbyIncidents && !incidentDetails.incident_group && nearbyIncidents.length >= 1) ? 
-                  <div className="status warning flex col cross-end">
+                  <div data-html2canvas-ignore className="status warning flex col cross-end">
                     <div className="flex gap-8">
                       <span className="material-symbols-outlined">warning</span>
                       <span className="textalign-start">
@@ -253,7 +297,7 @@ const ReportDetailsPage = () => {
                 {incidentDetails.status == "Closed" || incidentDetails.status == "Resolved" ? <RespondersSection id={id}/> : <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false} latitude={incidentDetails.coordinates.latitude} longitude={incidentDetails.coordinates.longitude}/>}
               </div>
             </div>
-            <div className="flex col main-between w-100 flex-1 gap-16 overflow-scroll">
+            <div className="flex col main-between w-100 flex-1 gap-16 overflow-scroll" data-html2canvas-ignore>
               <LiveStatusContainer id={id}/>
               <ChatroomContainer id={id}/>
             </div>

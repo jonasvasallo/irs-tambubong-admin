@@ -48,14 +48,14 @@ return () => unsubscribe();
         {witnessList.map((witness) => (
           <div key={witness.id} className="witness-row flex gap-8 cross-center main-between">
             <div className="flex gap-8 cross-center">
-                <img src="" alt="" width={40} height={40}/>
+                <img data-html2canvas-ignore src={`${witness.userDetails.profile_path}`} alt="" width={40} height={40}/>
                 <div className="flex col flex-3">
                   <span className="subheading-m color-major">{`${witness.userDetails.first_name} ${witness.userDetails.last_name}`}</span>
                   <span className="body-m color-minor">{witness.userDetails.contact_no}</span>
                   <span className="body-m color-major">{witness.details}</span>
                 </div>
             </div>
-            <button onClick={() => window.location.href=`${witness.media_attachment}`}>View</button>
+            <button data-html2canvas-ignore onClick={() => window.location.href=`${witness.media_attachment}`}>View</button>
           </div>
         ))}
         

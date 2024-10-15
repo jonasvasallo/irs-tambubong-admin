@@ -119,20 +119,20 @@ const AssignedPersonsContainer = (props) => {
     <div id="responders" className="w-100 flex col gap-8">
         <div className="flex main-between">
         <span className="subheading-m color-major">Assigned Persons</span>
-        {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id} emergency={props.emergency} latitude={props.latitude} longitude={props.longitude}/>, 'info', <></>)} className='button text'>Add</button> : <></>}
+        {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button data-html2canvas-ignore onClick={() => openModal('Add Person', 'Description here', <PersonsAvailable id={props.id} emergency={props.emergency} latitude={props.latitude} longitude={props.longitude}/>, 'info', <></>)} className='button text'>Add</button> : <></>}
         </div>
         {assignedPersonnelList.map((person) => (
         <div key={person.id} className="responder-row flex gap-8 cross-center main-between">
             
                 <div className="flex gap-8 cross-center">
-                <img src={person.profile_path} alt="" width={40} height={40} style={{objectFit: 'cover', borderRadius: '50%'}}/>
+                <img data-html2canvas-ignore src={person.profile_path} alt="" width={40} height={40} style={{objectFit: 'cover', borderRadius: '50%'}}/>
                 <div className="flex col main-center">
                     <span className="subheading-m color-major">{`${person.first_name} ${person.last_name}`}</span>
                     <span className="body-m color-minor">{person.contact_no}</span>
                 </div>
                 </div>
             
-        {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button className='button filled' onClick={() => handleRemovePerson(person.id)}>Delete</button> : <></>}
+        {(user_type == 'admin' || userPermissions['manage_incidents']) ? <button data-html2canvas-ignore className='button filled' onClick={() => handleRemovePerson(person.id)}>Delete</button> : <></>}
         
         </div>
         ))}
