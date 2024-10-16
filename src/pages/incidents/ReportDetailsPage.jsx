@@ -19,7 +19,7 @@ import MergeIncidents from "../../components/MergeIncidents";
 import ReactMap from "../../components/maps/ReactMap";
 import RespondersSection from "./RespondersSection";
 import { useAuth } from "../../core/AuthContext";
-import html2pdf from "html2pdf.js";
+
 
 const ReportDetailsPage = () => {
 
@@ -155,6 +155,7 @@ const ReportDetailsPage = () => {
     }
 }
 async function generatePDF() {
+  const html2pdf = (await import("html2pdf.js")).default;
   // Create a container div that includes the logo, title, report content, and footer
   const container = document.createElement('div');
   
