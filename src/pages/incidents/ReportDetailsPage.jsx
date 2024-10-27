@@ -268,7 +268,7 @@ async function generatePDF() {
                 <div className="flex col flex-1 gap-16 cross-end" style={{'width' : '450px'}}>
                 <button data-html2canvas-ignore style={{maxWidth : '200px'}} className="button outlined" onClick={() => generatePDF()}>Download PDF</button>
                   <div style={{'width' : '250px'}}>
-                    {/* <ReactMap positions={[{lat: incidentDetails.coordinates.latitude, lng: incidentDetails.coordinates.longitude}]}/> */}
+                    <ReactMap positions={[{lat: incidentDetails.coordinates.latitude, lng: incidentDetails.coordinates.longitude}]}/>
                   </div>
                   {incidentDetails.incident_group &&
                   <div data-html2canvas-ignore className="status warning flex col cross-end">

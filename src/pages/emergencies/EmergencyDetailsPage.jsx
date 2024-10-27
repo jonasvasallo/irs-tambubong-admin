@@ -133,7 +133,7 @@ const EmergencyDetailsPage = () => {
                         <div className="w-100 flex col gap-8">
                         <span className="body-s color-minor">{id}</span>
                           <div style={{'width' : '100%', 'height' : '250px'}}>
-                            {/* <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/> */}
+                            <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/>
                           </div>
                           <div className="flex main-between cross-start">
                             {userDetails && 
