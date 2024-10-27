@@ -41,7 +41,7 @@ const StreetsSection = () => {
         <div className='flex col'>
             <span className="subheading-m color-major">Streets</span>
             <br />
-            <span className="body-m color-minor">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ratione aut exercitationem dolore suscipit ab libero impedit magnam vel obcaecati aliquid autem blanditiis, enim sequi. Fugit soluta quidem et deserunt qui!</span>
+            <span className="body-m color-minor">Here, you can create, update, and delete street names in the system. These street entries help standardize location details within users.</span>
         </div>
         <div className='flex gap-8'>
             <div className="input-field">

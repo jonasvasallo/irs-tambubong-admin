@@ -43,9 +43,7 @@ const IncidentTagsSection = () => {
                 <span className="subheading-m color-major">Incident Tags</span>
                 <br />
                 <span className="body-m color-minor">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. 
-                    Ratione aut exercitationem dolore suscipit ab libero impedit magnam vel obcaecati aliquid 
-                    autem blanditiis, enim sequi. Fugit soluta quidem et deserunt qui!
+                    Here, you can create, update, and delete tags in the system. These tags help categorize incidents by type, useful for incident classification.
                 </span>
             </div>
             <div className='flex gap-8'>

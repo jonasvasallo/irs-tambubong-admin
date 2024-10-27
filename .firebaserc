@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "irs-capstone"
-  }
+    "default": "irs-capstone",
+    "adminirstambubong": "irs-capstone"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

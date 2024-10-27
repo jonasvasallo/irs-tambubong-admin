@@ -27,7 +27,7 @@ const ReactMap = (props) => {
 
   return (
     
-    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} onLoad={() => setIsLoaded(true)}>
+    <APIProvider apiKey={'AIzaSyC3A-eH8GTy-uK8y3CsXsT0bVrf5Ysl58E'} onLoad={() => setIsLoaded(true)}>
         <div className='maps'>
             {/* <Map zoom={17} center={{ lat: centerLat, lng: centerLng }} mapId={import.meta.env.VITE_MAP_ID} disableDefaultUI={true}>
                 {positions && positions.map((position, index) =>(
