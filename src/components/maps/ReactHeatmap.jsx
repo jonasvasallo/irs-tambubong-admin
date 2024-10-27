@@ -5,7 +5,7 @@ import {GoogleMap, HeatmapLayerF, useLoadScript, Marker} from '@react-google-map
 const ReactHeatmap = ({data}) => {
   const libraries = ['visualization'];
     const {isLoaded, loadError} = useLoadScript({
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        googleMapsApiKey: "AIzaSyC3A-eH8GTy-uK8y3CsXsT0bVrf5Ysl58E",
         libraries,
     })
 

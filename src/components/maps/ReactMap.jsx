@@ -35,7 +35,7 @@ const ReactMap = (props) => {
                 ))}
             </Map> */}
             {(isLoaded && isLoaded == true) ? 
-            <Map zoom={17} center={{ lat: centerLat, lng: centerLng }} mapId={import.meta.env.VITE_MAP_ID} disableDefaultUI={true}>
+            <Map zoom={17} center={{ lat: centerLat, lng: centerLng }} mapId={"db9dd38d599a2798"} disableDefaultUI={true}>
             {positions && positions.map((position, index) =>(
                 <AdvancedMarker key={index} position={position}></AdvancedMarker>
             ))}
