@@ -133,7 +133,7 @@ const EmergencyDetailsPage = () => {
                         <div className="w-100 flex col gap-8">
                         <span className="body-s color-minor">{id}</span>
                           <div style={{'width' : '100%', 'height' : '250px'}}>
-                            <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/>
+                            {/* <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/> */}
                           </div>
                           <div className="flex main-between cross-start">
                             {userDetails && 
@@ -144,19 +144,19 @@ const EmergencyDetailsPage = () => {
                                 <span className="body-m">{userDetails.gender}</span>
                                 <span className="body-m color-minor">{userDetails.contact_no}</span>
                                 {(userDetails.verified) ? <span className="subheading-m status success">Verified</span> : <span className="status warning textalign-start">This report was made by a user that is still not verified. <Link to={`/users/${emergencyDetails.user_id}`}>Check User</Link></span>}
-                                
                               </div>
                             </div>}
                             <div>
                               {
                               (user_type == 'admin' || userPermissions['manage_emergencies']) ?
                               (!emergencyDetails.incident_id ? 
-                                <button className="button filled" onClick={() => openModal("Add New Incident", "", <AddIncident id={id} attachment={emergencyDetails.attachment} location={emergencyDetails.location} reported_by={emergencyDetails.user_id}/>, 'info')}>Add as an incident</button>
+                                (emergencyDetails.status == "Resolved" || emergencyDetails.status == "Closed") ? <button className="button filled" onClick={() => openModal("Add New Incident", "", <AddIncident id={id} responders={emergencyDetails.responders} status={emergencyDetails.status} attachment={emergencyDetails.attachment} location={emergencyDetails.location} reported_by={emergencyDetails.user_id}/>, 'info')}>Add as an incident</button> : <button disabled className="button filled" onClick={() => openModal("Add New Incident", "", <AddIncident id={id} responders={emergencyDetails.responders} attachment={emergencyDetails.attachment} location={emergencyDetails.location} reported_by={emergencyDetails.user_id}/>, 'info')}>Add as an incident</button>
                                 : 
                                 <div className='status warning flex gap-8'>
                                   <span className="body-m textalign-start">This emergency report is attached to an incident.</span>
                                   <button className="button text" onClick={() => navigate(`/reports/${emergencyDetails.incident_id}`)}>Check</button>
-                                </div>) :
+                                </div>
+                              ) :
                                 <></>
                               }
                             </div>
@@ -181,7 +181,7 @@ const EmergencyDetailsPage = () => {
                             <span className="status error">{emergencyDetails.status}</span>
                             {(user_type == 'admin' || userPermissions['manage_emergencies']) ? <button className="button text" onClick={() => openModal("Update Status", "", <EmergencyStatus id={id} />, 'info', <></>)}>Change</button> : <></>}
                           </div>
-                          {emergencyDetails.status == "Resolved" || emergencyDetails.status == "Closed" ? <RespondersSection id={id} emergency={true}/> : <AssignedPersonsContainer id={id} emergency={true} latitude={emergencyDetails.location.latitude} longitude={emergencyDetails.location.longitude}/>}
+                          {emergencyDetails.status == "Resolved" || emergencyDetails.status == "Closed" ? <RespondersSection id={id} responders={emergencyDetails.responders} emergency={true}/> : <AssignedPersonsContainer id={id} emergency={true} latitude={emergencyDetails.location.latitude} longitude={emergencyDetails.location.longitude}/>}
                           
                         </div>
                         <div className="w-100 h-100 flex col">

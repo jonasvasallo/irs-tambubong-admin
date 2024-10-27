@@ -30,12 +30,14 @@ const PersonsAvailable = (props) => {
                     const q = query(usersRef, where("user_type", "==", "tanod"));
                     const querySnapshot = await getDocs(q);
 
-                    const availablePersons = querySnapshot.docs
-                        .map(doc => ({ id: doc.id, ...doc.data() }))
-                        .filter(person => !responders.includes(person.id) && 
-                        person.isOnline === true,);
-
-                    setAvailablePersons(availablePersons);
+                    let fetchedPersons = querySnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .filter(person => !responders.includes(person.id));
+    
+                    
+                    fetchedPersons = fetchedPersons.sort((a, b) => (b.isOnline ? 1 : 0) - (a.isOnline ? 1 : 0));
+        
+                    setAvailablePersons(fetchedPersons);
                     setStatus(incidentData.status);
                 } else {
                     setError("No such incident document!");
@@ -133,6 +135,13 @@ const PersonsAvailable = (props) => {
         }
       };
 
+      const getHoursDifference = (lastLogin) => {
+        const lastLoginDate = lastLogin.toDate(); // Convert Firestore timestamp to Date
+        const now = new Date();
+        const differenceInMs = now - lastLoginDate;
+        return Math.floor(differenceInMs / (1000 * 60 * 60)); // Convert ms to hours
+    };
+
     return (
         <div id="personsAvailable">
             {error && (
@@ -141,7 +150,8 @@ const PersonsAvailable = (props) => {
                 </div>
             )}
             <div className="flex col">
-                {availablePersons.map((person) => (
+                {
+                availablePersons.map((person) => (
                     <div key={person.id} className="flex main-between cross-center">
                         <div className="flex gap-16 cross-center">
                             <img src={person.profile_path || ''} alt="" width={40} height={40} />
@@ -153,11 +163,15 @@ const PersonsAvailable = (props) => {
                                 :
                                 <span className='status error'>Offline</span>
                                 }
-                                <span>Distance: 
+                                <span>
+                                    {(person.lastLocationFetched) ? `${getHoursDifference(person.lastLocationFetched)} hours ago` : `Not updated yet`}
+                                </span>
+                                <span>
                                 {
-                                    (person.current_location != null) ? `${getDistance({latitude: props.latitude, longitude: props.longitude}, {latitude: person.current_location.latitude, longitude: person.current_location.longitude})}` : 'UNKNOWN'
+                                    (person.current_location != null && person.isOnline)
+                                    ? `${(getDistance({latitude: props.latitude, longitude: props.longitude}, {latitude: person.current_location.latitude, longitude: person.current_location.longitude}) / 1000).toFixed(1)} km away`
+                                    : 'UNKNOWN'
                                 }
-                                m
                                 </span>
                             </div>
                         </div>
@@ -165,7 +179,8 @@ const PersonsAvailable = (props) => {
                             <button className='button filled' onClick={() => handleAddPerson(person.id)}>Add</button>
                         </div>
                     </div>
-                ))}
+                ))
+                }
             </div>
         </div>
     )

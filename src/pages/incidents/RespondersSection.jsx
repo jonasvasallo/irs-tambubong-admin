@@ -5,9 +5,11 @@ import { firestore } from '../../config/firebase';
 const RespondersSection = (props) => {
     const docRef = (props.emergency && props.emergency === true) ? doc(firestore, "sos", props.id) : doc(firestore, "incidents", props.id);
     const [respondersList, setRespondersList] = useState([]);
+    const [assignedResponders, setAssignedResponders] = useState([]);
 
     useEffect(() => {
         const fetchResponders = async () => {
+            console.log("Fetching responders");
             const respondersCollectionRef = collection(docRef, "responders");
             const respondersSnapshot = await getDocs(respondersCollectionRef);
             const respondersData = await Promise.all(respondersSnapshot.docs.map(async (responderDoc) => {
@@ -34,8 +36,28 @@ const RespondersSection = (props) => {
             setRespondersList(respondersData);
         };
 
+        const fetchAssignedResponders = async () => {
+            console.log("Fetching assigned responders based on UIDs");
+            const assignedRespondersData = await Promise.all(props.responders.map(async (uid) => {
+                const userDocRef = doc(firestore, "users", uid);
+                const userDocSnapshot = await getDoc(userDocRef);
+                const userData = userDocSnapshot.exists() ? userDocSnapshot.data() : {};
+
+                return {
+                    id: uid,
+                    first_name: userData.first_name || "",
+                    last_name: userData.last_name || "",
+                    profile_path: userData.profile_path || "",
+                    user_type: userData.user_type || ""
+                };
+            }));
+            setAssignedResponders(assignedRespondersData);
+        };
+
         fetchResponders();
-    }, [docRef]);
+        fetchAssignedResponders();
+        console.log(respondersList);
+    }, []);
 
     const formatResponseTime = (milliseconds) => {
         const seconds = Math.floor(milliseconds / 1000);
@@ -49,7 +71,7 @@ const RespondersSection = (props) => {
             <div><span className="subheading-m color-major">Responders</span></div>
             <br />
             <div className="flex col gap-8">
-                {respondersList.map((responder) => (
+                {(respondersList.length > 0) ? respondersList.map((responder) => (
                     <div key={responder.id} className="flex gap-32 cross-center main-around">
                         <div className="flex gap-8 cross-center">
                             <div><img src={responder.profile_path} alt="Profile" width={40} height={40} style={{objectFit: 'cover', 'borderRadius' : '50%'}} /></div>
@@ -67,7 +89,20 @@ const RespondersSection = (props) => {
                         </div>
                         
                     </div>
-                ))}
+                )) : 
+                assignedResponders.length > 0 ? assignedResponders.map((responder) => (
+                    <div key={responder.id} className="flex gap-8 cross-center">
+                        <div><img src={responder.profile_path} alt="Profile" width={40} height={40} style={{objectFit: 'cover', 'borderRadius' : '50%'}} /></div>
+                        <div className='flex col'>
+                            <span>{`${responder.first_name} ${responder.last_name}`}</span>
+                            <span className="color-minor">{responder.user_type.toUpperCase()}</span>
+                        </div>
+                        <div className="flex col">
+                            <span className="status error">NO RESPONSE</span>
+                        </div>
+                    </div>
+                )) : <>No assigned responders for this report</>
+                }
             </div>
         </div>
     );

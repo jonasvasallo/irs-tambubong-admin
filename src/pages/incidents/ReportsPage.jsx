@@ -26,7 +26,7 @@ const ReportsPage = () => {
 
     const incidentsQuery = (incidentStatusFilter == 'Active') ? query(
       incidentCollectionRef,
-      where('status', 'not-in', ['Resolved', 'Closed']),
+      where('status', 'not-in', ['Resolved', 'Closed', 'Rejected']),
       orderBy('timestamp', 'asc')
     ) : query(
       incidentCollectionRef,
@@ -71,7 +71,7 @@ const ReportsPage = () => {
 
     const incidentGroupQuery = (incidentGroupStatusFilter == 'Active') ? query(
       incidentGroupCollectionRef,
-      where('status', 'not-in', ['Resolved', 'Closed']),
+      where('status', 'not-in', ['Resolved', 'Closed', 'Rejected']),
       orderBy('timestamp', 'desc')
     ) : query(
       incidentGroupCollectionRef,
@@ -238,7 +238,7 @@ const ReportsPage = () => {
                         <option value="Handling">Handling</option>
                         <option value="Resolved">Resolved</option>
                         <option value="Closed">Closed</option>
-                        <option value="Dismissed">Rejected</option>
+                        <option value="Rejected">Rejected</option>
                     </select>
                 </div>
               </div>
@@ -306,7 +306,7 @@ const ReportsPage = () => {
                         <option value="Handling">Handling</option>
                         <option value="Resolved">Resolved</option>
                         <option value="Closed">Closed</option>
-                        <option value="Dismissed">Rejected</option>
+                        <option value="Rejected">Rejected</option>
                     </select>
                 </div>
               </div>

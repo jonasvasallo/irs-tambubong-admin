@@ -217,7 +217,7 @@ const CreateSchedule = (props) => {
     const localNow = nextDay.set({ hour: 7, minute: 0, second: 0, millisecond: 0 }).format("YYYY-MM-DDTHH:mm");
 
     // Calculate the minimum start date (day before today)
-    const minStartDate = now.clone().subtract(1, 'days').set({ hour: 7, minute: 0, second: 0, millisecond: 0 });
+    const minStartDate = now.clone().add(1, 'days').set({ hour: 7, minute: 0, second: 0, millisecond: 0 });
     const minStartDateFormatted = minStartDate.format("YYYY-MM-DDTHH:mm");
 
     const validateTimeRange = (dateTime) => {

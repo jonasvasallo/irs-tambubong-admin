@@ -268,7 +268,7 @@ async function generatePDF() {
                 <div className="flex col flex-1 gap-16 cross-end" style={{'width' : '450px'}}>
                 <button data-html2canvas-ignore style={{maxWidth : '200px'}} className="button outlined" onClick={() => generatePDF()}>Download PDF</button>
                   <div style={{'width' : '250px'}}>
-                    <ReactMap positions={[{lat: incidentDetails.coordinates.latitude, lng: incidentDetails.coordinates.longitude}]}/>
+                    {/* <ReactMap positions={[{lat: incidentDetails.coordinates.latitude, lng: incidentDetails.coordinates.longitude}]}/> */}
                   </div>
                   {incidentDetails.incident_group &&
                   <div data-html2canvas-ignore className="status warning flex col cross-end">
@@ -295,7 +295,7 @@ async function generatePDF() {
               <span className="body-m color-major">{incidentDetails.details}</span>
               <div className="flex main-between gap-32 flex-1">
                 <WitnessContainer id={id}/>
-                {incidentDetails.status == "Closed" || incidentDetails.status == "Resolved" ? <RespondersSection id={id}/> : <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false} latitude={incidentDetails.coordinates.latitude} longitude={incidentDetails.coordinates.longitude}/>}
+                {incidentDetails.status == "Closed" || incidentDetails.status == "Resolved" ? <RespondersSection id={id} responders={incidentDetails.responders}/> : <AssignedPersonsContainer id={id} emergency={incidentDetails.emergency ? true : false} latitude={incidentDetails.coordinates.latitude} longitude={incidentDetails.coordinates.longitude}/>}
               </div>
             </div>
             <div className="flex col main-between w-100 flex-1 gap-16 overflow-scroll" data-html2canvas-ignore>
