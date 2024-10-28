@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { firestore } from "../config/firebase";
+import { getDistance } from 'geolib';
+import moment from 'moment';
 
 const AssignGroupPerson = (props) => {
     let incidentDocRef = doc(firestore, "incidents", props.id);
@@ -28,11 +30,14 @@ const AssignGroupPerson = (props) => {
                     const q = query(usersRef, where("user_type", "==", "tanod"));
                     const querySnapshot = await getDocs(q);
 
-                    const availablePersons = querySnapshot.docs
-                        .map(doc => ({ id: doc.id, ...doc.data() }))
-                        .filter(person => !responders.includes(person.id));
-
-                    setAvailablePersons(availablePersons);
+                    let fetchedPersons = querySnapshot.docs
+                    .map(doc => ({ id: doc.id, ...doc.data() }))
+                    .filter(person => !responders.includes(person.id));
+    
+                    
+                    fetchedPersons = fetchedPersons.sort((a, b) => (b.isOnline ? 1 : 0) - (a.isOnline ? 1 : 0));
+        
+                    setAvailablePersons(fetchedPersons);
                     setStatus(incidentData.status);
                 } else {
                     setError("No such incident document!");
@@ -96,6 +101,13 @@ const AssignGroupPerson = (props) => {
             setError("Error adding person to responders.");
         }
     };
+
+    const getHoursDifference = (lastLogin) => {
+        const lastLoginDate = lastLogin.toDate(); // Convert Firestore timestamp to Date
+        const now = new Date();
+        const differenceInMs = now - lastLoginDate;
+        return Math.floor(differenceInMs / (1000 * 60 * 60)); // Convert ms to hours
+    };
   return (
     <div id="personsAvailable">
             {error && (
@@ -106,9 +118,23 @@ const AssignGroupPerson = (props) => {
             <div className="flex col">
                 {availablePersons.map((person) => (
                     <div key={person.id} className="flex main-between cross-center">
-                        <div className="flex gap-16 cross-center">
-                            <img src={person.profile_path || ''} alt="" width={40} height={40} style={{objectFit: 'cover', borderRadius: '50%'}}/>
+                                                <div className="flex gap-16 cross-center">
+                            <img src={person.profile_path || ''} alt="" width={40} height={40} />
                             <span>{person.first_name} {person.last_name}</span>
+                            <div className="flex col">
+                                {
+                                (person.isOnline) ?
+                                <span className='status success'>Online</span>
+                                :
+                                <span className='status error'>Offline</span>
+                                }
+                                <span>
+                                    {(person.lastLocationFetched) ? `${getHoursDifference(person.lastLocationFetched)} hours ago` : `Not updated yet`}
+                                </span>
+                                <span>
+                                    UNKNOWN
+                                </span>
+                            </div>
                         </div>
                         <div>
                             <button className='button filled' onClick={() => handleAddPerson(person.id)}>Add</button>
