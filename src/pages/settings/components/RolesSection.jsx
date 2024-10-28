@@ -92,7 +92,7 @@ const RolesSection = () => {
   };
 
   return (
-    <div className='flex col gap-8'>
+    <div className='flex col gap-8 overflow-scroll'>
       <div className='flex col'>
         <span className="subheading-m color-major">Roles</span>
         <br />

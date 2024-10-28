@@ -37,7 +37,7 @@ const StreetsSection = () => {
         street.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   return (
-    <div className='flex col gap-8'>
+    <div className='flex col gap-8 overflow-scroll'>
         <div className='flex col'>
             <span className="subheading-m color-major">Streets</span>
             <br />
