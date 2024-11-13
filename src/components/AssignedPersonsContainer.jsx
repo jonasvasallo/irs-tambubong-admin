@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import Modal from "./Modal";
-import { collection, getDocs, doc, onSnapshot, query, where, getDoc, updateDoc, arrayRemove, addDoc, serverTimestamp  } from "firebase/firestore";
+import { collection, getDocs, doc, onSnapshot, query, where, getDoc, updateDoc, arrayRemove, addDoc, serverTimestamp, deleteDoc  } from "firebase/firestore";
 import { auth, firestore } from '../config/firebase';
 import { useModal } from '../core/ModalContext';
 import PersonsAvailable from './PersonsAvailable';
@@ -97,6 +97,8 @@ const AssignedPersonsContainer = (props) => {
                     await updateDoc(incidentDocRef, {
                         responders: arrayRemove(personId)
                     });
+                    const responderDocRef = doc(incidentDocRef, "responders", personId);
+                    await deleteDoc(responderDocRef);
                     await addDoc(collection(firestore, "audits"), {
                         uid: auth.currentUser.uid,
                         action: 'delete',

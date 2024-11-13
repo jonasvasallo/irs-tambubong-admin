@@ -5,6 +5,7 @@ import "../../styles/settingspage.css";
 import IncidentTagsSection from './components/IncidentTagsSection';
 import RolesSection from './components/RolesSection';
 import StreetsSection from './components/StreetsSection';
+import TanodDutyScheduleSection from './components/TanodDutyScheduleSection';
 
 const SettingsPage = () => {
   const [selectedSection, setSelectedSection] = useState('IncidentTags');
@@ -17,6 +18,8 @@ const SettingsPage = () => {
         return <RolesSection />;
       case 'Streets':
         return <StreetsSection />;
+      case 'Duty':
+        return <TanodDutyScheduleSection />;
       default:
         return <div>Select a section</div>;
     }
@@ -53,6 +56,12 @@ const SettingsPage = () => {
                       onClick={() => setSelectedSection('Streets')}
                     >
                       Streets
+                    </button>
+                    <button
+                      className={`side-button ${selectedSection === 'Duty' ? 'selected' : ''}`}
+                      onClick={() => setSelectedSection('Duty')}
+                    >
+                      Tanod Duty Schedule
                     </button>
                   </div>
                 </div>

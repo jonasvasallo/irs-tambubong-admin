@@ -95,7 +95,7 @@ const ReportDetailsPage = () => {
 
     const checkIncidents = async (incident) => {
       console.log("Checking incidents fired");
-      const {coordinates, timestamp} = incident;
+      const {coordinates, timestamp, incident_tag} = incident;
       const RADIUS = 500; //in meters
       const TIME_FRAME = 900000; //in milliseconds (15 minutes)
 
@@ -110,6 +110,7 @@ const ReportDetailsPage = () => {
         const q = query(incidentsRef,
           where('timestamp', '>=', lowerTimeThreshold),
           where('timestamp', '<=', upperTimeThreshold),
+          where('incident_tag', '==', incident_tag),
           where('status', 'not-in', ['Resolved', 'Closed'])
         );
 
@@ -241,7 +242,7 @@ async function generatePDF() {
                         <span className="tag">{incidentTag ? `${incidentTag.tag_name}` : "Loading..."}</span>
                         {
                           (user_type === 'admin' || userPermissions['manage_incidents']) 
-                          ? <button data-html2canvas-ignore className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>
+                          ? (!incidentDetails.incident_group && <button data-html2canvas-ignore className="button text" onClick={() => openModal("Update Tag", "Group incidents by attaching tags", <IncidentTags id={id}/>, 'info', <></>)}>Update</button>)
                           : <></>
                         }
                         

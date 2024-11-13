@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, updateDoc, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
 import { firestore } from "../config/firebase";
 import { getDistance } from 'geolib';
 import moment from 'moment';
@@ -15,6 +15,31 @@ const AssignGroupPerson = (props) => {
     const [availablePersons, setAvailablePersons] = useState([]);
     const [error, setError] = useState(null);
     const [status, setStatus] = useState();
+
+    const [schedules, setSchedules] = useState([]);
+    const [selectedSchedule, setSelectedSchedule] = useState("All");
+
+    useEffect(() => {
+        const fetchSchedules = async () => {
+            const scheduleRef = collection(firestore, "duty_schedules");
+            const querySnapshot = await getDocs(scheduleRef);
+            const schedulesData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                name: doc.data().name,
+                members: doc.data().members || []
+            }));
+            
+            // Get the current day name, e.g., "Monday"
+            const currentDayName = moment().format('dddd');
+            
+            // Filter schedules to include only the current day and "All" option
+            const filteredSchedules = schedulesData.filter(schedule => schedule.name.startsWith(currentDayName));
+    
+            // Prepend "All" option to the filtered schedules
+            setSchedules(filteredSchedules);
+        };
+        fetchSchedules();
+    }, []);
 
     useEffect(() => {
         
@@ -33,7 +58,11 @@ const AssignGroupPerson = (props) => {
                     let fetchedPersons = querySnapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data() }))
                     .filter(person => !responders.includes(person.id));
-    
+
+                    if (selectedSchedule !== "All") {
+                        const schedule = schedules.find(s => s.id === selectedSchedule);
+                        fetchedPersons = fetchedPersons.filter(person => schedule?.members.includes(person.id));
+                    }
                     
                     fetchedPersons = fetchedPersons.sort((a, b) => (b.isOnline ? 1 : 0) - (a.isOnline ? 1 : 0));
         
@@ -49,7 +78,11 @@ const AssignGroupPerson = (props) => {
         };
 
         fetchAvailablePersons();
-    }, []);
+    }, [selectedSchedule]);
+
+    const handleScheduleChange = (e) => {
+        setSelectedSchedule(e.target.value);
+    };
 
     const handleAddPerson = async (personId) => {
         setError("");
@@ -88,6 +121,11 @@ const AssignGroupPerson = (props) => {
                     await updateDoc(incidentDocRef, {
                         responders: arrayUnion(personId)
                     });
+                    const responderDocRef = doc(incidentDocRef, "responders", personId);
+                    await setDoc(responderDocRef, {
+                        response_start: serverTimestamp(),
+                        status: "Assigned"
+                    });
                     setError(null);
                 }
 
@@ -110,6 +148,12 @@ const AssignGroupPerson = (props) => {
     };
   return (
     <div id="personsAvailable">
+        <select className="dropdown" onChange={handleScheduleChange} value={selectedSchedule}>
+            <option value="All">All</option>
+            {schedules.map(schedule => (
+                <option key={schedule.id} value={schedule.id}>{schedule.name}</option>
+            ))}
+        </select>
             {error && (
                 <div id="error-section">
                     <span className='status error'>{error}</span>

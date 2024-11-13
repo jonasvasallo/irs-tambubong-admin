@@ -221,6 +221,8 @@ useEffect(() => {
 
   const calculateTagCounts = async (incidents) => {
     const tagCount = {};
+  
+    // Count the occurrences of each tag
     for (const incident of incidents) {
       const tag = incident.incident_tag;
       if (tag) {
@@ -230,16 +232,34 @@ useEffect(() => {
         tagCount[tag]++;
       }
     }
-
+  
+    // Convert the tag counts into an array of { tag, count } objects
     const tagCountEntries = await Promise.all(Object.keys(tagCount).map(async tag => ({
       tag: await fetchTagName(tag),
       count: tagCount[tag]
     })));
-
+  
+    // Sort the array in descending order by count
     const sortedTagCounts = tagCountEntries.sort((a, b) => b.count - a.count);
-
+  
+    // Assign ranks, handling ties
+    let lastCount = null;
+    let currentRank = 0;
+    sortedTagCounts.forEach((tagEntry, index) => {
+      console.log("lastCount:", lastCount);
+      console.log("rank: ", currentRank);
+      if (tagEntry.count !== lastCount) {
+        console.log("diff rank");
+        currentRank = currentRank + 1;
+        lastCount = tagEntry.count;
+      }
+      tagEntry.rank = currentRank;  // Assign rank to each entry
+    });
+  
     setTagCounts(sortedTagCounts);
+    console.log(sortedTagCounts);
   };
+  
 
   const getTimeUnit = (range) => {
     switch (range) {
@@ -333,30 +353,43 @@ useEffect(() => {
                       {(heatmapData && heatmapData.length > 0) ? <ReactHeatmap key={`${timeRange}-${heatmapData.length}`} data={heatmapData}/> : <>No data given...</>}
                     </div>
                     <div className="report-container grow-1 flex col gap-8">
-                      <span className="body-l">Trending Incidents</span>
-                      {tagCounts.map(({ tag, count }, index) => (
-                        <div key={tag} className="flex gap-8 main-between cross-center">
-                          <span className="subheading-l">#{index + 1} {tag}</span>
-                          <span className="body-m">{count} reports</span>
-                        </div>
-                      ))}
-                    </div>
+                    <span className="body-l">Trending Incidents</span>
+                    {
+                      tagCounts.map(({ tag, count, rank }, index) => {
+
+                        return (
+                          <div key={tag} className="flex gap-8 main-between cross-center">
+                            <span className="subheading-s">#{rank} {tag}</span>
+                            <span className="body-s">{count} reports</span>
+                          </div>
+                        );
+                      })
+                    }
+                  </div>
+
                   </div>
                   <div className="flex gap-8">
-                    <div className="report-container grow-1 overflow-scroll" style={{maxWidth: "600px"}}>
-                      <span className="body-l">Incidents</span>
-                      <br />
-                      <br />
-                      <div className="flex col gap-8">
-                      {incidentList.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds).map((incident) => (
+                  <div className="report-container grow-1 overflow-scroll" style={{maxWidth: "600px"}}>
+                  <div className="flex main-between">
+                    <span className="body-l">Incidents</span>
+                    <Link className='link' to={'/reports'}>View All</Link>
+                  </div>
+                  <br />
+                  <br />
+                  <div className="flex col gap-8">
+                    {incidentList
+                      .sort((a, b) => b.timestamp.seconds - a.timestamp.seconds)  // Sort incidents by timestamp
+                      .slice(0, 8)  // Limit to the first 20 incidents
+                      .map((incident) => (
                         <div key={incident.id} className='flex gap-16 cross-center'>
                           <span className='subheading-m'>{incident.title}</span>
                           <span>{moment.unix(incident.timestamp.seconds).format('ddd, MMMM D, YYYY [at] h:mm A')}</span>
                           <Link className='link' to={`/reports/${incident.id}`} style={{ marginTop: '0' }}>View</Link>
                         </div>
                       ))}
-                      </div>
-                    </div>
+                  </div>
+                </div>
+
                     <div className="report-container grow-1" style={{maxWidth: "600px"}}>
                       <span className="body-l">Incident Frequency</span>
                       <BarChart data={{ labels: tagCounts.map(tag => tag.tag), data: tagCounts.map(tag => tag.count) }} />
