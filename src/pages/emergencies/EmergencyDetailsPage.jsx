@@ -133,7 +133,7 @@ const EmergencyDetailsPage = () => {
                         <div className="w-100 flex col gap-8">
                         <span className="body-s color-minor">{id}</span>
                           <div style={{'width' : '100%', 'height' : '250px'}}>
-                            <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/>
+                            {/* <ReactMap positions={[{lat: emergencyDetails.location.latitude, lng: emergencyDetails.location.longitude}]}/> */}
                           </div>
                           <div className="flex main-between cross-start">
                             {userDetails && 
@@ -185,9 +185,15 @@ const EmergencyDetailsPage = () => {
                           
                         </div>
                         <div className="w-100 h-100 flex col">
-                          {emergencyDetails.attachment && <div className="flex-1">
-                            <video src={emergencyDetails.attachment} autoPlay controls className='w-100 ' height={250} />
-                          </div>}
+                        {emergencyDetails.attachment && (
+                          <div className="flex-1">
+                            {emergencyDetails.attachmentType === "image" ? (
+                              <img src={emergencyDetails.attachment} alt="attachment" className="w-100" height={250} />
+                            ) : (
+                              <video src={emergencyDetails.attachment} autoPlay controls className="w-100" height={250} />
+                            )}
+                          </div>
+                        )}
                           <div id="emergency-chatroom" className='flex-1'>
                             <span className="subheading-m">Emergency Chatroom</span>
                             <ChatroomContainer id={id} emergency={true} />
